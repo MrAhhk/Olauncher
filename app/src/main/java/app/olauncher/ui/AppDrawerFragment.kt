@@ -7,9 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -227,11 +224,7 @@ class AppDrawerFragment : Fragment() {
                 it?.let { appModels ->
                     val list = appModels.toMutableList()
                     if (flag == Constants.FLAG_LAUNCH_APP) {
-                        val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
-                        if (prefs.lastAppDrawerShuffleDate != today) {
-                            list.shuffle()
-                            prefs.lastAppDrawerShuffleDate = today
-                        }
+                        list.shuffle()
                     }
                     adapter.setAppList(list)
                     adapter.filter.filter(binding.search.query)

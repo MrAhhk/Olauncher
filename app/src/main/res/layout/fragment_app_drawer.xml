@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="?attr/primaryShadeDarkColor"
+    android:background="@color/black"
     android:orientation="vertical">
 
     <Space
@@ -35,7 +35,7 @@
             app:queryBackground="@null"
             app:queryHint="___"
             app:searchIcon="@null"
-            app:theme="@style/AppSearchText" />
+            app:theme="@style/AppDrawerSearchText" />
 
         <TextView
             android:id="@+id/appRename"
@@ -47,6 +47,7 @@
             android:paddingVertical="@dimen/app_padding_vertical"
             android:text="@string/rename"
             android:textAllCaps="true"
+            android:textColor="@color/white"
             android:visibility="gone" />
 
     </LinearLayout>
