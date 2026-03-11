@@ -297,6 +297,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         val homeAppsNum = minOf(prefs.homeAppsNum, 7)
         if (homeAppsNum == 0) return
 
+        binding.homeApp8.visibility = View.GONE
         binding.homeApp1.visibility = View.VISIBLE
         if (!setHomeAppText(binding.homeApp1, prefs.appName1, prefs.appPackage1, prefs.appUser1, prefs.isShortcut1, prefs.shortcutId1)) {
             prefs.appName1 = ""
@@ -344,6 +345,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             prefs.appName7 = ""
             prefs.appPackage7 = ""
         }
+        if (homeAppsNum >= 7) return
     }
 
     private fun setHomeAppText(textView: TextView, appName: String, packageName: String, userString: String, isShortcut: Boolean, shortcutId: String?): Boolean {
@@ -393,6 +395,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.homeApp5.visibility = View.GONE
         binding.homeApp6.visibility = View.GONE
         binding.homeApp7.visibility = View.GONE
+        binding.homeApp8.visibility = View.GONE
     }
 
     private fun launchAppOrShortcut(

@@ -28,7 +28,4 @@
     <color name="blackInverseTrans80">#CCFFFFFF</color>
     <color name="blackInverseTrans90">#E6FFFFFF</color>
 
-    <!-- Light gray for hint text -->
-    <color name="lightGray">#B0B0B0</color>
-
 </resources>

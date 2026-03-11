@@ -222,11 +222,7 @@ class AppDrawerFragment : Fragment() {
         } else {
             viewModel.appList.observe(viewLifecycleOwner) {
                 it?.let { appModels ->
-                    val list = appModels.toMutableList()
-                    if (flag == Constants.FLAG_LAUNCH_APP) {
-                        list.shuffle()
-                    }
-                    adapter.setAppList(list)
+                    adapter.setAppList(appModels.toMutableList())
                     adapter.filter.filter(binding.search.query)
                 }
             }
@@ -250,6 +246,7 @@ class AppDrawerFragment : Fragment() {
                 Constants.FLAG_SET_HOME_APP_5 -> prefs.appName5 = name
                 Constants.FLAG_SET_HOME_APP_6 -> prefs.appName6 = name
                 Constants.FLAG_SET_HOME_APP_7 -> prefs.appName7 = name
+                Constants.FLAG_SET_HOME_APP_8 -> prefs.appName8 = name
             }
             findNavController().popBackStack()
         }
