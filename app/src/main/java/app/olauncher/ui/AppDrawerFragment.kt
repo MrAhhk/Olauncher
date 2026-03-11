@@ -30,6 +30,9 @@ import app.olauncher.helper.openUrl
 import app.olauncher.helper.showKeyboard
 import app.olauncher.helper.showToast
 import app.olauncher.helper.uninstall
+import java.util.Calendar
+import java.util.Collections
+import java.util.Random
 
 class AppDrawerFragment : Fragment() {
 
@@ -222,7 +225,17 @@ class AppDrawerFragment : Fragment() {
         } else {
             viewModel.appList.observe(viewLifecycleOwner) {
                 it?.let { appModels ->
-                    adapter.setAppList(appModels.toMutableList())
+                    val listToShow = appModels.toMutableList()
+                    if (flag == Constants.FLAG_LAUNCH_APP) {
+                        val today = Calendar.getInstance().run {
+                            get(Calendar.YEAR) * 1000 + get(Calendar.DAY_OF_YEAR)
+                        }
+                        Collections.shuffle(listToShow, Random(today.toLong()))
+                        if (today != prefs.appDrawerLastShuffleDate) {
+                            prefs.appDrawerLastShuffleDate = today
+                        }
+                    }
+                    adapter.setAppList(listToShow)
                     adapter.filter.filter(binding.search.query)
                 }
             }
