@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:background="@color/black"
     android:orientation="vertical"
     tools:context=".ui.HomeFragment">
 
@@ -34,6 +35,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-light"
             android:format12Hour="h:mm"
+            android:textColor="@color/white"
             android:textSize="@dimen/time_size"
             tools:text="02:34" />
 
@@ -45,6 +47,7 @@
             android:format12Hour="EEE, dd MMM"
             android:format24Hour="EEE, dd MMM"
             android:paddingHorizontal="3dp"
+            android:textColor="@color/white"
             android:textSize="@dimen/date_size"
             tools:text="Thu, 30 Dec" />
     </LinearLayout>
@@ -60,6 +63,7 @@
         android:layout_marginTop="72dp"
         android:gravity="center"
         android:padding="10dp"
+        android:textColor="@color/white"
         android:textSize="@dimen/date_size"
         android:visibility="gone"
         tools:text="2h 11m"
@@ -83,6 +87,8 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_1"
+            android:textColor="@color/white"
+            android:textColorHint="@color/whiteTrans50"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -94,6 +100,8 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_2"
+            android:textColor="@color/white"
+            android:textColorHint="@color/whiteTrans50"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -105,6 +113,8 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_3"
+            android:textColor="@color/white"
+            android:textColorHint="@color/whiteTrans50"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -116,6 +126,8 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_4"
+            android:textColor="@color/white"
+            android:textColorHint="@color/whiteTrans50"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -127,6 +139,8 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_5"
+            android:textColor="@color/white"
+            android:textColorHint="@color/whiteTrans50"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -138,6 +152,8 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_6"
+            android:textColor="@color/white"
+            android:textColorHint="@color/whiteTrans50"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -149,17 +165,8 @@
             android:hint="@string/app"
             android:paddingVertical="@dimen/home_app_padding_vertical"
             android:tag="@string/tag_7"
-            android:visibility="gone"
-            tools:visibility="visible" />
-
-        <TextView
-            android:id="@+id/homeApp8"
-            style="@style/TextLarge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="@string/app"
-            android:paddingVertical="@dimen/home_app_padding_vertical"
-            android:tag="@string/tag_8"
+            android:textColor="@color/white"
+            android:textColorHint="@color/whiteTrans50"
             android:visibility="gone"
             tools:visibility="visible" />
 
@@ -174,7 +181,8 @@
         android:layout_marginHorizontal="8dp"
         android:layout_marginBottom="56dp"
         android:gravity="center"
-        android:text="@string/swipe_up_for_apps" />
+        android:text="@string/swipe_up_for_apps"
+        android:textColor="@color/white" />
 
     <!-- Set default launcher -->
     <TextView
@@ -189,5 +197,6 @@
         android:ellipsize="end"
         android:maxLines="1"
         android:text="@string/set_as_default_launcher_u"
+        android:textColor="@color/white"
         android:visibility="gone" />
 </FrameLayout>

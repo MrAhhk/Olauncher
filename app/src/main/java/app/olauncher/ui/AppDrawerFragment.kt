@@ -7,6 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.TextView
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -222,7 +225,15 @@ class AppDrawerFragment : Fragment() {
         } else {
             viewModel.appList.observe(viewLifecycleOwner) {
                 it?.let { appModels ->
-                    adapter.setAppList(appModels.toMutableList())
+                    val list = appModels.toMutableList()
+                    if (flag == Constants.FLAG_LAUNCH_APP) {
+                        val today = SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Date())
+                        if (prefs.lastAppDrawerShuffleDate != today) {
+                            list.shuffle()
+                            prefs.lastAppDrawerShuffleDate = today
+                        }
+                    }
+                    adapter.setAppList(list)
                     adapter.filter.filter(binding.search.query)
                 }
             }
@@ -246,7 +257,6 @@ class AppDrawerFragment : Fragment() {
                 Constants.FLAG_SET_HOME_APP_5 -> prefs.appName5 = name
                 Constants.FLAG_SET_HOME_APP_6 -> prefs.appName6 = name
                 Constants.FLAG_SET_HOME_APP_7 -> prefs.appName7 = name
-                Constants.FLAG_SET_HOME_APP_8 -> prefs.appName8 = name
             }
             findNavController().popBackStack()
         }
