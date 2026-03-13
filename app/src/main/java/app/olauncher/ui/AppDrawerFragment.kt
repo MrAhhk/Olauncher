@@ -74,7 +74,7 @@ class AppDrawerFragment : Fragment() {
     private fun initViews() {
         if (flag == Constants.FLAG_HIDDEN_APPS)
             binding.search.queryHint = getString(R.string.hidden_apps)
-        else if (flag in Constants.FLAG_SET_HOME_APP_1..Constants.FLAG_SET_CALENDAR_APP)
+        else if (Constants.isHomeAppFlag(flag) || flag in Constants.FLAG_SET_SWIPE_LEFT_APP..Constants.FLAG_SET_CALENDAR_APP)
             binding.search.queryHint = "Please select an app"
         try {
             val searchTextView = binding.search.findViewById<TextView>(R.id.search_src_text)
@@ -260,6 +260,10 @@ class AppDrawerFragment : Fragment() {
                 Constants.FLAG_SET_HOME_APP_6 -> prefs.appName6 = name
                 Constants.FLAG_SET_HOME_APP_7 -> prefs.appName7 = name
                 Constants.FLAG_SET_HOME_APP_8 -> prefs.appName8 = name
+                Constants.FLAG_SET_HOME_APP_9 -> prefs.setAppName(9, name)
+                Constants.FLAG_SET_HOME_APP_10 -> prefs.setAppName(10, name)
+                Constants.FLAG_SET_HOME_APP_11 -> prefs.setAppName(11, name)
+                Constants.FLAG_SET_HOME_APP_12 -> prefs.setAppName(12, name)
             }
             findNavController().popBackStack()
         }

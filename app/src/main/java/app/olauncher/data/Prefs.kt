@@ -7,6 +7,10 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
 
 class Prefs(context: Context) {
+    companion object {
+        private const val MAX_HOME_APPS = 12
+    }
+
     private val PREFS_FILENAME = "app.olauncher"
 
     private val FIRST_OPEN = "FIRST_OPEN"
@@ -541,6 +545,7 @@ class Prefs(context: Context) {
             6 -> prefs.getString(APP_NAME_6, "").toString()
             7 -> prefs.getString(APP_NAME_7, "").toString()
             8 -> prefs.getString(APP_NAME_8, "").toString()
+            in 9..MAX_HOME_APPS -> prefs.getString("APP_NAME_$location", "").toString()
             else -> ""
         }
     }
@@ -555,6 +560,7 @@ class Prefs(context: Context) {
             6 -> prefs.getString(APP_PACKAGE_6, "").toString()
             7 -> prefs.getString(APP_PACKAGE_7, "").toString()
             8 -> prefs.getString(APP_PACKAGE_8, "").toString()
+            in 9..MAX_HOME_APPS -> prefs.getString("APP_PACKAGE_$location", "").toString()
             else -> ""
         }
     }
@@ -569,6 +575,7 @@ class Prefs(context: Context) {
             6 -> prefs.getString(APP_ACTIVITY_CLASS_NAME_6, "").toString()
             7 -> prefs.getString(APP_ACTIVITY_CLASS_NAME_7, "").toString()
             8 -> prefs.getString(APP_ACTIVITY_CLASS_NAME_8, "").toString()
+            in 9..MAX_HOME_APPS -> prefs.getString("APP_ACTIVITY_CLASS_NAME_$location", "").toString()
             else -> ""
         }
     }
@@ -583,6 +590,7 @@ class Prefs(context: Context) {
             6 -> prefs.getString(APP_USER_6, "").toString()
             7 -> prefs.getString(APP_USER_7, "").toString()
             8 -> prefs.getString(APP_USER_8, "").toString()
+            in 9..MAX_HOME_APPS -> prefs.getString("APP_USER_$location", "").toString()
             else -> ""
         }
     }
@@ -597,6 +605,7 @@ class Prefs(context: Context) {
             6 -> shortcutId6
             7 -> shortcutId7
             8 -> shortcutId8
+            in 9..MAX_HOME_APPS -> prefs.getString("SHORTCUT_ID_$location", "").toString()
             else -> ""
         }
     }
@@ -611,11 +620,12 @@ class Prefs(context: Context) {
             6 -> isShortcut6
             7 -> isShortcut7
             8 -> isShortcut8
+            in 9..MAX_HOME_APPS -> prefs.getBoolean("IS_SHORTCUT_$location", false)
             else -> false
         }
     }
 
-    fun setAppActivityClassName(location: Int, activityClassName: String) {
+    fun setResolvedAppActivityClassName(location: Int, activityClassName: String) {
         when (location) {
             1 -> appActivityClassName1 = activityClassName
             2 -> appActivityClassName2 = activityClassName
@@ -625,18 +635,112 @@ class Prefs(context: Context) {
             6 -> appActivityClassName6 = activityClassName
             7 -> appActivityClassName7 = activityClassName
             8 -> appActivityClassName8 = activityClassName
+            in 9..MAX_HOME_APPS -> prefs.edit { putString("APP_ACTIVITY_CLASS_NAME_$location", activityClassName) }
         }
     }
 
     fun updateAppActivityClassName(packageName: String, activityClassName: String) {
-        for (i in 1..8) {
-            if (getAppPackage(i) == packageName) setAppActivityClassName(i, activityClassName)
+        for (i in 1..MAX_HOME_APPS) {
+            if (getAppPackage(i) == packageName) setResolvedAppActivityClassName(i, activityClassName)
         }
         if (clockAppPackage == packageName) clockAppClassName = activityClassName
         if (calendarAppPackage == packageName) calendarAppClassName = activityClassName
         if (screenTimeAppPackage == packageName) screenTimeAppClassName = activityClassName
         if (appPackageSwipeLeft == packageName) appActivityClassNameSwipeLeft = activityClassName
         if (appPackageSwipeRight == packageName) appActivityClassNameRight = activityClassName
+    }
+
+    fun setAppName(location: Int, value: String) {
+        when (location) {
+            1 -> appName1 = value
+            2 -> appName2 = value
+            3 -> appName3 = value
+            4 -> appName4 = value
+            5 -> appName5 = value
+            6 -> appName6 = value
+            7 -> appName7 = value
+            8 -> appName8 = value
+            in 9..MAX_HOME_APPS -> prefs.edit { putString("APP_NAME_$location", value) }
+        }
+    }
+
+    fun setAppPackage(location: Int, value: String) {
+        when (location) {
+            1 -> appPackage1 = value
+            2 -> appPackage2 = value
+            3 -> appPackage3 = value
+            4 -> appPackage4 = value
+            5 -> appPackage5 = value
+            6 -> appPackage6 = value
+            7 -> appPackage7 = value
+            8 -> appPackage8 = value
+            in 9..MAX_HOME_APPS -> prefs.edit { putString("APP_PACKAGE_$location", value) }
+        }
+    }
+
+    fun setAppUser(location: Int, value: String) {
+        when (location) {
+            1 -> appUser1 = value
+            2 -> appUser2 = value
+            3 -> appUser3 = value
+            4 -> appUser4 = value
+            5 -> appUser5 = value
+            6 -> appUser6 = value
+            7 -> appUser7 = value
+            8 -> appUser8 = value
+            in 9..MAX_HOME_APPS -> prefs.edit { putString("APP_USER_$location", value) }
+        }
+    }
+
+    fun setAppActivityClassName(location: Int, value: String?) {
+        when (location) {
+            1 -> appActivityClassName1 = value
+            2 -> appActivityClassName2 = value
+            3 -> appActivityClassName3 = value
+            4 -> appActivityClassName4 = value
+            5 -> appActivityClassName5 = value
+            6 -> appActivityClassName6 = value
+            7 -> appActivityClassName7 = value
+            8 -> appActivityClassName8 = value
+            in 9..MAX_HOME_APPS -> prefs.edit { putString("APP_ACTIVITY_CLASS_NAME_$location", value) }
+        }
+    }
+
+    fun setIsShortcut(location: Int, value: Boolean) {
+        when (location) {
+            1 -> isShortcut1 = value
+            2 -> isShortcut2 = value
+            3 -> isShortcut3 = value
+            4 -> isShortcut4 = value
+            5 -> isShortcut5 = value
+            6 -> isShortcut6 = value
+            7 -> isShortcut7 = value
+            8 -> isShortcut8 = value
+            in 9..MAX_HOME_APPS -> prefs.edit { putBoolean("IS_SHORTCUT_$location", value) }
+        }
+    }
+
+    fun setShortcutId(location: Int, value: String) {
+        when (location) {
+            1 -> shortcutId1 = value
+            2 -> shortcutId2 = value
+            3 -> shortcutId3 = value
+            4 -> shortcutId4 = value
+            5 -> shortcutId5 = value
+            6 -> shortcutId6 = value
+            7 -> shortcutId7 = value
+            8 -> shortcutId8 = value
+            in 9..MAX_HOME_APPS -> prefs.edit { putString("SHORTCUT_ID_$location", value) }
+        }
+    }
+
+    fun clearHomeApp(location: Int) {
+        setAppName(location, "")
+        setAppPackage(location, "")
+        setAppUser(location, "")
+        setAppActivityClassName(location, "")
+        setIsShortcut(location, false)
+        setShortcutId(location, "")
     }
 
     fun getAppRenameLabel(appPackage: String): String = prefs.getString(appPackage, "").toString()

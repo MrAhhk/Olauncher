@@ -74,6 +74,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Constants.FLAG_SET_HOME_APP_6 -> saveHomeApp(appModel, 6)
             Constants.FLAG_SET_HOME_APP_7 -> saveHomeApp(appModel, 7)
             Constants.FLAG_SET_HOME_APP_8 -> saveHomeApp(appModel, 8)
+            Constants.FLAG_SET_HOME_APP_9 -> saveHomeApp(appModel, 9)
+            Constants.FLAG_SET_HOME_APP_10 -> saveHomeApp(appModel, 10)
+            Constants.FLAG_SET_HOME_APP_11 -> saveHomeApp(appModel, 11)
+            Constants.FLAG_SET_HOME_APP_12 -> saveHomeApp(appModel, 12)
 
             Constants.FLAG_SET_SWIPE_LEFT_APP -> saveSwipeApp(appModel, isLeft = true)
             Constants.FLAG_SET_SWIPE_RIGHT_APP -> saveSwipeApp(appModel, isLeft = false)
@@ -95,6 +99,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun saveHomeApp(appModel: AppModel, position: Int) {
+        if (position in 9..12) {
+            saveExtendedHomeApp(appModel, position)
+            refreshHome(false)
+            return
+        }
         when (appModel) {
             is AppModel.App -> {
                 when (position) {
@@ -249,6 +258,28 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
         }
         refreshHome(false)
+    }
+
+    private fun saveExtendedHomeApp(appModel: AppModel, position: Int) {
+        when (appModel) {
+            is AppModel.App -> {
+                prefs.setAppName(position, appModel.appLabel)
+                prefs.setAppPackage(position, appModel.appPackage)
+                prefs.setAppUser(position, appModel.user.toString())
+                prefs.setAppActivityClassName(position, appModel.activityClassName)
+                prefs.setIsShortcut(position, false)
+                prefs.setShortcutId(position, "")
+            }
+
+            is AppModel.PinnedShortcut -> {
+                prefs.setAppName(position, appModel.appLabel)
+                prefs.setAppPackage(position, appModel.appPackage)
+                prefs.setAppUser(position, appModel.user.toString())
+                prefs.setAppActivityClassName(position, null)
+                prefs.setIsShortcut(position, true)
+                prefs.setShortcutId(position, appModel.shortcutId)
+            }
+        }
     }
 
     private fun saveSwipeApp(appModel: AppModel, isLeft: Boolean) {

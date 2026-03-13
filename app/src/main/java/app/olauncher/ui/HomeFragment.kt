@@ -146,6 +146,10 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             R.id.homeApp6 -> showAppList(Constants.FLAG_SET_HOME_APP_6, prefs.appName6.isNotEmpty(), true)
             R.id.homeApp7 -> showAppList(Constants.FLAG_SET_HOME_APP_7, prefs.appName7.isNotEmpty(), true)
             R.id.homeApp8 -> showAppList(Constants.FLAG_SET_HOME_APP_8, prefs.appName8.isNotEmpty(), true)
+            R.id.homeApp9 -> showAppList(Constants.FLAG_SET_HOME_APP_9, prefs.getAppName(9).isNotEmpty(), true)
+            R.id.homeApp10 -> showAppList(Constants.FLAG_SET_HOME_APP_10, prefs.getAppName(10).isNotEmpty(), true)
+            R.id.homeApp11 -> showAppList(Constants.FLAG_SET_HOME_APP_11, prefs.getAppName(11).isNotEmpty(), true)
+            R.id.homeApp12 -> showAppList(Constants.FLAG_SET_HOME_APP_12, prefs.getAppName(12).isNotEmpty(), true)
             R.id.clock -> {
                 showAppList(Constants.FLAG_SET_CLOCK_APP)
                 prefs.clockAppPackage = ""
@@ -309,81 +313,19 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.homeApp12
     )
 
-    private fun getStoredValue(key: String): String {
-        return requireContext().getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
-            .getString(key, "")
-            .orEmpty()
-    }
-
-    private fun getStoredBoolean(key: String): Boolean {
-        return requireContext().getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
-            .getBoolean(key, false)
-    }
-
     private fun getHomeAppInfo(location: Int): HomeAppInfo {
-        return if (location <= 8) {
-            HomeAppInfo(
-                appName = prefs.getAppName(location),
-                packageName = prefs.getAppPackage(location),
-                activityClassName = prefs.getAppActivityClassName(location),
-                userString = prefs.getAppUser(location),
-                isShortcut = prefs.getIsShortcut(location),
-                shortcutId = prefs.getShortcutId(location)
-            )
-        } else {
-            HomeAppInfo(
-                appName = getStoredValue("APP_NAME_$location"),
-                packageName = getStoredValue("APP_PACKAGE_$location"),
-                activityClassName = getStoredValue("APP_ACTIVITY_CLASS_NAME_$location"),
-                userString = getStoredValue("APP_USER_$location"),
-                isShortcut = getStoredBoolean("IS_SHORTCUT_$location"),
-                shortcutId = getStoredValue("SHORTCUT_ID_$location")
-            )
-        }
+        return HomeAppInfo(
+            appName = prefs.getAppName(location),
+            packageName = prefs.getAppPackage(location),
+            activityClassName = prefs.getAppActivityClassName(location),
+            userString = prefs.getAppUser(location),
+            isShortcut = prefs.getIsShortcut(location),
+            shortcutId = prefs.getShortcutId(location)
+        )
     }
 
-    private fun clearLegacyHomeAppSlot(location: Int) {
-        when (location) {
-            1 -> {
-                prefs.appName1 = ""
-                prefs.appPackage1 = ""
-            }
-
-            2 -> {
-                prefs.appName2 = ""
-                prefs.appPackage2 = ""
-            }
-
-            3 -> {
-                prefs.appName3 = ""
-                prefs.appPackage3 = ""
-            }
-
-            4 -> {
-                prefs.appName4 = ""
-                prefs.appPackage4 = ""
-            }
-
-            5 -> {
-                prefs.appName5 = ""
-                prefs.appPackage5 = ""
-            }
-
-            6 -> {
-                prefs.appName6 = ""
-                prefs.appPackage6 = ""
-            }
-
-            7 -> {
-                prefs.appName7 = ""
-                prefs.appPackage7 = ""
-            }
-
-            8 -> {
-                prefs.appName8 = ""
-                prefs.appPackage8 = ""
-            }
-        }
+    private fun clearHomeAppSlot(location: Int) {
+        prefs.clearHomeApp(location)
     }
 
     private fun showSecondaryHomeApps() {
@@ -443,7 +385,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
             appView.visibility = if (hasValidApp) View.VISIBLE else View.GONE
             if (hasValidApp && index > PRIMARY_HOME_APPS) secondaryAppsCount++
-            if (!hasValidApp && index <= 8) clearLegacyHomeAppSlot(index)
+            if (!hasValidApp) clearHomeAppSlot(index)
         }
     }
 

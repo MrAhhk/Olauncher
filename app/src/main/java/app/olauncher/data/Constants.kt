@@ -76,12 +76,21 @@ object Constants {
     const val FLAG_SET_HOME_APP_6 = 6
     const val FLAG_SET_HOME_APP_7 = 7
     const val FLAG_SET_HOME_APP_8 = 8
+    const val FLAG_SET_HOME_APP_9 = 16
+    const val FLAG_SET_HOME_APP_10 = 17
+    const val FLAG_SET_HOME_APP_11 = 18
+    const val FLAG_SET_HOME_APP_12 = 19
 
     const val FLAG_SET_SWIPE_LEFT_APP = 11
     const val FLAG_SET_SWIPE_RIGHT_APP = 12
     const val FLAG_SET_CLOCK_APP = 13
     const val FLAG_SET_CALENDAR_APP = 14
     const val FLAG_SET_SCREEN_TIME_APP = 15
+
+    fun isHomeAppFlag(flag: Int): Boolean {
+        return flag in FLAG_SET_HOME_APP_1..FLAG_SET_HOME_APP_8
+            || flag in FLAG_SET_HOME_APP_9..FLAG_SET_HOME_APP_12
+    }
 
     const val REQUEST_CODE_ENABLE_ADMIN = 666
     const val REQUEST_CODE_LAUNCHER_SELECTOR = 678
