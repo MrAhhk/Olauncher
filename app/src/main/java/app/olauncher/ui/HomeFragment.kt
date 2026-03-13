@@ -104,7 +104,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             else -> {
                 try { // Launch app
                     val appLocation = view.tag.toString().toInt()
-                    homeAppClicked(appLocation)
+                    if (prefs.getAppName(appLocation).isBlank()) openHomeAppSelector(appLocation)
+                    else homeAppClicked(appLocation)
                 } catch (e: Exception) {
                     e.printStackTrace()
                 }
@@ -355,6 +356,29 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         swipeDownAction()
     }
 
+    private fun getHomeAppFlag(location: Int): Int? {
+        return when (location) {
+            1 -> Constants.FLAG_SET_HOME_APP_1
+            2 -> Constants.FLAG_SET_HOME_APP_2
+            3 -> Constants.FLAG_SET_HOME_APP_3
+            4 -> Constants.FLAG_SET_HOME_APP_4
+            5 -> Constants.FLAG_SET_HOME_APP_5
+            6 -> Constants.FLAG_SET_HOME_APP_6
+            7 -> Constants.FLAG_SET_HOME_APP_7
+            8 -> Constants.FLAG_SET_HOME_APP_8
+            9 -> Constants.FLAG_SET_HOME_APP_9
+            10 -> Constants.FLAG_SET_HOME_APP_10
+            11 -> Constants.FLAG_SET_HOME_APP_11
+            12 -> Constants.FLAG_SET_HOME_APP_12
+            else -> null
+        }
+    }
+
+    private fun openHomeAppSelector(location: Int) {
+        val flag = getHomeAppFlag(location) ?: return
+        showAppList(flag, prefs.getAppName(location).isNotEmpty(), true)
+    }
+
     private fun populateHomeScreen(appCountUpdated: Boolean) {
         if (appCountUpdated) hideHomeApps()
         populateDateTime()
@@ -363,7 +387,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             populateScreenTime()
 
         val homeAppsNum = minOf(prefs.homeAppsNum, MAX_HOME_APPS)
-        secondaryAppsCount = 0
+        secondaryAppsCount = (homeAppsNum - PRIMARY_HOME_APPS).coerceAtLeast(0)
         hideSecondaryHomeApps()
 
         if (homeAppsNum == 0) return
@@ -383,9 +407,11 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 appInfo.shortcutId
             )
 
-            appView.visibility = if (hasValidApp) View.VISIBLE else View.GONE
-            if (hasValidApp && index > PRIMARY_HOME_APPS) secondaryAppsCount++
-            if (!hasValidApp) clearHomeAppSlot(index)
+            appView.visibility = View.VISIBLE
+            if (!hasValidApp) {
+                clearHomeAppSlot(index)
+                appView.text = getString(R.string.add_an_app)
+            }
         }
     }
 

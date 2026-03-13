@@ -19,6 +19,7 @@
     <string name="time_spent_hour" translatable="false">%1$sh %2$sm</string>
 
     <string name="app">App</string>
+    <string name="add_an_app">Add an app</string>
     <string name="set_as_default_launcher">Set as default launcher</string>
     <string name="set_as_default_launcher_u"><u>Set as default launcher</u></string>
     <string name="set_as_default_launcher_first">Set Olauncher default first</string>
