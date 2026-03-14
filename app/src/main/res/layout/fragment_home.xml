@@ -15,37 +15,160 @@
         android:layout_height="1dp"
         android:contentDescription="@string/lock_layout_description" />
 
-    <!-- Clock and calendar-->
+    <!-- Top info area: clock/date/battery left, weather right -->
     <LinearLayout
         android:id="@+id/dateTimeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="20dp"
         android:layout_marginTop="56dp"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:visibility="gone"
         tools:visibility="visible">
 
-        <TextClock
-            android:id="@+id/clock"
-            style="@style/TextDefault"
-            android:layout_width="wrap_content"
+        <!-- Left block: clock, date, battery -->
+        <LinearLayout
+            android:id="@+id/clockDateBatteryBlock"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="sans-serif-light"
-            android:format12Hour="h:mm"
-            android:textSize="@dimen/time_size"
-            tools:text="02:34" />
+            android:layout_weight="1"
+            android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/date"
-            style="@style/TextDefault"
+            <TextClock
+                android:id="@+id/clock"
+                style="@style/TextDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-light"
+                android:format12Hour="h:mm"
+                android:textSize="@dimen/time_size"
+                tools:text="02:34" />
+
+            <TextView
+                android:id="@+id/date"
+                style="@style/TextDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:paddingHorizontal="3dp"
+                android:textSize="@dimen/date_size"
+                tools:text="Sat, 14 Mar 2026" />
+
+            <ProgressBar
+                android:id="@+id/batteryProgress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/home_battery_bar_height"
+                android:layout_marginTop="6dp"
+                android:max="100"
+                android:progress="75"
+                android:progressDrawable="@drawable/home_battery_progress"
+                tools:progress="75" />
+        </LinearLayout>
+
+        <!-- Right block: weather widget -->
+        <LinearLayout
+            android:id="@+id/weatherWidget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:format12Hour="EEE, dd MMM"
-            android:format24Hour="EEE, dd MMM"
-            android:paddingHorizontal="3dp"
-            android:textSize="@dimen/date_size"
-            tools:text="Thu, 30 Dec" />
+            android:layout_gravity="bottom"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="end"
+            android:orientation="vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <!-- Primary row: icon + temperature + unit -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/weatherIcon"
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:contentDescription="@string/weather"
+                    android:src="@drawable/ic_weather_clear_home" />
+
+                <TextView
+                    android:id="@+id/weatherTemp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="22sp"
+                    tools:text="46°" />
+
+                <TextView
+                    android:id="@+id/weatherUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_marginTop="2dp"
+                    android:textColor="#AAFFFFFF"
+                    android:textSize="10sp"
+                    tools:text="c" />
+            </LinearLayout>
+
+            <!-- Secondary row: humidity, visibility, AQI -->
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:contentDescription="@string/humidity"
+                    android:src="@drawable/ic_humidity_home" />
+
+                <TextView
+                    android:id="@+id/weatherHumidity"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    tools:text="37%" />
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/visibility"
+                    android:src="@drawable/ic_visibility_home" />
+
+                <TextView
+                    android:id="@+id/weatherVisibility"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    tools:text="33mi" />
+
+                <ImageView
+                    android:layout_width="12dp"
+                    android:layout_height="12dp"
+                    android:layout_marginStart="8dp"
+                    android:contentDescription="@string/aqi"
+                    android:src="@drawable/ic_aqi_home" />
+
+                <TextView
+                    android:id="@+id/weatherAqi"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="2dp"
+                    android:textColor="@android:color/white"
+                    android:textSize="11sp"
+                    tools:text="51" />
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Screen time-->

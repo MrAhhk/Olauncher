@@ -5,4 +5,5 @@
     <dimen name="alphabet_recycler_margin_start">320dp</dimen>
     <dimen name="home_pinned_item_height">48dp</dimen>
     <dimen name="home_pinned_fade_height">24dp</dimen>
+    <dimen name="home_battery_bar_height">4dp</dimen>
 </resources>

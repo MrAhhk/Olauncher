@@ -1,13 +1,20 @@
 package app.olauncher.ui
 
+import android.app.SearchManager
 import android.app.admin.DevicePolicyManager
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.SharedPreferences
 import android.content.pm.LauncherApps
 import android.content.res.Configuration
+import android.location.LocationManager
+import android.net.Uri
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -25,6 +32,7 @@ import androidx.core.view.setPadding
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSnapHelper
@@ -49,16 +57,33 @@ import app.olauncher.helper.openSearch
 import app.olauncher.helper.setPlainWallpaperByTheme
 import app.olauncher.helper.showToast
 import app.olauncher.listener.OnSwipeTouchListener
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.json.JSONObject
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import android.app.SearchManager
 
 class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
 
     companion object {
         private const val MAX_HOME_APPS = 12
         private const val PRIMARY_HOME_APPS = 7
+        private const val WEATHER_REFRESH_MS = 30 * 60 * 1000L
+        private const val DEFAULT_LAT = 40.7128
+        private const val DEFAULT_LON = -74.0060
+        private const val PREF_WEATHER = "weather_cache"
+        private const val KEY_TEMP = "temp"
+        private const val KEY_HUMIDITY = "humidity"
+        private const val KEY_VISIBILITY = "visibility_m"
+        private const val KEY_AQI = "aqi"
+        private const val KEY_CODE = "weather_code"
+        private const val KEY_TS = "cache_ts"
+        private const val KEY_LAT = "lat"
+        private const val KEY_LON = "lon"
     }
 
     private lateinit var prefs: Prefs
@@ -68,6 +93,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var pinnedAppsAdapter: PinnedAppsAdapter
+    private var batteryReceiver: BroadcastReceiver? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -96,6 +122,15 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         viewModel.isOlauncherDefault()
         if (prefs.showStatusBar) showStatusBar()
         else hideStatusBar()
+        registerBatteryReceiver()
+        syncBatteryBarWidth()
+        refreshWeatherIfNeeded()
+        renderCachedWeather()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        unregisterBatteryReceiver()
     }
 
     override fun onClick(view: View) {
@@ -238,6 +273,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.setDefaultLauncher.setOnLongClickListener(this)
         binding.tvScreenTime.setOnClickListener(this)
         binding.tvScreenTime.setOnLongClickListener(this)
+        binding.batteryProgress.setOnClickListener { openBatterySettings() }
+        binding.weatherWidget.setOnClickListener { openWeatherPage() }
     }
 
     private fun setHomeAlignment(horizontalGravity: Int = prefs.homeAlignment) {
@@ -251,16 +288,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.clock.isVisible = Constants.DateTime.isTimeVisible(prefs.dateTimeVisibility)
         binding.date.isVisible = Constants.DateTime.isDateVisible(prefs.dateTimeVisibility)
 
-//        var dateText = SimpleDateFormat("EEE, d MMM", Locale.getDefault()).format(Date())
-        val dateFormat = SimpleDateFormat("EEE, d MMM", Locale.getDefault())
-        var dateText = dateFormat.format(Date())
-
-        if (!prefs.showStatusBar) {
-            val battery = (requireContext().getSystemService(Context.BATTERY_SERVICE) as BatteryManager)
-                .getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-            if (battery > 0)
-                dateText = getString(R.string.day_battery, dateText, battery)
-        }
+        val dateText = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault()).format(Date())
         binding.date.text = dateText.replace(".,", ",")
     }
 
@@ -787,8 +815,234 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         }
     }
 
+    // ── Battery ──────────────────────────────────────────────────────────
+
+    private fun registerBatteryReceiver() {
+        if (batteryReceiver != null) return
+        batteryReceiver = object : BroadcastReceiver() {
+            override fun onReceive(ctx: Context?, intent: Intent?) {
+                val level = intent?.getIntExtra(BatteryManager.EXTRA_LEVEL, -1) ?: return
+                val scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, 100)
+                val pct = (level * 100) / scale
+                binding.batteryProgress.progress = pct
+            }
+        }
+        requireContext().registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+    }
+
+    private fun unregisterBatteryReceiver() {
+        batteryReceiver?.let {
+            try { requireContext().unregisterReceiver(it) } catch (_: Exception) {}
+        }
+        batteryReceiver = null
+    }
+
+    private fun syncBatteryBarWidth() {
+        binding.clock.post {
+            if (_binding == null) return@post
+            val clockWidth = binding.clock.width
+            if (clockWidth > 0) {
+                val lp = binding.batteryProgress.layoutParams
+                lp.width = clockWidth
+                binding.batteryProgress.layoutParams = lp
+            }
+        }
+    }
+
+    private fun openBatterySettings() {
+        val ctx = requireContext()
+        try {
+            ctx.startActivity(Intent(Intent.ACTION_POWER_USAGE_SUMMARY).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+        } catch (_: Exception) {
+            try {
+                ctx.startActivity(Intent(Settings.ACTION_BATTERY_SAVER_SETTINGS).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
+            } catch (_: Exception) {
+                try {
+                    ctx.startActivity(Intent(Settings.ACTION_SETTINGS).apply {
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    })
+                } catch (_: Exception) {}
+            }
+        }
+    }
+
+    // ── Weather ─────────────────────────────────────────────────────────
+
+    private data class WeatherInfo(
+        val temp: Double,
+        val humidity: Int,
+        val visibilityMeters: Double,
+        val aqi: Int,
+        val weatherCode: Int
+    )
+
+    private fun launcherPrefs(): SharedPreferences =
+        requireContext().getSharedPreferences(PREF_WEATHER, Context.MODE_PRIVATE)
+
+    private fun refreshWeatherIfNeeded() {
+        val sp = launcherPrefs()
+        val lastTs = sp.getLong(KEY_TS, 0L)
+        if (System.currentTimeMillis() - lastTs < WEATHER_REFRESH_MS) return
+        lifecycleScope.launch {
+            try {
+                val (lat, lon) = getWeatherCoordinates()
+                val info = withContext(Dispatchers.IO) { fetchWeatherInfo(lat, lon) } ?: return@launch
+                cacheWeatherInfo(info, lat, lon)
+                if (_binding != null) applyWeatherInfo(info)
+            } catch (_: Exception) {}
+        }
+    }
+
+    private fun getWeatherCoordinates(): Pair<Double, Double> {
+        val cached = getCachedCoordinates()
+        try {
+            val lm = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val loc = getLastKnownLocation(lm)
+            if (loc != null) return loc.latitude to loc.longitude
+        } catch (_: SecurityException) {}
+        return cached
+    }
+
+    @Suppress("MissingPermission")
+    private fun getLastKnownLocation(lm: LocationManager): android.location.Location? {
+        for (provider in listOf(LocationManager.NETWORK_PROVIDER, LocationManager.GPS_PROVIDER, LocationManager.PASSIVE_PROVIDER)) {
+            try {
+                val loc = lm.getLastKnownLocation(provider)
+                if (loc != null) return loc
+            } catch (_: Exception) {}
+        }
+        return null
+    }
+
+    private fun getCachedCoordinates(): Pair<Double, Double> {
+        val sp = launcherPrefs()
+        val lat = sp.getFloat(KEY_LAT, DEFAULT_LAT.toFloat()).toDouble()
+        val lon = sp.getFloat(KEY_LON, DEFAULT_LON.toFloat()).toDouble()
+        return lat to lon
+    }
+
+    private fun fetchWeatherInfo(lat: Double, lon: Double): WeatherInfo? {
+        val forecastUrl = "https://api.open-meteo.com/v1/forecast" +
+                "?latitude=$lat&longitude=$lon" +
+                "&current=temperature_2m,relative_humidity_2m,weather_code,visibility"
+        val aqiUrl = "https://air-quality-api.open-meteo.com/v1/air-quality" +
+                "?latitude=$lat&longitude=$lon" +
+                "&current=european_aqi"
+
+        val forecastJson = httpGet(forecastUrl) ?: return null
+        val current = forecastJson.getJSONObject("current")
+        val temp = current.getDouble("temperature_2m")
+        val humidity = current.getInt("relative_humidity_2m")
+        val vis = current.getDouble("visibility")
+        val code = current.getInt("weather_code")
+
+        var aqi = 0
+        try {
+            val aqiJson = httpGet(aqiUrl)
+            aqi = aqiJson?.getJSONObject("current")?.getInt("european_aqi") ?: 0
+        } catch (_: Exception) {}
+
+        return WeatherInfo(temp, humidity, vis, aqi, code)
+    }
+
+    private fun httpGet(url: String): JSONObject? {
+        val conn = URL(url).openConnection() as HttpURLConnection
+        conn.connectTimeout = 8000
+        conn.readTimeout = 8000
+        return try {
+            if (conn.responseCode == 200) JSONObject(conn.inputStream.bufferedReader().readText())
+            else null
+        } finally {
+            conn.disconnect()
+        }
+    }
+
+    private fun cacheWeatherInfo(info: WeatherInfo, lat: Double, lon: Double) {
+        launcherPrefs().edit()
+            .putFloat(KEY_TEMP, info.temp.toFloat())
+            .putInt(KEY_HUMIDITY, info.humidity)
+            .putFloat(KEY_VISIBILITY, info.visibilityMeters.toFloat())
+            .putInt(KEY_AQI, info.aqi)
+            .putInt(KEY_CODE, info.weatherCode)
+            .putLong(KEY_TS, System.currentTimeMillis())
+            .putFloat(KEY_LAT, lat.toFloat())
+            .putFloat(KEY_LON, lon.toFloat())
+            .apply()
+    }
+
+    private fun renderCachedWeather() {
+        val sp = launcherPrefs()
+        if (!sp.contains(KEY_TS)) return
+        val info = WeatherInfo(
+            temp = sp.getFloat(KEY_TEMP, 0f).toDouble(),
+            humidity = sp.getInt(KEY_HUMIDITY, 0),
+            visibilityMeters = sp.getFloat(KEY_VISIBILITY, 0f).toDouble(),
+            aqi = sp.getInt(KEY_AQI, 0),
+            weatherCode = sp.getInt(KEY_CODE, 0)
+        )
+        applyWeatherInfo(info)
+    }
+
+    private fun applyWeatherInfo(info: WeatherInfo) {
+        if (_binding == null) return
+        binding.weatherWidget.visibility = View.VISIBLE
+
+        val useFahrenheit = useFahrenheit()
+        val displayTemp = if (useFahrenheit) info.temp * 9.0 / 5.0 + 32.0 else info.temp
+        binding.weatherTemp.text = "${displayTemp.toInt()}°"
+        binding.weatherUnit.text = if (useFahrenheit) "f" else "c"
+        binding.weatherIcon.setImageResource(getWeatherIconResource(info.weatherCode))
+        binding.weatherHumidity.text = "${info.humidity}%"
+        binding.weatherVisibility.text = formatVisibility(info.visibilityMeters, useFahrenheit)
+        binding.weatherAqi.text = "${info.aqi}"
+    }
+
+    private fun useFahrenheit(): Boolean {
+        val country = Locale.getDefault().country.uppercase()
+        return country in listOf("US", "BS", "KY", "LR", "PW", "FM", "MH")
+    }
+
+    private fun formatVisibility(meters: Double, imperial: Boolean): String {
+        return if (imperial) {
+            val miles = meters / 1609.344
+            "${miles.toInt()}mi"
+        } else {
+            val km = meters / 1000.0
+            "${km.toInt()}km"
+        }
+    }
+
+    private fun getWeatherIconResource(code: Int): Int = when (code) {
+        0, 1 -> R.drawable.ic_weather_clear_home
+        2, 3 -> R.drawable.ic_weather_cloud_home
+        45, 48 -> R.drawable.ic_weather_cloud_home
+        51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99 -> R.drawable.ic_weather_rain_home
+        71, 73, 75, 77, 85, 86 -> R.drawable.ic_weather_snow_home
+        else -> R.drawable.ic_weather_cloud_home
+    }
+
+    private fun openWeatherPage() {
+        val ctx = requireContext()
+        try {
+            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.msn.com/weather")).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            })
+        } catch (_: Exception) {
+            try {
+                ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.google.com/search?q=weather")).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                })
+            } catch (_: Exception) {}
+        }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        unregisterBatteryReceiver()
         _binding = null
     }
 }
