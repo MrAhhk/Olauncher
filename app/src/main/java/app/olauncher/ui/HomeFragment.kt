@@ -52,6 +52,7 @@ import app.olauncher.listener.OnSwipeTouchListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import android.app.SearchManager
 
 class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
 
@@ -102,6 +103,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             R.id.lock -> {}
             R.id.clock -> openClockApp()
             R.id.date -> openCalendarApp()
+            R.id.phoneCornerAction -> openDialerApp(requireContext())
+            R.id.cameraCornerAction -> openCameraApp(requireContext())
             R.id.setDefaultLauncher -> viewModel.resetLauncherLiveData.call()
             R.id.tvScreenTime -> openScreenTimeDigitalWellbeing()
 
@@ -227,6 +230,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.lock.setOnClickListener(this)
         binding.clock.setOnClickListener(this)
         binding.date.setOnClickListener(this)
+        binding.phoneCornerAction.setOnClickListener(this)
+        binding.cameraCornerAction.setOnClickListener(this)
         binding.clock.setOnLongClickListener(this)
         binding.date.setOnLongClickListener(this)
         binding.setDefaultLauncher.setOnClickListener(this)
@@ -411,7 +416,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun handleSwipeUpAction() {
-        showAppList(Constants.FLAG_LAUNCH_APP)
+        // Keep swipe-up detection active with no action.
     }
 
     private fun handleSwipeDownAction() {
@@ -582,29 +587,49 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun openSwipeRightApp() {
-        if (!prefs.swipeRightEnabled) return
-        launchAppOrShortcut(
-            appName = prefs.appNameSwipeRight,
-            packageName = prefs.appPackageSwipeRight,
-            activityClassName = prefs.appActivityClassNameRight,
-            shortcutId = prefs.shortcutIdSwipeRight,
-            isShortcut = prefs.isShortcutSwipeRight,
-            userString = prefs.appUserSwipeRight,
-            fallback = { openDialerApp(requireContext()) }
-        )
+        showAppList(Constants.FLAG_LAUNCH_APP)
     }
 
     private fun openSwipeLeftApp() {
-        if (!prefs.swipeLeftEnabled) return
-        launchAppOrShortcut(
-            appName = prefs.appNameSwipeLeft,
-            packageName = prefs.appPackageSwipeLeft,
-            activityClassName = prefs.appActivityClassNameSwipeLeft,
-            shortcutId = prefs.shortcutIdSwipeLeft,
-            isShortcut = prefs.isShortcutSwipeLeft,
-            userString = prefs.appUserSwipeLeft,
-            fallback = { openCameraApp(requireContext()) }
-        )
+        openGoogleOrSystemSearch()
+    }
+
+    private fun openGoogleOrSystemSearch() {
+        val context = requireContext()
+        val packageManager = context.packageManager
+        val googleSearchIntent = Intent(Intent.ACTION_WEB_SEARCH).apply {
+            setPackage("com.google.android.googlequicksearchbox")
+            putExtra(SearchManager.QUERY, "")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            if (googleSearchIntent.resolveActivity(packageManager) != null) {
+                context.startActivity(googleSearchIntent)
+                return
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val fallbackIntent = Intent(Intent.ACTION_WEB_SEARCH).apply {
+            putExtra(SearchManager.QUERY, "")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        try {
+            if (fallbackIntent.resolveActivity(packageManager) != null) {
+                context.startActivity(fallbackIntent)
+                return
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        val searchIntent = Intent(Intent.ACTION_SEARCH).apply {
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+        if (searchIntent.resolveActivity(packageManager) != null) {
+            context.startActivity(searchIntent)
+        }
     }
 
     private fun showAppList(flag: Int, rename: Boolean = false, includeHiddenApps: Boolean = false) {

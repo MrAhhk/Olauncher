@@ -134,4 +134,38 @@
         android:maxLines="1"
         android:text="@string/set_as_default_launcher_u"
         android:visibility="gone" />
+
+    <FrameLayout
+        android:id="@+id/cornerActionsOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingHorizontal="24dp"
+        android:paddingBottom="36dp">
+
+        <ImageView
+            android:id="@+id/phoneCornerAction"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="bottom|start"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:contentDescription="@string/swipe_right_app"
+            android:focusable="true"
+            android:padding="2dp"
+            android:src="@drawable/ic_phone_home"
+            android:tint="@android:color/white" />
+
+        <ImageView
+            android:id="@+id/cameraCornerAction"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="bottom|end"
+            android:background="@android:color/transparent"
+            android:clickable="true"
+            android:contentDescription="@string/swipe_left_app"
+            android:focusable="true"
+            android:padding="2dp"
+            android:src="@drawable/ic_camera_home"
+            android:tint="@android:color/white" />
+    </FrameLayout>
 </FrameLayout>
