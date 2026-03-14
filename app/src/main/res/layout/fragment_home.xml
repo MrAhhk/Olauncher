@@ -59,8 +59,8 @@
                 style="?android:attr/progressBarStyleHorizontal"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/home_battery_bar_height"
-                android:layout_marginTop="6dp"
-                android:max="100"
+android:layout_marginTop="12dp"
+            android:max="100"
                 android:progress="75"
                 android:progressDrawable="@drawable/home_battery_progress"
                 tools:progress="75" />
