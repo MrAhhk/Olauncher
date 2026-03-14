@@ -587,11 +587,11 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun openSwipeRightApp() {
-        showAppList(Constants.FLAG_LAUNCH_APP)
+        openGoogleOrSystemSearch()
     }
 
     private fun openSwipeLeftApp() {
-        openGoogleOrSystemSearch()
+        showAppList(Constants.FLAG_LAUNCH_APP)
     }
 
     private fun openGoogleOrSystemSearch() {
