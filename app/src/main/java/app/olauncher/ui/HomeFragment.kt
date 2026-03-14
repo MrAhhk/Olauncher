@@ -8,8 +8,10 @@ import android.content.res.Configuration
 import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
+import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
@@ -24,6 +26,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import app.olauncher.MainViewModel
 import app.olauncher.R
 import app.olauncher.data.AppModel
@@ -44,7 +49,6 @@ import app.olauncher.helper.openSearch
 import app.olauncher.helper.setPlainWallpaperByTheme
 import app.olauncher.helper.showToast
 import app.olauncher.listener.OnSwipeTouchListener
-import app.olauncher.listener.ViewSwipeTouchListener
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -62,8 +66,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private var secondaryAppsCount = 0
-    private var isSecondaryAppsVisible = false
+    private lateinit var pinnedAppsAdapter: PinnedAppsAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -81,6 +84,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
         initObservers()
         setHomeAlignment(prefs.homeAlignment)
+        initPinnedAppsRecycler()
         initSwipeTouchListener()
         initClickListeners()
     }
@@ -139,18 +143,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     override fun onLongClick(view: View): Boolean {
         when (view.id) {
-            R.id.homeApp1 -> showAppList(Constants.FLAG_SET_HOME_APP_1, prefs.appName1.isNotEmpty(), true)
-            R.id.homeApp2 -> showAppList(Constants.FLAG_SET_HOME_APP_2, prefs.appName2.isNotEmpty(), true)
-            R.id.homeApp3 -> showAppList(Constants.FLAG_SET_HOME_APP_3, prefs.appName3.isNotEmpty(), true)
-            R.id.homeApp4 -> showAppList(Constants.FLAG_SET_HOME_APP_4, prefs.appName4.isNotEmpty(), true)
-            R.id.homeApp5 -> showAppList(Constants.FLAG_SET_HOME_APP_5, prefs.appName5.isNotEmpty(), true)
-            R.id.homeApp6 -> showAppList(Constants.FLAG_SET_HOME_APP_6, prefs.appName6.isNotEmpty(), true)
-            R.id.homeApp7 -> showAppList(Constants.FLAG_SET_HOME_APP_7, prefs.appName7.isNotEmpty(), true)
-            R.id.homeApp8 -> showAppList(Constants.FLAG_SET_HOME_APP_8, prefs.appName8.isNotEmpty(), true)
-            R.id.homeApp9 -> showAppList(Constants.FLAG_SET_HOME_APP_9, prefs.getAppName(9).isNotEmpty(), true)
-            R.id.homeApp10 -> showAppList(Constants.FLAG_SET_HOME_APP_10, prefs.getAppName(10).isNotEmpty(), true)
-            R.id.homeApp11 -> showAppList(Constants.FLAG_SET_HOME_APP_11, prefs.getAppName(11).isNotEmpty(), true)
-            R.id.homeApp12 -> showAppList(Constants.FLAG_SET_HOME_APP_12, prefs.getAppName(12).isNotEmpty(), true)
             R.id.clock -> {
                 showAppList(Constants.FLAG_SET_CLOCK_APP)
                 prefs.clockAppPackage = ""
@@ -178,6 +170,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 if (viewModel.isOlauncherDefault.value != true) {
                     requireContext().showToast(R.string.set_as_default_launcher)
                     findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
+                }
+            }
+
+            else -> {
+                val location = view.tag?.toString()?.toIntOrNull()
+                if (location != null) {
+                    openHomeAppSelector(location)
+                    return true
                 }
             }
         }
@@ -221,9 +221,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private fun initSwipeTouchListener() {
         val context = requireContext()
         binding.mainLayout.setOnTouchListener(getSwipeGestureListener(context))
-        getHomeAppViews().forEach {
-            it.setOnTouchListener(getViewSwipeTouchListener(context, it))
-        }
     }
 
     private fun initClickListeners() {
@@ -242,7 +239,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         val verticalGravity = if (prefs.homeBottomAlignment) Gravity.BOTTOM else Gravity.CENTER_VERTICAL
         binding.homeAppsLayout.gravity = Gravity.CENTER_HORIZONTAL or verticalGravity
         binding.dateTimeLayout.gravity = horizontalGravity
-        getHomeAppViews().forEach { it.gravity = Gravity.CENTER_HORIZONTAL }
     }
 
     private fun populateDateTime() {
@@ -299,20 +295,105 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         val shortcutId: String
     )
 
-    private fun getHomeAppViews(): List<TextView> = listOf(
-        binding.homeApp1,
-        binding.homeApp2,
-        binding.homeApp3,
-        binding.homeApp4,
-        binding.homeApp5,
-        binding.homeApp6,
-        binding.homeApp7,
-        binding.homeApp8,
-        binding.homeApp9,
-        binding.homeApp10,
-        binding.homeApp11,
-        binding.homeApp12
+    private data class HomePinnedItem(
+        val location: Int,
+        val title: String
     )
+
+    private inner class PinnedAppsAdapter : RecyclerView.Adapter<PinnedAppsAdapter.PinnedAppViewHolder>() {
+        private val items = mutableListOf<HomePinnedItem>()
+
+        inner class PinnedAppViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+            val title: TextView = view.findViewById(R.id.pinnedAppName)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PinnedAppViewHolder {
+            val view = layoutInflater.inflate(R.layout.item_home_pinned_app, parent, false)
+            return PinnedAppViewHolder(view)
+        }
+
+        override fun onBindViewHolder(holder: PinnedAppViewHolder, position: Int) {
+            val item = items[position]
+            holder.title.text = item.title
+            holder.itemView.tag = item.location
+            holder.itemView.setOnClickListener(this@HomeFragment)
+            holder.itemView.setOnLongClickListener(this@HomeFragment)
+        }
+
+        override fun getItemCount(): Int = items.size
+
+        fun submitList(newItems: List<HomePinnedItem>) {
+            items.clear()
+            items.addAll(newItems)
+            notifyDataSetChanged()
+            updateFadeOverlays()
+        }
+    }
+
+    private fun initPinnedAppsRecycler() {
+        pinnedAppsAdapter = PinnedAppsAdapter()
+        binding.pinnedAppsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.pinnedAppsRecyclerView.setHasFixedSize(true)
+        binding.pinnedAppsRecyclerView.adapter = pinnedAppsAdapter
+        LinearSnapHelper().attachToRecyclerView(binding.pinnedAppsRecyclerView)
+        binding.pinnedAppsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                updateFadeOverlays()
+            }
+        })
+        updatePinnedViewportHeight()
+        initPinnedAppsGestureBridge()
+    }
+
+    private fun initPinnedAppsGestureBridge() {
+        val detector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
+            override fun onFling(
+                event1: MotionEvent?,
+                event2: MotionEvent,
+                velocityX: Float,
+                velocityY: Float
+            ): Boolean {
+                val startEvent = event1 ?: return false
+                val diffY = event2.y - startEvent.y
+                val diffX = event2.x - startEvent.x
+                val swipeThreshold = 100
+                val velocityThreshold = 100
+                if (kotlin.math.abs(diffX) > kotlin.math.abs(diffY)) {
+                    if (kotlin.math.abs(diffX) > swipeThreshold && kotlin.math.abs(velocityX) > velocityThreshold) {
+                        if (diffX > 0) openSwipeRightApp() else openSwipeLeftApp()
+                    }
+                } else if (kotlin.math.abs(diffY) > swipeThreshold && kotlin.math.abs(velocityY) > velocityThreshold) {
+                    if (diffY < 0 && !binding.pinnedAppsRecyclerView.canScrollVertically(1)) {
+                        handleSwipeUpAction()
+                    } else if (diffY > 0 && !binding.pinnedAppsRecyclerView.canScrollVertically(-1)) {
+                        handleSwipeDownAction()
+                    }
+                }
+                return false
+            }
+        })
+        binding.pinnedAppsRecyclerView.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
+            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
+                detector.onTouchEvent(e)
+                return false
+            }
+        })
+    }
+
+    private fun updatePinnedViewportHeight() {
+        val itemHeight = resources.getDimensionPixelSize(R.dimen.home_pinned_item_height)
+        binding.homeAppsViewport.layoutParams = binding.homeAppsViewport.layoutParams.apply {
+            height = itemHeight * PRIMARY_HOME_APPS
+        }
+    }
+
+    private fun updateFadeOverlays() {
+        val canScrollUp = binding.pinnedAppsRecyclerView.canScrollVertically(-1)
+        val canScrollDown = binding.pinnedAppsRecyclerView.canScrollVertically(1)
+        binding.topFadeOverlay.visibility = if (canScrollUp) View.VISIBLE else View.GONE
+        binding.bottomFadeOverlay.visibility = if (canScrollDown) View.VISIBLE else View.GONE
+    }
 
     private fun getHomeAppInfo(location: Int): HomeAppInfo {
         return HomeAppInfo(
@@ -329,30 +410,11 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         prefs.clearHomeApp(location)
     }
 
-    private fun showSecondaryHomeApps() {
-        if (secondaryAppsCount == 0 || isSecondaryAppsVisible) return
-        binding.secondaryHomeAppsLayout.visibility = View.VISIBLE
-        isSecondaryAppsVisible = true
-    }
-
-    private fun hideSecondaryHomeApps() {
-        binding.secondaryHomeAppsLayout.visibility = View.GONE
-        isSecondaryAppsVisible = false
-    }
-
     private fun handleSwipeUpAction() {
-        if (!isSecondaryAppsVisible && secondaryAppsCount > 0) {
-            showSecondaryHomeApps()
-            return
-        }
         showAppList(Constants.FLAG_LAUNCH_APP)
     }
 
     private fun handleSwipeDownAction() {
-        if (isSecondaryAppsVisible) {
-            hideSecondaryHomeApps()
-            return
-        }
         swipeDownAction()
     }
 
@@ -387,77 +449,64 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             populateScreenTime()
 
         val homeAppsNum = minOf(prefs.homeAppsNum, MAX_HOME_APPS)
-        secondaryAppsCount = (homeAppsNum - PRIMARY_HOME_APPS).coerceAtLeast(0)
-        hideSecondaryHomeApps()
+        if (homeAppsNum == 0) {
+            pinnedAppsAdapter.submitList(emptyList())
+            return
+        }
 
-        if (homeAppsNum == 0) return
-
-        val homeAppViews = getHomeAppViews()
-        homeAppViews.forEach { it.visibility = View.GONE }
-
+        val pinnedItems = mutableListOf<HomePinnedItem>()
         for (index in 1..homeAppsNum) {
-            val appView = homeAppViews[index - 1]
             val appInfo = getHomeAppInfo(index)
-            val hasValidApp = setHomeAppText(
-                appView,
-                appInfo.appName,
+            val hasValidApp = isHomeAppValid(
                 appInfo.packageName,
                 appInfo.userString,
                 appInfo.isShortcut,
                 appInfo.shortcutId
             )
-
-            appView.visibility = View.VISIBLE
-            if (!hasValidApp) {
-                clearHomeAppSlot(index)
-                appView.text = getString(R.string.add_an_app)
-            }
+            if (!hasValidApp) clearHomeAppSlot(index)
+            pinnedItems.add(
+                HomePinnedItem(
+                    location = index,
+                    title = if (hasValidApp && appInfo.appName.isNotBlank()) appInfo.appName else getString(R.string.add_an_app)
+                )
+            )
         }
+        pinnedAppsAdapter.submitList(pinnedItems)
     }
 
-    private fun setHomeAppText(textView: TextView, appName: String, packageName: String, userString: String, isShortcut: Boolean, shortcutId: String?): Boolean {
+    private fun isHomeAppValid(packageName: String, userString: String, isShortcut: Boolean, shortcutId: String?): Boolean {
         // Get user handle for the app/shortcut
         val userHandle = getUserHandleFromString(requireContext(), userString)
-        
+
         // If it's a shortcut, verify it still exists
         if (isShortcut) {
             val launcherApps = requireContext().getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-            
+
             // Query for the specific shortcut
             val query = LauncherApps.ShortcutQuery().apply {
                 setPackage(packageName)
                 setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED)
             }
-            
+
             try {
                 val shortcuts = launcherApps.getShortcuts(query, userHandle)
                 // Check if our shortcut still exists
                 if (shortcuts?.any { it.id == shortcutId } == true) {
-                    textView.text = appName
                     return true
                 }
-                textView.text = ""
                 return false
             } catch (e: Exception) {
                 e.printStackTrace()
-                textView.text = ""
                 return false
             }
         }
-        
+
         // Regular app check
-        if (isPackageInstalled(requireContext(), packageName, userString)) {
-            textView.text = appName
-            return true
-        }
-        textView.text = ""
-        return false
+        return isPackageInstalled(requireContext(), packageName, userString)
     }
 
     private fun hideHomeApps() {
-        getHomeAppViews().forEach { it.visibility = View.GONE }
-        hideSecondaryHomeApps()
-        secondaryAppsCount = 0
+        if (::pinnedAppsAdapter.isInitialized) pinnedAppsAdapter.submitList(emptyList())
     }
 
     private fun launchAppOrShortcut(
@@ -666,10 +715,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun showLongPressToast() = requireContext().showToast(getString(R.string.long_press_to_select_app))
 
-    private fun textOnClick(view: View) = onClick(view)
-
-    private fun textOnLongClick(view: View) = onLongClick(view)
-
     private fun getSwipeGestureListener(context: Context): View.OnTouchListener {
         return object : OnSwipeTouchListener(context) {
             override fun onSwipeLeft() {
@@ -713,40 +758,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             override fun onClick() {
                 super.onClick()
                 viewModel.checkForMessages.call()
-            }
-        }
-    }
-
-    private fun getViewSwipeTouchListener(context: Context, view: View): View.OnTouchListener {
-        return object : ViewSwipeTouchListener(context, view) {
-            override fun onSwipeLeft() {
-                super.onSwipeLeft()
-                openSwipeLeftApp()
-            }
-
-            override fun onSwipeRight() {
-                super.onSwipeRight()
-                openSwipeRightApp()
-            }
-
-            override fun onSwipeUp() {
-                super.onSwipeUp()
-                handleSwipeUpAction()
-            }
-
-            override fun onSwipeDown() {
-                super.onSwipeDown()
-                handleSwipeDownAction()
-            }
-
-            override fun onLongClick(view: View) {
-                super.onLongClick(view)
-                textOnLongClick(view)
-            }
-
-            override fun onClick(view: View) {
-                super.onClick(view)
-                textOnClick(view)
             }
         }
     }

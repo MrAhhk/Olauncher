@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/pinnedAppName"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/home_pinned_item_height"
+    android:background="#000000"
+    android:ellipsize="end"
+    android:gravity="center"
+    android:maxLines="1"
+    android:paddingHorizontal="16dp"
+    android:textColor="#FFFFFF"
+    android:textSize="@dimen/text_large" />

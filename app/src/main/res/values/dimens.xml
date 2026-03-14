@@ -3,4 +3,6 @@
     <dimen name="alphabet_recycler_margin_bottom">16dp</dimen>
     <dimen name="alphabet_recycler_margin_end">10dp</dimen>
     <dimen name="alphabet_recycler_margin_start">320dp</dimen>
+    <dimen name="home_pinned_item_height">48dp</dimen>
+    <dimen name="home_pinned_fade_height">24dp</dimen>
 </resources>
