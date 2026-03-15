@@ -2,6 +2,8 @@ package app.olauncher.ui
 
 import android.content.Context
 import android.content.pm.LauncherApps
+import android.graphics.Typeface
+import android.os.Build
 import android.os.UserHandle
 import android.text.Editable
 import android.text.TextWatcher
@@ -116,6 +118,7 @@ class AppDrawerAdapter(
                     appFilteredList = items
                     submitList(appFilteredList) {
                         autoLaunch()
+                        notifyDataSetChanged()
                     }
                 }
             }
@@ -178,6 +181,12 @@ class AppDrawerAdapter(
             appTitle.text = buildString {
                 append(appModel.appLabel)
                 if (appModel.isNew) append(" ✦")
+            }
+            val isExactMatch = appModel.appLabel.trim() == currentSearchQueryProvider().trim()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                appTitle.typeface = Typeface.create(appTitle.typeface, if (isExactMatch) 500 else 200, false)
+            } else {
+                appTitle.paint.isFakeBoldText = isExactMatch
             }
             appTitle.gravity = appLabelGravity
             otherProfileIndicator.isVisible = appModel.user != myUserHandle
