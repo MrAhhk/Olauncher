@@ -8,19 +8,22 @@ class PinItemActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Set window to be transparent
+
         window.setBackgroundDrawable(null)
 
-        val launcherApps = getSystemService(LauncherApps::class.java)
-        val pinItemRequest = launcherApps.getPinItemRequest(intent)
+        try {
+            val launcherApps = getSystemService(LauncherApps::class.java)
+            val pinItemRequest = launcherApps.getPinItemRequest(intent)
 
-        when (pinItemRequest != null) {
-            true -> handleRequestType(pinItemRequest)
-            false -> showToast("Invalid pin request")
+            when (pinItemRequest != null) {
+                true -> handleRequestType(pinItemRequest)
+                false -> showToast("Invalid pin request")
+            }
+        } catch (e: Exception) {
+            showToast("Invalid pin request")
+        } finally {
+            finish()
         }
-
-        finish()
     }
 
     private fun handleRequestType(pinItemRequest: LauncherApps.PinItemRequest) {

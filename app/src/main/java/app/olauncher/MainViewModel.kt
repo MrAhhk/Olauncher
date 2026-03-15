@@ -287,27 +287,30 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getTodaysScreenTime() {
         if (prefs.screenTimeLastUpdated.hasBeenMinutes(1).not()) return
 
-        val eventLogWrapper = EventLogWrapper(
-            appContext
-        )
-        // Start of today in millis
-        val calendar = Calendar.getInstance().apply {
-            set(Calendar.HOUR_OF_DAY, 0)
-            set(Calendar.MINUTE, 0)
-            set(Calendar.SECOND, 0)
-            set(Calendar.MILLISECOND, 0)
-        }
-        val startTime = calendar.timeInMillis
-        val endTime = System.currentTimeMillis()
+        try {
+            val eventLogWrapper = EventLogWrapper(appContext)
+            val calendar = Calendar.getInstance().apply {
+                set(Calendar.HOUR_OF_DAY, 0)
+                set(Calendar.MINUTE, 0)
+                set(Calendar.SECOND, 0)
+                set(Calendar.MILLISECOND, 0)
+            }
+            val startTime = calendar.timeInMillis
+            val endTime = System.currentTimeMillis()
 
-        val timeSpent = eventLogWrapper.aggregateSimpleUsageStats(
-            eventLogWrapper.aggregateForegroundStats(
-                eventLogWrapper.getForegroundStatsByTimestamps(startTime, endTime)
+            val timeSpent = eventLogWrapper.aggregateSimpleUsageStats(
+                eventLogWrapper.aggregateForegroundStats(
+                    eventLogWrapper.getForegroundStatsByTimestamps(startTime, endTime)
+                )
             )
-        )
-        val viewTimeSpent = appContext.formattedTimeSpent(timeSpent)
-        screenTimeValue.postValue(viewTimeSpent)
-        prefs.screenTimeLastUpdated = endTime
+            val viewTimeSpent = appContext.formattedTimeSpent(timeSpent)
+            screenTimeValue.postValue(viewTimeSpent)
+            prefs.screenTimeLastUpdated = endTime
+        } catch (e: SecurityException) {
+            screenTimeValue.postValue("")
+        } catch (e: Exception) {
+            screenTimeValue.postValue("")
+        }
     }
 
     fun setDefaultClockApp() {
