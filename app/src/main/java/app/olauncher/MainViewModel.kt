@@ -49,6 +49,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val showDialog = SingleLiveEvent<String>()
     val checkForMessages = SingleLiveEvent<Unit?>()
     val resetLauncherLiveData = SingleLiveEvent<Unit?>()
+    val requestWeatherRefresh = MutableLiveData(false)
 
     fun selectedApp(appModel: AppModel, flag: Int) {
         when (flag) {

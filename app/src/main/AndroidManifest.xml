@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.REQUEST_DELETE_PACKAGES" />
     <!--Used only for downloading wallpapers-->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Used for weather widget: current or latest update location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!--Used only for opening alarm app-->
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
     <uses-permission

@@ -47,6 +47,8 @@ class Prefs(context: Context) {
     private val LAUNCHER_RESTART_TIMESTAMP = "LAUNCHER_RECREATE_TIMESTAMP"
     private val SHOWN_ON_DAY_OF_YEAR = "SHOWN_ON_DAY_OF_YEAR"
     private val APP_DRAWER_LAST_SHUFFLE_DATE = "APP_DRAWER_LAST_SHUFFLE_DATE"
+    private val WEATHER_TEMP_UNIT = "WEATHER_TEMP_UNIT"
+    private val SHOW_WEATHER_WIDGET = "SHOW_WEATHER_WIDGET"
 
     private val APP_NAME_1 = "APP_NAME_1"
     private val APP_NAME_2 = "APP_NAME_2"
@@ -198,6 +200,15 @@ class Prefs(context: Context) {
     var appTheme: Int
         get() = prefs.getInt(APP_THEME, AppCompatDelegate.MODE_NIGHT_YES)
         set(value) = prefs.edit { putInt(APP_THEME, value).apply() }
+
+    /** Weather temp unit: "system" (by location), "celsius", "fahrenheit" */
+    var weatherTempUnit: String
+        get() = prefs.getString(WEATHER_TEMP_UNIT, "system").toString()
+        set(value) = prefs.edit { putString(WEATHER_TEMP_UNIT, value).apply() }
+
+    var showWeatherWidget: Boolean
+        get() = prefs.getBoolean(SHOW_WEATHER_WIDGET, true)
+        set(value) = prefs.edit { putBoolean(SHOW_WEATHER_WIDGET, value).apply() }
 
     var textSizeScale: Float
         get() = prefs.getFloat(TEXT_SIZE_SCALE, 1.0f)

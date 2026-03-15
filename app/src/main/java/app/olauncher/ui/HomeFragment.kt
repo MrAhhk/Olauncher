@@ -7,9 +7,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.pm.LauncherApps
 import android.content.res.Configuration
+import android.location.Geocoder
 import android.location.LocationManager
+import android.Manifest
 import android.net.Uri
 import android.os.BatteryManager
 import android.os.Build
@@ -25,7 +28,9 @@ import android.view.WindowInsets
 import android.widget.FrameLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.view.setPadding
@@ -72,7 +77,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     companion object {
         private const val MAX_HOME_APPS = 12
         private const val PRIMARY_HOME_APPS = 7
-        private const val WEATHER_REFRESH_MS = 30 * 60 * 1000L
+        private const val WEATHER_REFRESH_MS = 15 * 60 * 1000L
         private const val DEFAULT_LAT = 40.7128
         private const val DEFAULT_LON = -74.0060
         private const val PREF_WEATHER = "weather_cache"
@@ -84,6 +89,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         private const val KEY_TS = "cache_ts"
         private const val KEY_LAT = "lat"
         private const val KEY_LON = "lon"
+        private const val KEY_LOCATION_NAME = "location_name"
     }
 
     private lateinit var prefs: Prefs
@@ -101,6 +107,12 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private var lastEdgeLastVisible = -1
     private var lastEdgeCanScrollUp = false
     private var lastEdgeCanScrollDown = false
+
+    private val requestLocationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { granted ->
+        if (granted.values.any { it }) refreshWeatherIfNeeded()
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -132,7 +144,12 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         else hideStatusBar()
         registerBatteryReceiver()
         syncBatteryBarWidth()
-        refreshWeatherIfNeeded()
+        if (viewModel.requestWeatherRefresh.value == true) {
+            viewModel.requestWeatherRefresh.value = false
+            refreshWeatherIfNeeded(force = true)
+        } else {
+            refreshWeatherIfNeeded()
+        }
         renderCachedWeather()
     }
 
@@ -915,28 +932,56 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private fun launcherPrefs(): SharedPreferences =
         requireContext().getSharedPreferences(PREF_WEATHER, Context.MODE_PRIVATE)
 
-    private fun refreshWeatherIfNeeded() {
+    fun refreshWeatherIfNeeded(force: Boolean = false) {
+        if (!prefs.showWeatherWidget) return
         val sp = launcherPrefs()
-        val lastTs = sp.getLong(KEY_TS, 0L)
-        if (System.currentTimeMillis() - lastTs < WEATHER_REFRESH_MS) return
+        if (!force) {
+            val lastTs = sp.getLong(KEY_TS, 0L)
+            if (System.currentTimeMillis() - lastTs < WEATHER_REFRESH_MS) return
+        }
+        val coords = getWeatherCoordinates()
+        if (coords == null) {
+            if (!hasLocationPermission() && !sp.contains(KEY_TS)) {
+                requestLocationPermission.launch(
+                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+                )
+            }
+            return
+        }
+        val (lat, lon) = coords
         lifecycleScope.launch {
             try {
-                val (lat, lon) = getWeatherCoordinates()
                 val info = withContext(Dispatchers.IO) { fetchWeatherInfo(lat, lon) } ?: return@launch
                 cacheWeatherInfo(info, lat, lon)
-                if (_binding != null) applyWeatherInfo(info)
+                val locationName = withContext(Dispatchers.IO) { getLocationName(lat, lon) }
+                if (!locationName.isNullOrBlank()) {
+                    cacheLocationName(locationName)
+                }
+                if (_binding != null) {
+                    applyWeatherInfo(info)
+                }
             } catch (_: Exception) {}
         }
     }
 
-    private fun getWeatherCoordinates(): Pair<Double, Double> {
-        val cached = getCachedCoordinates()
-        try {
-            val lm = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
-            val loc = getLastKnownLocation(lm)
-            if (loc != null) return loc.latitude to loc.longitude
-        } catch (_: SecurityException) {}
-        return cached
+    private fun hasLocationPermission(): Boolean {
+        val ctx = requireContext()
+        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    /** Returns current or latest-update coordinates, or null if no permission and no prior cache. */
+    private fun getWeatherCoordinates(): Pair<Double, Double>? {
+        if (hasLocationPermission()) {
+            try {
+                val lm = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+                val loc = getLastKnownLocation(lm)
+                if (loc != null) return loc.latitude to loc.longitude
+            } catch (_: SecurityException) {}
+            return getCachedCoordinates()
+        }
+        if (!launcherPrefs().contains(KEY_TS)) return null
+        return getCachedCoordinates()
     }
 
     @Suppress("MissingPermission")
@@ -1006,7 +1051,34 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             .apply()
     }
 
+    private fun getLocationName(lat: Double, lon: Double): String? {
+        return try {
+            val geocoder = Geocoder(requireContext(), Locale.getDefault())
+            @Suppress("DEPRECATION")
+            val addresses = geocoder.getFromLocation(lat, lon, 1)
+            addresses?.firstOrNull()?.let { addr ->
+                addr.locality
+                    ?: addr.subAdminArea
+                    ?: addr.adminArea
+                    ?: addr.countryName
+            }
+        } catch (_: Exception) { null }
+    }
+
+    private fun cacheLocationName(name: String) {
+        launcherPrefs().edit().putString(KEY_LOCATION_NAME, name).apply()
+    }
+
+    private fun getCachedLocationName(): String? {
+        val s = launcherPrefs().getString(KEY_LOCATION_NAME, null) ?: return null
+        return s.takeIf { it.isNotBlank() }
+    }
+
     private fun renderCachedWeather() {
+        if (!prefs.showWeatherWidget) {
+            if (_binding != null) binding.weatherWidget.visibility = View.GONE
+            return
+        }
         val sp = launcherPrefs()
         if (!sp.contains(KEY_TS)) return
         val info = WeatherInfo(
@@ -1021,8 +1093,16 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun applyWeatherInfo(info: WeatherInfo) {
         if (_binding == null) return
+        if (!prefs.showWeatherWidget) {
+            binding.weatherWidget.visibility = View.GONE
+            return
+        }
         binding.weatherWidget.visibility = View.VISIBLE
         applyWeatherWidgetOffsets()
+
+        val locationName = getCachedLocationName()
+        binding.weatherLocationName.text = locationName ?: ""
+        binding.weatherLocationName.visibility = if (!locationName.isNullOrBlank()) View.VISIBLE else View.GONE
 
         val useFahrenheit = useFahrenheit()
         val displayTemp = if (useFahrenheit) info.temp * 9.0 / 5.0 + 32.0 else info.temp
@@ -1045,8 +1125,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun useFahrenheit(): Boolean {
-        val country = Locale.getDefault().country.uppercase()
-        return country in listOf("US", "BS", "KY", "LR", "PW", "FM", "MH")
+        return when (prefs.weatherTempUnit) {
+            "fahrenheit" -> true
+            "celsius" -> false
+            else -> {
+                val country = Locale.getDefault().country.uppercase()
+                country in listOf("US", "BS", "KY", "LR", "PW", "FM", "MH")
+            }
+        }
     }
 
     private fun formatVisibility(meters: Double, imperial: Boolean): String {

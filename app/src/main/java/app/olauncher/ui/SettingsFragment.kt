@@ -80,6 +80,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateAlignment()
         populateStatusBar()
         populateDateTime()
+        populateWeatherWidget()
+        populateWeatherTempUnit()
         populateSwipeApps()
         populateSwipeDownAction()
         populateActionHints()
@@ -90,6 +92,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     override fun onClick(view: View) {
         binding.appsNumSelectLayout.visibility = View.GONE
         binding.dateTimeSelectLayout.visibility = View.GONE
+        binding.weatherWidgetSelectLayout.visibility = View.GONE
+        binding.weatherTempUnitSelectLayout.visibility = View.GONE
         binding.appThemeSelectLayout.visibility = View.GONE
         binding.swipeDownSelectLayout.visibility = View.GONE
         if (view.id != R.id.textSizeMinus && view.id != R.id.textSizePlus) {
@@ -122,6 +126,17 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.dateTimeOn -> toggleDateTime(Constants.DateTime.ON)
             R.id.dateTimeOff -> toggleDateTime(Constants.DateTime.OFF)
             R.id.dateOnly -> toggleDateTime(Constants.DateTime.DATE_ONLY)
+            R.id.weatherWidgetOnOff -> binding.weatherWidgetSelectLayout.visibility = View.VISIBLE
+            R.id.weatherWidgetOn -> setWeatherWidgetEnabled(true)
+            R.id.weatherWidgetOff -> setWeatherWidgetEnabled(false)
+            R.id.updateWeatherButton -> {
+                viewModel.requestWeatherRefresh.value = true
+                requireContext().showToast(getString(R.string.updating_weather))
+            }
+            R.id.weatherTempUnitText -> binding.weatherTempUnitSelectLayout.visibility = View.VISIBLE
+            R.id.weatherTempSystem -> setWeatherTempUnit("system")
+            R.id.weatherTempCelsius -> setWeatherTempUnit("celsius")
+            R.id.weatherTempFahrenheit -> setWeatherTempUnit("fahrenheit")
             R.id.appThemeText -> binding.appThemeSelectLayout.visibility = View.VISIBLE
             R.id.themeLight -> updateTheme(AppCompatDelegate.MODE_NIGHT_NO)
             R.id.themeDark -> updateTheme(AppCompatDelegate.MODE_NIGHT_YES)
@@ -218,6 +233,14 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.dateTimeOn.setOnClickListener(this)
         binding.dateTimeOff.setOnClickListener(this)
         binding.dateOnly.setOnClickListener(this)
+        binding.weatherWidgetOnOff.setOnClickListener(this)
+        binding.updateWeatherButton.setOnClickListener(this)
+        binding.weatherWidgetOn.setOnClickListener(this)
+        binding.weatherWidgetOff.setOnClickListener(this)
+        binding.weatherTempUnitText.setOnClickListener(this)
+        binding.weatherTempSystem.setOnClickListener(this)
+        binding.weatherTempCelsius.setOnClickListener(this)
+        binding.weatherTempFahrenheit.setOnClickListener(this)
         binding.swipeLeftApp.setOnClickListener(this)
         binding.swipeRightApp.setOnClickListener(this)
         binding.swipeDownAction.setOnClickListener(this)
@@ -332,6 +355,33 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 Constants.DateTime.DATE_ONLY -> R.string.date
                 Constants.DateTime.ON -> R.string.on
                 else -> R.string.off
+            }
+        )
+    }
+
+    private fun setWeatherTempUnit(unit: String) {
+        prefs.weatherTempUnit = unit
+        populateWeatherTempUnit()
+    }
+
+    private fun setWeatherWidgetEnabled(enabled: Boolean) {
+        prefs.showWeatherWidget = enabled
+        populateWeatherWidget()
+    }
+
+    private fun populateWeatherWidget() {
+        binding.weatherWidgetOnOff.text = getString(
+            if (prefs.showWeatherWidget) R.string.on else R.string.off
+        )
+        binding.updateWeatherButton.isVisible = prefs.showWeatherWidget
+    }
+
+    private fun populateWeatherTempUnit() {
+        binding.weatherTempUnitText.text = getString(
+            when (prefs.weatherTempUnit) {
+                "celsius" -> R.string.temp_celsius
+                "fahrenheit" -> R.string.temp_fahrenheit
+                else -> R.string.temp_system
             }
         )
     }

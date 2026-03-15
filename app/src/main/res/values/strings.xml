@@ -73,6 +73,13 @@
     <string name="appearance">Appearance</string>
     <string name="gestures">Gestures</string>
     <string name="theme_mode">Theme mode</string>
+    <string name="weather_widget">Weather widget</string>
+    <string name="update_weather">Update weather</string>
+    <string name="updating_weather">Updating weather…</string>
+    <string name="weather_temp_unit">Metric</string>
+    <string name="temp_system">System (by location)</string>
+    <string name="temp_celsius">°C (Celsius)</string>
+    <string name="temp_fahrenheit">°F (Fahrenheit)</string>
     <string name="system_default">System</string>
     <string name="dark">Dark</string>
     <string name="light">Light</string>

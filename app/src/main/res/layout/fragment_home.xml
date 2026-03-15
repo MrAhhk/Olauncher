@@ -85,10 +85,25 @@ android:layout_marginTop="12dp"
             android:visibility="gone"
             tools:visibility="visible">
 
+            <!-- Location name (like other weather apps) -->
+            <TextView
+                android:id="@+id/weatherLocationName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:textColor="#B3FFFFFF"
+                android:textSize="12sp"
+                android:visibility="gone"
+                tools:text="San Francisco"
+                tools:visibility="visible" />
+
             <!-- Temp capsule above, big icon below - use dimens for offsets -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
                 android:clipChildren="false"
                 android:gravity="end"
                 android:orientation="vertical">
