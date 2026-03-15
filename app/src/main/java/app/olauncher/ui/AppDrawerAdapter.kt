@@ -183,17 +183,18 @@ class AppDrawerAdapter(
                 append(appModel.appLabel)
                 if (appModel.isNew) append(" ✦")
             }
+            val isNonLatinApp = appModel.appLabel.any { it.code > 0x7F }
             val isExactMatch = appModel.appLabel.trim() == currentSearchQueryProvider().trim()
+            val shouldBold = isNonLatinApp || isExactMatch
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                appTitle.typeface = Typeface.create(appTitle.typeface, if (isExactMatch) 500 else 200, false)
+                appTitle.typeface = Typeface.create(appTitle.typeface, if (shouldBold) 500 else 200, false)
             } else {
-                appTitle.paint.isFakeBoldText = isExactMatch
+                appTitle.paint.isFakeBoldText = shouldBold
             }
             appTitle.gravity = appLabelGravity
             otherProfileIndicator.isVisible = appModel.user != myUserHandle
 
             appTitle.setOnClickListener {
-                val isNonLatinApp = appModel.appLabel.any { it.code > 0x7F }
                 if (isNonLatinApp) {
                     clickListener(appModel)
                     return@setOnClickListener
