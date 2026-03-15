@@ -5,9 +5,9 @@
     <dimen name="alphabet_recycler_margin_start">320dp</dimen>
     <dimen name="home_pinned_item_height">48dp</dimen>
     <dimen name="home_pinned_fade_height">24dp</dimen>
-    <dimen name="home_battery_bar_height">5dp</dimen>
+    <dimen name="home_battery_bar_height">6dp</dimen>
     <!-- Weather widget (MSN taskbar style) -->
-    <dimen name="weather_widget_icon_size">77dp</dimen>
+    <dimen name="weather_widget_icon_size">70dp</dimen>
     <dimen name="weather_widget_capsule_offset_above_icon">0dp</dimen>
     <dimen name="weather_widget_temp_size">17sp</dimen>
     <dimen name="weather_widget_unit_size">9sp</dimen>
