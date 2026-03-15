@@ -53,6 +53,7 @@ class AppDrawerAdapter(
 
     private var autoLaunch = true
     private var isBangSearch = false
+    private var currentSearchQuery = ""
     private val appFilter = createAppFilter()
     private val myUserHandle = android.os.Process.myUserHandle()
 
@@ -77,6 +78,7 @@ class AppDrawerAdapter(
                 appLabelGravity,
                 myUserHandle,
                 appModel,
+                { currentSearchQuery },
                 appClickListener,
                 appDeleteListener,
                 appInfoListener,
@@ -95,6 +97,7 @@ class AppDrawerAdapter(
             override fun performFiltering(charSearch: CharSequence?): FilterResults {
                 isBangSearch = charSearch?.startsWith("!") ?: false
                 autoLaunch = charSearch?.startsWith(" ")?.not() ?: true
+                currentSearchQuery = charSearch?.toString() ?: ""
 
                 val appFilteredList: MutableList<AppModel> = if (charSearch.isNullOrBlank()) appsList
                 else appsList.filter { app ->
@@ -120,16 +123,7 @@ class AppDrawerAdapter(
     }
 
     private fun autoLaunch() {
-        try {
-            if (itemCount == 1
-                && autoLaunch
-                && isBangSearch.not()
-                && flag == Constants.FLAG_LAUNCH_APP
-                && appFilteredList.size > 0
-            ) appClickListener(appFilteredList[0])
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        return
     }
 
     private fun appLabelMatches(appLabel: String, charSearch: CharSequence): Boolean {
@@ -169,6 +163,7 @@ class AppDrawerAdapter(
             appLabelGravity: Int,
             myUserHandle: UserHandle,
             appModel: AppModel,
+            currentSearchQueryProvider: () -> String,
             clickListener: (AppModel) -> Unit,
             appDeleteListener: (AppModel) -> Unit,
             appInfoListener: (AppModel) -> Unit,
@@ -187,7 +182,11 @@ class AppDrawerAdapter(
             appTitle.gravity = appLabelGravity
             otherProfileIndicator.isVisible = appModel.user != myUserHandle
 
-            appTitle.setOnClickListener { clickListener(appModel) }
+            appTitle.setOnClickListener {
+                if (appModel.appLabel.trim() == currentSearchQueryProvider().trim()) {
+                    clickListener(appModel)
+                }
+            }
 
             appTitle.setOnLongClickListener {
                 if (appModel.appPackage.isNotEmpty()) {

@@ -87,12 +87,17 @@ class AppDrawerFragment : Fragment() {
     private fun initSearch() {
         binding.search.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
-                if (query?.startsWith("!") == true)
-                    requireContext().openUrl(Constants.URL_DUCK_SEARCH + query.replace(" ", "%20"))
-                else if (adapter.itemCount == 0)
-                    requireContext().openSearch(query?.trim())
-                else
-                    adapter.launchFirstInList()
+                val submittedQuery = query?.trim().orEmpty()
+                val exactMatch = adapter.appsList.firstOrNull { app ->
+                    submittedQuery == app.appLabel.trim()
+                }
+                if (exactMatch != null) {
+                    viewModel.selectedApp(exactMatch, flag)
+                    if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
+                        findNavController().popBackStack(R.id.mainFragment, false)
+                    else
+                        findNavController().popBackStack()
+                }
                 return true
             }
 
