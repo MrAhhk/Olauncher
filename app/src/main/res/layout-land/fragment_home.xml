@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
+    android:clipChildren="false"
+    android:clipToPadding="false"
     android:orientation="vertical"
     tools:context=".ui.HomeFragment">
 
@@ -20,6 +22,8 @@
         android:id="@+id/dateTimeLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:clipChildren="false"
+        android:clipToPadding="false"
         android:layout_marginHorizontal="48dp"
         android:layout_marginTop="48dp"
         android:orientation="horizontal"
@@ -66,12 +70,14 @@
                 tools:progress="75" />
         </LinearLayout>
 
-        <!-- Right block: weather widget -->
+        <!-- Right block: weather widget (MSN taskbar style) -->
         <LinearLayout
             android:id="@+id/weatherWidget"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_gravity="bottom|end"
+            android:clipChildren="false"
+            android:clipToPadding="false"
             android:clickable="true"
             android:focusable="true"
             android:gravity="end"
@@ -79,51 +85,77 @@
             android:visibility="gone"
             tools:visibility="visible">
 
-            <!-- Primary row: icon + temperature + unit -->
+            <!-- Temp capsule above, big icon below - use dimens for offsets -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:clipChildren="false"
+                android:gravity="end"
+                android:orientation="vertical">
 
-                <ImageView
-                    android:id="@+id/weatherIcon"
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:contentDescription="@string/weather"
-                    android:src="@drawable/ic_weather_clear_home" />
-
-                <TextView
-                    android:id="@+id/weatherTemp"
+                <LinearLayout
+                    android:id="@+id/weatherTempCapsule"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="4dp"
-                    android:textColor="@android:color/white"
-                    android:textSize="22sp"
-                    tools:text="46°" />
+                    android:layout_gravity="end"
+                    android:layout_marginBottom="@dimen/weather_widget_capsule_margin_bottom"
+                    android:background="@drawable/bg_weather_temp_capsule"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingStart="@dimen/weather_widget_capsule_h_padding"
+                    android:paddingTop="@dimen/weather_widget_capsule_v_padding"
+                    android:paddingEnd="@dimen/weather_widget_capsule_h_padding"
+                    android:paddingBottom="@dimen/weather_widget_capsule_v_padding"
+                    android:elevation="2dp">
 
-                <TextView
-                    android:id="@+id/weatherUnit"
+                    <TextView
+                        android:id="@+id/weatherTemp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@android:color/white"
+                        android:textSize="@dimen/weather_widget_temp_size"
+                        android:textStyle="bold"
+                        tools:text="31°" />
+
+                    <TextView
+                        android:id="@+id/weatherUnit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="bottom"
+                        android:layout_marginStart="1dp"
+                        android:layout_marginBottom="1dp"
+                        android:textColor="#E0FFFFFF"
+                        android:textSize="@dimen/weather_widget_unit_size"
+                        tools:text="c" />
+                </LinearLayout>
+
+                <FrameLayout
+                    android:id="@+id/weatherIconWrapper"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:layout_marginTop="2dp"
-                    android:textColor="#AAFFFFFF"
-                    android:textSize="10sp"
-                    tools:text="c" />
+                    android:layout_gravity="end">
+
+                    <ImageView
+                        android:id="@+id/weatherIcon"
+                        android:layout_width="@dimen/weather_widget_icon_size"
+                        android:layout_height="@dimen/weather_widget_icon_size"
+                        android:contentDescription="@string/weather"
+                        android:src="@drawable/ic_weather_partly_cloudy_home" />
+                </FrameLayout>
             </LinearLayout>
 
             <!-- Secondary row: humidity, visibility, AQI -->
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_gravity="end"
+                android:layout_marginTop="@dimen/weather_widget_row_spacing"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
+                    android:layout_width="@dimen/weather_widget_secondary_icon_size"
+                    android:layout_height="@dimen/weather_widget_secondary_icon_size"
                     android:contentDescription="@string/humidity"
                     android:src="@drawable/ic_humidity_home" />
 
@@ -131,15 +163,15 @@
                     android:id="@+id/weatherHumidity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:textColor="@android:color/white"
-                    android:textSize="11sp"
+                    android:textSize="@dimen/weather_widget_secondary_text_size"
                     tools:text="37%" />
 
                 <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="@dimen/weather_widget_secondary_icon_size"
+                    android:layout_height="@dimen/weather_widget_secondary_icon_size"
+                    android:layout_marginStart="10dp"
                     android:contentDescription="@string/visibility"
                     android:src="@drawable/ic_visibility_home" />
 
@@ -147,15 +179,15 @@
                     android:id="@+id/weatherVisibility"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:textColor="@android:color/white"
-                    android:textSize="11sp"
+                    android:textSize="@dimen/weather_widget_secondary_text_size"
                     tools:text="33mi" />
 
                 <ImageView
-                    android:layout_width="12dp"
-                    android:layout_height="12dp"
-                    android:layout_marginStart="8dp"
+                    android:layout_width="@dimen/weather_widget_secondary_icon_size"
+                    android:layout_height="@dimen/weather_widget_secondary_icon_size"
+                    android:layout_marginStart="10dp"
                     android:contentDescription="@string/aqi"
                     android:src="@drawable/ic_aqi_home" />
 
@@ -163,9 +195,9 @@
                     android:id="@+id/weatherAqi"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="2dp"
+                    android:layout_marginStart="4dp"
                     android:textColor="@android:color/white"
-                    android:textSize="11sp"
+                    android:textSize="@dimen/weather_widget_secondary_text_size"
                     tools:text="51" />
             </LinearLayout>
         </LinearLayout>

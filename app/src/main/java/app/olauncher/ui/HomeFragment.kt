@@ -121,6 +121,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         initPinnedAppsRecycler()
         initSwipeTouchListener()
         initClickListeners()
+        binding.weatherWidget.post { applyWeatherWidgetOffsets() }
     }
 
     override fun onResume() {
@@ -1021,6 +1022,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private fun applyWeatherInfo(info: WeatherInfo) {
         if (_binding == null) return
         binding.weatherWidget.visibility = View.VISIBLE
+        applyWeatherWidgetOffsets()
 
         val useFahrenheit = useFahrenheit()
         val displayTemp = if (useFahrenheit) info.temp * 9.0 / 5.0 + 32.0 else info.temp
@@ -1030,6 +1032,16 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.weatherHumidity.text = "${info.humidity}%"
         binding.weatherVisibility.text = formatVisibility(info.visibilityMeters, useFahrenheit)
         binding.weatherAqi.text = "${info.aqi}"
+    }
+
+    /** Applies position offsets from dimens so changing values in dimens.xml takes effect after rebuild. */
+    private fun applyWeatherWidgetOffsets() {
+        if (_binding == null) return
+        val res = resources
+        binding.weatherIconWrapper.translationX = res.getDimension(R.dimen.weather_icon_offset_x)
+        binding.weatherIconWrapper.translationY = res.getDimension(R.dimen.weather_icon_offset_y)
+        binding.weatherTempCapsule.translationX = res.getDimension(R.dimen.weather_temp_offset_x)
+        binding.weatherTempCapsule.translationY = res.getDimension(R.dimen.weather_temp_offset_y)
     }
 
     private fun useFahrenheit(): Boolean {
@@ -1049,7 +1061,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun getWeatherIconResource(code: Int): Int = when (code) {
         0, 1 -> R.drawable.ic_weather_clear_home
-        2, 3 -> R.drawable.ic_weather_cloud_home
+        2, 3 -> R.drawable.ic_weather_partly_cloudy_home
         45, 48 -> R.drawable.ic_weather_cloud_home
         51, 53, 55, 56, 57, 61, 63, 65, 66, 67, 80, 81, 82, 95, 96, 99 -> R.drawable.ic_weather_rain_home
         71, 73, 75, 77, 85, 86 -> R.drawable.ic_weather_snow_home
