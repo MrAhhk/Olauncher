@@ -214,8 +214,6 @@ class AppDrawerFragment : Fragment() {
     }
 
     private fun initObservers() {
-        viewModel.firstOpen.observe(viewLifecycleOwner) {
-        }
         if (flag == Constants.FLAG_HIDDEN_APPS) {
             viewModel.hiddenApps.observe(viewLifecycleOwner) {
                 it?.let {
@@ -231,9 +229,6 @@ class AppDrawerFragment : Fragment() {
                             get(Calendar.YEAR) * 1000 + get(Calendar.DAY_OF_YEAR)
                         }
                         Collections.shuffle(listToShow, Random(today.toLong()))
-                        if (today != prefs.appDrawerLastShuffleDate) {
-                            prefs.appDrawerLastShuffleDate = today
-                        }
                     }
                     adapter.setAppList(listToShow)
                     adapter.filter.filter(binding.search.query)

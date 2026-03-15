@@ -96,10 +96,10 @@ class AppDrawerAdapter(
                 isBangSearch = charSearch?.startsWith("!") ?: false
                 autoLaunch = charSearch?.startsWith(" ")?.not() ?: true
 
-                val appFilteredList = (if (charSearch.isNullOrBlank()) appsList
+                val appFilteredList: MutableList<AppModel> = if (charSearch.isNullOrBlank()) appsList
                 else appsList.filter { app ->
                     appLabelMatches(app.appLabel, charSearch)
-                } as MutableList<AppModel>)
+                }.toMutableList()
 
                 val filterResults = FilterResults()
                 filterResults.values = appFilteredList
@@ -228,23 +228,18 @@ class AppDrawerAdapter(
             etAppRename.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
                 appTitle.visibility = if (hasFocus) View.INVISIBLE else View.VISIBLE
             }
-            etAppRename.addTextChangedListener(object : TextWatcher {
+            val watcher = object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
                     etAppRename.hint = getAppName(etAppRename.context, appModel.appPackage, appModel.user)
                 }
-
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     etAppRename.hint = ""
                 }
-            })
+            }
+            (etAppRename.tag as? TextWatcher)?.let { etAppRename.removeTextChangedListener(it) }
+            etAppRename.tag = watcher
+            etAppRename.addTextChangedListener(watcher)
             etAppRename.setOnEditorActionListener { _, actionCode, _ ->
                 if (actionCode == EditorInfo.IME_ACTION_DONE) {
                     val renameLabel = etAppRename.text.toString().trim()

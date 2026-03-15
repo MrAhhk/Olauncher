@@ -8,13 +8,11 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Process
 import android.provider.Settings
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -30,14 +28,10 @@ import app.olauncher.helper.animateAlpha
 import app.olauncher.helper.appUsagePermissionGranted
 import app.olauncher.helper.getColorFromAttr
 import app.olauncher.helper.isAccessServiceEnabled
-import app.olauncher.helper.isDarkThemeOn
-import app.olauncher.helper.isEinkDisplay
 import app.olauncher.helper.isOlauncherDefault
-import app.olauncher.helper.isTablet
 import app.olauncher.helper.openAppInfo
 import app.olauncher.helper.openUrl
 import app.olauncher.helper.rateApp
-import app.olauncher.helper.setPlainWallpaper
 import app.olauncher.helper.shareApp
 import app.olauncher.helper.showToast
 import app.olauncher.listener.DeviceAdmin
@@ -74,10 +68,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateKeyboardText()
         populateScreenTimeOnOff()
         populateLockSettings()
-        populateWallpaperText()
-        populateAppThemeText()
-        populateTextSize()
-        populateAlignment()
         populateStatusBar()
         populateDateTime()
         populateWeatherWidget()
@@ -94,16 +84,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.dateTimeSelectLayout.visibility = View.GONE
         binding.weatherWidgetSelectLayout.visibility = View.GONE
         binding.weatherTempUnitSelectLayout.visibility = View.GONE
-        binding.appThemeSelectLayout.visibility = View.GONE
         binding.swipeDownSelectLayout.visibility = View.GONE
-        if (view.id != R.id.textSizeMinus && view.id != R.id.textSizePlus) {
-            if (binding.textSizesLayout.visibility == View.VISIBLE) {
-                binding.textSizesLayout.visibility = View.GONE
-                applyTextSizeScale()
-            }
-        }
-        if (view.id != R.id.alignmentBottom)
-            binding.alignmentSelectLayout.visibility = View.GONE
 
         when (view.id) {
             R.id.olauncherHiddenApps -> showHiddenApps()
@@ -114,13 +95,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.toggleLock -> toggleLockMode()
             R.id.autoShowKeyboard -> toggleKeyboardText()
             R.id.homeAppsNum -> binding.appsNumSelectLayout.visibility = View.VISIBLE
-            R.id.dailyWallpaperUrl -> requireContext().openUrl(prefs.dailyWallpaperUrl)
-            R.id.dailyWallpaper -> toggleDailyWallpaperUpdate()
-            R.id.alignment -> binding.alignmentSelectLayout.visibility = View.VISIBLE
-            R.id.alignmentLeft -> viewModel.updateHomeAlignment(Gravity.START)
-            R.id.alignmentCenter -> viewModel.updateHomeAlignment(Gravity.CENTER)
-            R.id.alignmentRight -> viewModel.updateHomeAlignment(Gravity.END)
-            R.id.alignmentBottom -> updateHomeBottomAlignment()
             R.id.statusBar -> toggleStatusBar()
             R.id.dateTime -> binding.dateTimeSelectLayout.visibility = View.VISIBLE
             R.id.dateTimeOn -> toggleDateTime(Constants.DateTime.ON)
@@ -137,11 +111,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.weatherTempSystem -> setWeatherTempUnit("system")
             R.id.weatherTempCelsius -> setWeatherTempUnit("celsius")
             R.id.weatherTempFahrenheit -> setWeatherTempUnit("fahrenheit")
-            R.id.appThemeText -> binding.appThemeSelectLayout.visibility = View.VISIBLE
-            R.id.themeLight -> updateTheme(AppCompatDelegate.MODE_NIGHT_NO)
-            R.id.themeDark -> updateTheme(AppCompatDelegate.MODE_NIGHT_YES)
-            R.id.themeSystem -> updateTheme(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
-            R.id.textSizeValue -> binding.textSizesLayout.visibility = View.VISIBLE
             R.id.actionAccessibility -> openAccessibilityService()
             R.id.closeAccessibility -> toggleAccessibilityVisibility(false)
             R.id.notWorking -> requireContext().openUrl(Constants.URL_DOUBLE_TAP)
@@ -161,9 +130,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.maxApps10 -> updateHomeAppsNum(10)
             R.id.maxApps11 -> updateHomeAppsNum(11)
             R.id.maxApps12 -> updateHomeAppsNum(12)
-
-            R.id.textSizeMinus -> adjustTextSizePreview(-0.1f)
-            R.id.textSizePlus -> adjustTextSizePreview(0.1f)
 
             R.id.swipeLeftApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_LEFT_APP)
             R.id.swipeRightApp -> showAppListIfEnabled(Constants.FLAG_SET_SWIPE_RIGHT_APP)
@@ -191,18 +157,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
     override fun onLongClick(view: View): Boolean {
         when (view.id) {
-            R.id.alignment -> {
-                prefs.appLabelAlignment = prefs.homeAlignment
-                findNavController().navigate(R.id.action_settingsFragment_to_appListFragment)
-                requireContext().showToast(getString(R.string.alignment_changed))
-            }
-
-            R.id.dailyWallpaper -> removeWallpaper()
-            R.id.appThemeText -> {
-                binding.appThemeSelectLayout.visibility = View.VISIBLE
-                binding.themeSystem.visibility = View.VISIBLE
-            }
-
             R.id.swipeLeftApp -> toggleSwipeLeft()
             R.id.swipeRightApp -> toggleSwipeRight()
             R.id.toggleLock -> startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
@@ -221,13 +175,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.toggleLock.setOnClickListener(this)
         binding.homeAppsNum.setOnClickListener(this)
         binding.screenTimeOnOff.setOnClickListener(this)
-        binding.dailyWallpaperUrl.setOnClickListener(this)
-        binding.dailyWallpaper.setOnClickListener(this)
-        binding.alignment.setOnClickListener(this)
-        binding.alignmentLeft.setOnClickListener(this)
-        binding.alignmentCenter.setOnClickListener(this)
-        binding.alignmentRight.setOnClickListener(this)
-        binding.alignmentBottom.setOnClickListener(this)
         binding.statusBar.setOnClickListener(this)
         binding.dateTime.setOnClickListener(this)
         binding.dateTimeOn.setOnClickListener(this)
@@ -246,11 +193,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.swipeDownAction.setOnClickListener(this)
         binding.search.setOnClickListener(this)
         binding.notifications.setOnClickListener(this)
-        binding.appThemeText.setOnClickListener(this)
-        binding.themeLight.setOnClickListener(this)
-        binding.themeDark.setOnClickListener(this)
-        binding.themeSystem.setOnClickListener(this)
-        binding.textSizeValue.setOnClickListener(this)
         binding.actionAccessibility.setOnClickListener(this)
         binding.closeAccessibility.setOnClickListener(this)
         binding.notWorking.setOnClickListener(this)
@@ -276,12 +218,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.maxApps11.setOnClickListener(this)
         binding.maxApps12.setOnClickListener(this)
 
-        binding.textSizeMinus.setOnClickListener(this)
-        binding.textSizePlus.setOnClickListener(this)
-
-        binding.dailyWallpaper.setOnLongClickListener(this)
-        binding.alignment.setOnLongClickListener(this)
-        binding.appThemeText.setOnLongClickListener(this)
         binding.swipeLeftApp.setOnLongClickListener(this)
         binding.swipeRightApp.setOnLongClickListener(this)
         binding.toggleLock.setOnLongClickListener(this)
@@ -297,9 +233,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
                 binding.setLauncher.text = getString(R.string.change_default_launcher)
                 prefs.toShowHintCounter += 1
             }
-        }
-        viewModel.homeAppAlignment.observe(viewLifecycleOwner) {
-            populateAlignment()
         }
         viewModel.updateSwipeApps.observe(viewLifecycleOwner) {
             populateSwipeApps()
@@ -476,69 +409,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         }
     }
 
-    private fun removeWallpaper() {
-        if (requireContext().isEinkDisplay()) {
-            prefs.appTheme = AppCompatDelegate.MODE_NIGHT_NO
-            setPlainWallpaper(requireContext(), android.R.color.white)
-        } else {
-            prefs.appTheme = AppCompatDelegate.MODE_NIGHT_YES
-            setPlainWallpaper(requireContext(), android.R.color.black)
-        }
-        if (!prefs.dailyWallpaper) return
-        prefs.dailyWallpaper = false
-        populateWallpaperText()
-        viewModel.cancelWallpaperWorker()
-    }
-
-    private fun toggleDailyWallpaperUpdate() {
-        if (prefs.dailyWallpaper.not() && viewModel.isOlauncherDefault.value == false) {
-            requireContext().showToast(R.string.set_as_default_launcher_first)
-            return
-        }
-        prefs.dailyWallpaper = !prefs.dailyWallpaper
-        populateWallpaperText()
-        if (prefs.dailyWallpaper) {
-            viewModel.setWallpaperWorker()
-            showWallpaperToasts()
-        } else viewModel.cancelWallpaperWorker()
-    }
-
-    private fun showWallpaperToasts() {
-        if (isOlauncherDefault(requireContext()))
-            requireContext().showToast(getString(R.string.your_wallpaper_will_update_shortly))
-        else
-            requireContext().showToast(getString(R.string.olauncher_is_not_default_launcher), Toast.LENGTH_LONG)
-    }
-
     private fun updateHomeAppsNum(num: Int) {
         binding.homeAppsNum.text = num.toString()
         binding.appsNumSelectLayout.visibility = View.GONE
         prefs.homeAppsNum = num
         viewModel.refreshHome(true)
-    }
-
-    private var pendingTextSizeScale: Float = -1f
-
-    private fun adjustTextSizePreview(delta: Float) {
-        val maxScale = if (isTablet(requireContext())) 2.0f else 1.5f
-        val current = if (pendingTextSizeScale > 0) pendingTextSizeScale else prefs.textSizeScale
-        val newScale = Math.round((current + delta) * 10f) / 10f
-        val clamped = newScale.coerceIn(0.5f, maxScale)
-        if (clamped == current) return
-        pendingTextSizeScale = clamped
-        val formatted = String.format("%.1f", clamped)
-        binding.textSizeValue.text = formatted
-        binding.textSizeCurrent.text = formatted
-    }
-
-    private fun applyTextSizeScale() {
-        if (pendingTextSizeScale < 0 || prefs.textSizeScale == pendingTextSizeScale) {
-            pendingTextSizeScale = -1f
-            return
-        }
-        prefs.textSizeScale = pendingTextSizeScale
-        pendingTextSizeScale = -1f
-        requireActivity().recreate()
     }
 
     private fun toggleKeyboardText() {
@@ -551,48 +426,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         }
     }
 
-    private fun updateTheme(appTheme: Int) {
-        if (AppCompatDelegate.getDefaultNightMode() == appTheme) return
-        prefs.appTheme = appTheme
-        populateAppThemeText(appTheme)
-        setAppTheme(appTheme)
-    }
-
-    private fun setAppTheme(theme: Int) {
-        if (AppCompatDelegate.getDefaultNightMode() == theme) return
-        if (prefs.dailyWallpaper) {
-            setPlainWallpaper(theme)
-            viewModel.setWallpaperWorker()
-        }
-        requireActivity().recreate()
-    }
-
-    private fun setPlainWallpaper(appTheme: Int) {
-        when (appTheme) {
-            AppCompatDelegate.MODE_NIGHT_YES -> setPlainWallpaper(requireContext(), android.R.color.black)
-            AppCompatDelegate.MODE_NIGHT_NO -> setPlainWallpaper(requireContext(), android.R.color.white)
-            else -> {
-                if (requireContext().isDarkThemeOn())
-                    setPlainWallpaper(requireContext(), android.R.color.black)
-                else setPlainWallpaper(requireContext(), android.R.color.white)
-            }
-        }
-    }
-
-    private fun populateAppThemeText(appTheme: Int = prefs.appTheme) {
-        when (appTheme) {
-            AppCompatDelegate.MODE_NIGHT_YES -> binding.appThemeText.text = getString(R.string.dark)
-            AppCompatDelegate.MODE_NIGHT_NO -> binding.appThemeText.text = getString(R.string.light)
-            else -> binding.appThemeText.text = getString(R.string.system_default)
-        }
-    }
-
-    private fun populateTextSize() {
-        val formatted = String.format("%.1f", prefs.textSizeScale)
-        binding.textSizeValue.text = formatted
-        binding.textSizeCurrent.text = formatted
-    }
-
     private fun populateScreenTimeOnOff() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             if (requireContext().appUsagePermissionGranted()) binding.screenTimeOnOff.text = getString(R.string.on)
@@ -603,32 +436,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private fun populateKeyboardText() {
         if (prefs.autoShowKeyboard) binding.autoShowKeyboard.text = getString(R.string.on)
         else binding.autoShowKeyboard.text = getString(R.string.off)
-    }
-
-    private fun populateWallpaperText() {
-        if (prefs.dailyWallpaper) binding.dailyWallpaper.text = getString(R.string.on)
-        else binding.dailyWallpaper.text = getString(R.string.off)
-    }
-
-    private fun updateHomeBottomAlignment() {
-        if (viewModel.isOlauncherDefault.value != true) {
-            requireContext().showToast(getString(R.string.please_set_olauncher_as_default_first), Toast.LENGTH_LONG)
-            return
-        }
-        prefs.homeBottomAlignment = !prefs.homeBottomAlignment
-        populateAlignment()
-        viewModel.updateHomeAlignment(prefs.homeAlignment)
-    }
-
-    private fun populateAlignment() {
-        when (prefs.homeAlignment) {
-            Gravity.START -> binding.alignment.text = getString(R.string.left)
-            Gravity.CENTER -> binding.alignment.text = getString(R.string.center)
-            Gravity.END -> binding.alignment.text = getString(R.string.right)
-        }
-        binding.alignmentBottom.text = if (prefs.homeBottomAlignment)
-            getString(R.string.bottom_on)
-        else getString(R.string.bottom_off)
     }
 
     private fun populateLockSettings() {

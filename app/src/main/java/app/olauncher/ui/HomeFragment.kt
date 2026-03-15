@@ -267,8 +267,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             }
             if (binding.firstRunTips.visibility == View.VISIBLE) return@Observer
             binding.setDefaultLauncher.isVisible = it.not() && prefs.hideSetDefaultLauncher.not()
-//            if (it) binding.setDefaultLauncher.visibility = View.GONE
-//            else binding.setDefaultLauncher.visibility = View.VISIBLE
         })
         viewModel.homeAppAlignment.observe(viewLifecycleOwner) {
             setHomeAlignment(it)
@@ -367,13 +365,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PinnedAppViewHolder {
             val view = layoutInflater.inflate(R.layout.item_home_pinned_app, parent, false)
-            return PinnedAppViewHolder(view)
+            val holder = PinnedAppViewHolder(view)
+            holder.title.setTextColor(requireContext().getColor(android.R.color.white))
+            return holder
         }
 
         override fun onBindViewHolder(holder: PinnedAppViewHolder, position: Int) {
             val item = items[position]
             holder.title.text = item.title
-            holder.title.setTextColor(requireContext().getColor(android.R.color.white))
             holder.itemView.tag = item.location
             holder.itemView.setOnClickListener(this@HomeFragment)
             holder.itemView.setOnLongClickListener(this@HomeFragment)
@@ -664,11 +663,29 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun openSwipeRightApp() {
-        openGoogleOrSystemSearch()
+        if (prefs.swipeRightEnabled && prefs.appPackageSwipeRight.isNotBlank()) {
+            launchApp(
+                prefs.appNameSwipeRight,
+                prefs.appPackageSwipeRight,
+                prefs.appActivityClassNameRight,
+                prefs.appUserSwipeRight
+            )
+        } else {
+            openGoogleOrSystemSearch()
+        }
     }
 
     private fun openSwipeLeftApp() {
-        showAppList(Constants.FLAG_LAUNCH_APP)
+        if (prefs.swipeLeftEnabled && prefs.appPackageSwipeLeft.isNotBlank()) {
+            launchApp(
+                prefs.appNameSwipeLeft,
+                prefs.appPackageSwipeLeft,
+                prefs.appActivityClassNameSwipeLeft,
+                prefs.appUserSwipeLeft
+            )
+        } else {
+            showAppList(Constants.FLAG_LAUNCH_APP)
+        }
     }
 
     private fun openGoogleOrSystemSearch() {

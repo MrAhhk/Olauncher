@@ -319,8 +319,10 @@ class MainActivity : AppCompatActivity() {
     private fun restartLauncherOrCheckTheme(forceRestart: Boolean = false) {
         if (forceRestart || prefs.launcherRestartTimestamp.hasBeenHours(4)) {
             prefs.launcherRestartTimestamp = System.currentTimeMillis()
-            cacheDir.deleteRecursively()
-            recreate()
+            lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+                cacheDir.deleteRecursively()
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) { recreate() }
+            }
         } else
             checkTheme()
     }

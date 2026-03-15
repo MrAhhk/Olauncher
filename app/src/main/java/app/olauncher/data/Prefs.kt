@@ -745,6 +745,25 @@ class Prefs(context: Context) {
         }
     }
 
+    fun saveHomeApp(
+        location: Int,
+        name: String,
+        pkg: String,
+        user: String,
+        activityClassName: String?,
+        isShortcut: Boolean,
+        shortcutId: String
+    ) {
+        prefs.edit {
+            putString("APP_NAME_$location", name)
+            putString("APP_PACKAGE_$location", pkg)
+            putString("APP_USER_$location", user)
+            putString("APP_ACTIVITY_CLASS_NAME_$location", activityClassName)
+            putBoolean("IS_SHORTCUT_$location", isShortcut)
+            putString("SHORTCUT_ID_$location", shortcutId)
+        }
+    }
+
     fun clearHomeApp(location: Int) {
         setAppName(location, "")
         setAppPackage(location, "")
