@@ -28,4 +28,7 @@
     <color name="blackInverseTrans80">#CCFFFFFF</color>
     <color name="blackInverseTrans90">#E6FFFFFF</color>
 
+    <!-- Home pinned apps: dimmed text at scroll edges -->
+    <color name="home_pinned_edge_text">#99FFFFFF</color>
+
 </resources>

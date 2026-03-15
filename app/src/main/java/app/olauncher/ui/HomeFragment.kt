@@ -95,6 +95,13 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private lateinit var pinnedAppsAdapter: PinnedAppsAdapter
     private var batteryReceiver: BroadcastReceiver? = null
 
+    private var pinnedEdgeTextColor = 0
+    private var pinnedNormalTextColor = 0
+    private var lastEdgeFirstVisible = -1
+    private var lastEdgeLastVisible = -1
+    private var lastEdgeCanScrollUp = false
+    private var lastEdgeCanScrollDown = false
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -348,6 +355,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         override fun onBindViewHolder(holder: PinnedAppViewHolder, position: Int) {
             val item = items[position]
             holder.title.text = item.title
+            holder.title.setTextColor(requireContext().getColor(android.R.color.white))
             holder.itemView.tag = item.location
             holder.itemView.setOnClickListener(this@HomeFragment)
             holder.itemView.setOnLongClickListener(this@HomeFragment)
@@ -359,7 +367,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             items.clear()
             items.addAll(newItems)
             notifyDataSetChanged()
-            updateFadeOverlays()
+            this@HomeFragment.lastEdgeFirstVisible = -1
+            this@HomeFragment.lastEdgeLastVisible = -1
+            binding.pinnedAppsRecyclerView.post { updateFadeOverlays() }
         }
     }
 
@@ -422,10 +432,31 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun updateFadeOverlays() {
-        val canScrollUp = binding.pinnedAppsRecyclerView.canScrollVertically(-1)
-        val canScrollDown = binding.pinnedAppsRecyclerView.canScrollVertically(1)
+        val recyclerView = binding.pinnedAppsRecyclerView
+        val canScrollUp = recyclerView.canScrollVertically(-1)
+        val canScrollDown = recyclerView.canScrollVertically(1)
         binding.topFadeOverlay.visibility = if (canScrollUp) View.VISIBLE else View.GONE
         binding.bottomFadeOverlay.visibility = if (canScrollDown) View.VISIBLE else View.GONE
+        val lm = recyclerView.layoutManager as? LinearLayoutManager ?: return
+        val firstVisible = lm.findFirstVisibleItemPosition()
+        val lastVisible = lm.findLastVisibleItemPosition()
+        if (firstVisible < 0 || lastVisible < 0) return
+        val edgeStateChanged = firstVisible != lastEdgeFirstVisible || lastVisible != lastEdgeLastVisible ||
+            canScrollUp != lastEdgeCanScrollUp || canScrollDown != lastEdgeCanScrollDown
+        if (!edgeStateChanged) return
+        lastEdgeFirstVisible = firstVisible
+        lastEdgeLastVisible = lastVisible
+        lastEdgeCanScrollUp = canScrollUp
+        lastEdgeCanScrollDown = canScrollDown
+        if (pinnedEdgeTextColor == 0) {
+            pinnedEdgeTextColor = requireContext().getColor(R.color.home_pinned_edge_text)
+            pinnedNormalTextColor = requireContext().getColor(android.R.color.white)
+        }
+        for (position in firstVisible..lastVisible) {
+            val holder = recyclerView.findViewHolderForAdapterPosition(position) as? PinnedAppsAdapter.PinnedAppViewHolder ?: continue
+            val useGray = (position == firstVisible && canScrollUp) || (position == lastVisible && canScrollDown)
+            holder.title.setTextColor(if (useGray) pinnedEdgeTextColor else pinnedNormalTextColor)
+        }
     }
 
     private fun getHomeAppInfo(location: Int): HomeAppInfo {
