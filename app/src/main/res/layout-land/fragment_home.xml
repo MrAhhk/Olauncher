@@ -184,12 +184,14 @@
                     android:textSize="@dimen/weather_widget_secondary_text_size"
                     tools:text="33mi" />
 
-                <ImageView
-                    android:layout_width="@dimen/weather_widget_secondary_icon_size"
-                    android:layout_height="@dimen/weather_widget_secondary_icon_size"
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
-                    android:contentDescription="@string/aqi"
-                    android:src="@drawable/ic_aqi_home" />
+                    android:fontFamily="sans-serif-black"
+                    android:text="AQI"
+                    android:textColor="@android:color/white"
+                    android:textSize="@dimen/weather_widget_secondary_text_size" />
 
                 <TextView
                     android:id="@+id/weatherAqi"

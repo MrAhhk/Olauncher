@@ -15,7 +15,7 @@
     <dimen name="weather_widget_capsule_v_padding">4dp</dimen>
     <dimen name="weather_widget_capsule_margin_bottom">4dp</dimen>
     <!-- Offsets applied in code: positive = right/down, negative = left/up (change value then Build → Rebuild Project) -->
-    <dimen name="weather_icon_offset_x">-25dp</dimen>
+    <dimen name="weather_icon_offset_x">-27dp</dimen>
     <dimen name="weather_icon_offset_y">0dp</dimen>
     <dimen name="weather_temp_offset_x">-10dp</dimen>
     <dimen name="weather_temp_offset_y">10dp</dimen>
