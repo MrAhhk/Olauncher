@@ -24,6 +24,7 @@ import app.olauncher.databinding.AdapterAppDrawerBinding
 import app.olauncher.helper.hideKeyboard
 import app.olauncher.helper.isSystemApp
 import app.olauncher.helper.showKeyboard
+import app.olauncher.helper.showToast
 import java.text.Normalizer
 
 class AppDrawerAdapter(
@@ -192,8 +193,12 @@ class AppDrawerAdapter(
             otherProfileIndicator.isVisible = appModel.user != myUserHandle
 
             appTitle.setOnClickListener {
-                if (appModel.appLabel.trim() == currentSearchQueryProvider().trim()) {
+                val isNonLatinApp = appModel.appLabel.any { it.code > 0x7F }
+                val isExactMatch = appModel.appLabel.trim() == currentSearchQueryProvider().trim()
+                if (isNonLatinApp || isExactMatch) {
                     clickListener(appModel)
+                } else {
+                    root.context.showToast("Type the exact name to open it (non-Latin excluded)")
                 }
             }
 
