@@ -194,8 +194,12 @@ class AppDrawerAdapter(
 
             appTitle.setOnClickListener {
                 val isNonLatinApp = appModel.appLabel.any { it.code > 0x7F }
+                if (isNonLatinApp) {
+                    clickListener(appModel)
+                    return@setOnClickListener
+                }
                 val isExactMatch = appModel.appLabel.trim() == currentSearchQueryProvider().trim()
-                if (isNonLatinApp || isExactMatch) {
+                if (isExactMatch) {
                     clickListener(appModel)
                 } else {
                     root.context.showToast("Type the exact name to open it (non-Latin excluded)")
