@@ -776,4 +776,16 @@ class Prefs(context: Context) {
     fun getAppRenameLabel(appPackage: String): String = prefs.getString(appPackage, "").toString()
 
     fun setAppRenameLabel(appPackage: String, renameLabel: String) = prefs.edit { putString(appPackage, renameLabel) }
+
+    var pauseCount: Int
+        get() = prefs.getInt("pause_count", 0)
+        set(value) = prefs.edit { putInt("pause_count", value) }
+
+    var distractionOpensLog: Set<String>
+        get() = prefs.getStringSet("distraction_opens_log", emptySet()) ?: emptySet()
+        set(value) = prefs.edit { putStringSet("distraction_opens_log", value) }
+
+    var identityMode: String
+        get() = prefs.getString("identity_mode", "").toString()
+        set(value) = prefs.edit { putString("identity_mode", value) }
 }

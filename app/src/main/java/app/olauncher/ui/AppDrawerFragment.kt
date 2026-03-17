@@ -93,6 +93,9 @@ class AppDrawerFragment : Fragment() {
                 }
                 if (exactMatch != null) {
                     viewModel.selectedApp(exactMatch, flag)
+                    if (viewModel.pendingApp != null) {
+                        return true
+                    }
                     if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
                         findNavController().popBackStack(R.id.mainFragment, false)
                     else
@@ -121,10 +124,12 @@ class AppDrawerFragment : Fragment() {
             prefs.appLabelAlignment,
             appClickListener = { appModel ->
                 viewModel.selectedApp(appModel, flag)
-                if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
-                    findNavController().popBackStack(R.id.mainFragment, false)
-                else
-                    findNavController().popBackStack()
+                if (viewModel.pendingApp == null) {
+                    if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
+                        findNavController().popBackStack(R.id.mainFragment, false)
+                    else
+                        findNavController().popBackStack()
+                }
             },
             appInfoListener = {
                 openAppInfo(
@@ -238,6 +243,13 @@ class AppDrawerFragment : Fragment() {
                     adapter.setAppList(listToShow)
                     adapter.filter.filter(binding.search.query)
                 }
+            }
+        }
+        viewModel.showReflection.observe(viewLifecycleOwner) {
+            val tag = "reflection"
+            if (childFragmentManager.findFragmentByTag(tag) == null) {
+                ReflectionSheet.newInstance()
+                    .show(childFragmentManager, tag)
             }
         }
     }

@@ -278,6 +278,13 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         viewModel.screenTimeValue.observe(viewLifecycleOwner) {
             it?.let { binding.tvScreenTime.text = it }
         }
+        viewModel.showReflection.observe(viewLifecycleOwner) {
+            val tag = "reflection"
+            if (childFragmentManager.findFragmentByTag(tag) == null) {
+                ReflectionSheet.newInstance()
+                    .show(childFragmentManager, tag)
+            }
+        }
     }
 
     private fun initSwipeTouchListener() {

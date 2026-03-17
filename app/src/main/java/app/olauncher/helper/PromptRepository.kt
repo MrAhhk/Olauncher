@@ -2,7 +2,6 @@ package app.olauncher.helper
 
 object PromptRepository {
 
-    // 60% Mirror prompts (60)
     private val mirrorPrompts = listOf(
         "Why this app?",
         "Is this intentional?",
@@ -18,7 +17,6 @@ object PromptRepository {
         "What do you need?",
         "Is this familiar?",
         "What are you doing?",
-        "Notice this moment.",
         "What's pulling you here?",
         "Is this a habit?",
         "What are you seeking?",
@@ -40,7 +38,6 @@ object PromptRepository {
         "What do you hope to feel?",
         "Are you scrolling or searching?",
         "What does this give you?",
-        "Is this how you want to spend this?",
         "What are you here for?",
         "Is this a conscious choice?",
         "What do you actually need?",
@@ -63,10 +60,11 @@ object PromptRepository {
         "Are you in control here?",
         "What's the real pull?",
         "Is this your choice?",
-        "What are you moving toward?"
+        "What are you moving toward?",
+        "What are you returning to?",
+        "Is this enough?"
     )
 
-    // 20% Future self prompts (20)
     private val futurePrompts = listOf(
         "Will this matter in five minutes?",
         "Will you feel good after this?",
@@ -90,7 +88,6 @@ object PromptRepository {
         "Will this feel worth it?"
     )
 
-    // 10% Avoidance prompts (10)
     private val avoidancePrompts = listOf(
         "What are you avoiding?",
         "What are you not doing right now?",
@@ -104,7 +101,6 @@ object PromptRepository {
         "What are you running from?"
     )
 
-    // 5% Identity nudge prompts (5)
     private val identityPrompts = listOf(
         "Builder?",
         "Warrior?",
@@ -113,7 +109,6 @@ object PromptRepository {
         "Is this you?"
     )
 
-    // 5% Existential micro-prompts (5)
     private val deepPrompts = listOf(
         "Are you living or passing time?",
         "Is this how you want this moment?",
@@ -122,17 +117,9 @@ object PromptRepository {
         "What are you made of right now?"
     )
 
-    private val allPrompts: List<Pair<String, Float>> =
-        mirrorPrompts.map { it to 0.60f } +
-        futurePrompts.map { it to 0.20f } +
-        avoidancePrompts.map { it to 0.10f } +
-        identityPrompts.map { it to 0.05f } +
-        deepPrompts.map { it to 0.05f }
-
     private var lastPromptIndex: Int = -1
 
     fun getRandomPrompt(identityMode: String = ""): String {
-        // Weighted random selection
         val rand = Math.random().toFloat()
         val pool = when {
             rand < 0.60f -> mirrorPrompts
@@ -142,21 +129,13 @@ object PromptRepository {
             else -> deepPrompts
         }
 
-        // Avoid immediate repeat within same pool
-        var index = (pool.indices).random()
+        var index = pool.indices.random()
         if (pool === mirrorPrompts && index == lastPromptIndex) {
             index = (index + 1) % pool.size
         }
         lastPromptIndex = index
 
         val prompt = pool[index]
-
-        return if (identityMode.isNotEmpty()) {
-            "$identityMode: $prompt"
-        } else {
-            prompt
-        }
+        return if (identityMode.isNotEmpty()) "$identityMode: $prompt" else prompt
     }
-
-    fun getAll(): List<String> = allPrompts.map { it.first }
 }

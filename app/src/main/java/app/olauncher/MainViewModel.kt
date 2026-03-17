@@ -16,6 +16,7 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import app.olauncher.data.AppModel
 import app.olauncher.data.Constants
+import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.helper.SingleLiveEvent
 import app.olauncher.helper.WallpaperWorker
@@ -29,6 +30,7 @@ import app.olauncher.helper.usageStats.EventLogWrapper
 import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
@@ -51,9 +53,21 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val resetLauncherLiveData = SingleLiveEvent<Unit?>()
     val requestWeatherRefresh = MutableLiveData(false)
 
+    val showReflection: SingleLiveEvent<AppModel> = SingleLiveEvent()
+    var pendingApp: AppModel? = null
+
     fun selectedApp(appModel: AppModel, flag: Int) {
         when (flag) {
             Constants.FLAG_LAUNCH_APP -> {
+                val distractionList = DistractionList(getApplication())
+                if (distractionList.isDistraction(appModel.appPackage)) {
+                    logDistractionOpen()
+                    if (Random.nextFloat() < getReflectionProbability()) {
+                        pendingApp = appModel
+                        showReflection.postValue(appModel)
+                        return
+                    }
+                }
                 when (appModel) {
                     is AppModel.PinnedShortcut -> launchShortcut(appModel)
                     is AppModel.App ->
@@ -88,7 +102,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    private fun launchShortcut(appModel: AppModel.PinnedShortcut) {
+    private fun logDistractionOpen() {
+        val now = System.currentTimeMillis()
+        val sevenDaysMs = 7 * 24 * 60 * 60 * 1000L
+        val updated = prefs.distractionOpensLog.toMutableSet()
+        updated.add(now.toString())
+        updated.removeAll { it.toLongOrNull() ?: 0L < now - sevenDaysMs }
+        prefs.distractionOpensLog = updated
+    }
+
+    private fun getReflectionProbability(): Float {
+        val recent = prefs.distractionOpensLog
+            .filter { it.toLongOrNull() ?: 0L > System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L }
+        return when (recent.size) {
+            in 0..4   -> 0.2f
+            in 5..14  -> 0.4f
+            in 15..29 -> 0.7f
+            else      -> 1.0f
+        }
+    }
+
+    internal fun launchShortcut(appModel: AppModel.PinnedShortcut) {
         val launcher = appContext.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
         val query = LauncherApps.ShortcutQuery().apply {
             setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED)
@@ -204,7 +238,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         updateSwipeApps.postValue(Unit)
     }
 
-    private fun launchApp(packageName: String, activityClassName: String?, userHandle: UserHandle) {
+    internal fun launchApp(packageName: String, activityClassName: String?, userHandle: UserHandle) {
         val launcher = appContext.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
         val activityInfo = launcher.getActivityList(packageName, userHandle)
 
