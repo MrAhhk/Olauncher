@@ -12,6 +12,7 @@ import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -216,6 +217,7 @@ class MainActivity : AppCompatActivity() {
         rows: List<ReflectionAppRow>,
         hiddenSuffix: String,
     ) {
+        // First list index for each index letter — scroll aligns that row to the top.
         val letterToPosition = mutableMapOf<Char, Int>()
         for (i in rows.indices) {
             val c = reflectionIndexLetter(rows[i], hiddenSuffix)
@@ -225,9 +227,11 @@ class MainActivity : AppCompatActivity() {
         val alphabetStrip = binding.reflectionAlphabetIndex
         alphabetStrip.removeAllViews()
         val letters = listOf('!') + ('A'..'Z').toList() + '#'
-        val lm = binding.reflectionAppsList.layoutManager as LinearLayoutManager
+        val recycler = binding.reflectionAppsList
+        val lm = recycler.layoutManager as LinearLayoutManager
 
         letters.forEach { letter ->
+            val firstPos = letterToPosition[letter]
             val tv = TextView(this).apply {
                 text = when (letter) {
                     '#' -> "#"
@@ -237,10 +241,10 @@ class MainActivity : AppCompatActivity() {
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
                 setTextColor(getColor(R.color.whiteTrans80))
                 gravity = android.view.Gravity.CENTER
+                val has = firstPos != null
+                alpha = if (has) 1f else 0.35f
                 isClickable = false
                 isFocusable = false
-                val has = letterToPosition.containsKey(letter)
-                alpha = if (has) 1f else 0.35f
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     0,
@@ -250,17 +254,22 @@ class MainActivity : AppCompatActivity() {
             alphabetStrip.addView(tv)
         }
 
-        alphabetStrip.setOnTouchListener { v, event ->
-            if (letterToPosition.isEmpty()) return@setOnTouchListener false
-            val y = event.y
-            val h = v.height.toFloat().coerceAtLeast(1f)
-            val idx = (y / h * letters.size).toInt().coerceIn(0, letters.size - 1)
-            val letter = letters[idx]
-            val pos = letterToPosition[letter] ?: return@setOnTouchListener true
-            when (event.action) {
-                MotionEvent.ACTION_DOWN,
-                MotionEvent.ACTION_MOVE,
-                -> lm.scrollToPositionWithOffset(pos, 0)
+        // Xiaomi-style: drag along the letter strip to jump the list (no scrollbar on list).
+        var lastSlotIndex = -1
+        alphabetStrip.setOnTouchListener { strip, event ->
+            val y = event.y.coerceIn(0f, strip.height.toFloat())
+            val h = strip.height.toFloat().coerceAtLeast(1f)
+            val slot = (y / h * letters.size).toInt().coerceIn(0, letters.size - 1)
+            if (slot != lastSlotIndex) {
+                lastSlotIndex = slot
+                val letter = letters[slot]
+                letterToPosition[letter]?.let { pos ->
+                    recycler.post { lm.scrollToPositionWithOffset(pos, 0) }
+                    strip.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
+                }
+            }
+            if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
+                lastSlotIndex = -1
             }
             true
         }

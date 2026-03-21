@@ -29,10 +29,8 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/reflection_alphabet_strip_width"
             android:clipToPadding="false"
-            android:fadeScrollbars="false"
             android:overScrollMode="ifContentScrolls"
-            android:scrollbarThumbVertical="@color/whiteTrans50"
-            android:scrollbars="vertical" />
+            android:scrollbars="none" />
 
         <LinearLayout
             android:id="@+id/reflection_alphabet_index"
