@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.ViewModelProvider
@@ -19,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import app.olauncher.data.Constants
+import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.ActivityMainBinding
 import app.olauncher.helper.getColorFromAttr
@@ -104,6 +106,46 @@ class MainActivity : AppCompatActivity() {
         setupOrientation()
 
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
+
+        val setupDone = getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
+            .getBoolean("reflection_setup_done", false)
+        if (!setupDone) {
+            showReflectionSetupDialog()
+        }
+    }
+
+    fun showReflectionSetupDialog() {
+        val distractionList = DistractionList(this)
+        val installedApps = distractionList.getAllAppsForReflectionSetup()
+
+        if (installedApps.isEmpty()) {
+            getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
+                .edit().putBoolean("reflection_setup_done", true).apply()
+            return
+        }
+
+        val checkedStates = BooleanArray(installedApps.size) { i ->
+            distractionList.isDistraction(installedApps[i].second)
+        }
+        val appNames = installedApps.map { it.first }.toTypedArray()
+
+        AlertDialog.Builder(this)
+            .setTitle("Reflection pause will activate for:")
+            .setMultiChoiceItems(appNames, checkedStates) { _, which, isChecked ->
+                checkedStates[which] = isChecked
+            }
+            .setPositiveButton("Done") { _, _ ->
+                installedApps.forEachIndexed { index, (_, packageName) ->
+                    distractionList.applyReflectionSelection(
+                        packageName,
+                        checkedStates[index]
+                    )
+                }
+                getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
+                    .edit().putBoolean("reflection_setup_done", true).apply()
+            }
+            .setCancelable(false)
+            .show()
     }
 
     override fun onStart() {
