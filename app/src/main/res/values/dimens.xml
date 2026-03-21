@@ -26,4 +26,5 @@
     <dimen name="reflection_dialog_corner_radius">20dp</dimen>
     <dimen name="reflection_dialog_button_corner_radius">12dp</dimen>
     <dimen name="reflection_setup_list_height">380dp</dimen>
+    <dimen name="reflection_alphabet_strip_width">28dp</dimen>
 </resources>

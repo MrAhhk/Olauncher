@@ -2,6 +2,7 @@ package app.olauncher
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.TypedValue
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -12,9 +13,11 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
@@ -135,6 +138,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        val hiddenSuffix = getString(R.string.reflection_list_hidden_suffix)
         val rows = installedApps.map { (label, pkg) ->
             val isGame = distractionList.isGameCategory(pkg)
             val isHidden = prefs.isPackageHidden(pkg)
@@ -146,8 +150,11 @@ class MainActivity : AppCompatActivity() {
                 checked = checked,
                 isLocked = locked,
             )
-        }.sortedWith(
-            compareByDescending<ReflectionAppRow> { it.checked }
+        }.toMutableList()
+        // Selected (reflection pause on) first, under the “!” index; then A–Z / # for the rest.
+        rows.sortWith(
+            compareBy<ReflectionAppRow> { if (it.checked) 0 else 1 }
+                .thenBy { if (!it.checked) normalizedLetterSortKey(it.label, hiddenSuffix) else 0 }
                 .thenBy { it.label.lowercase(Locale.getDefault()) }
         )
 
@@ -155,6 +162,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = ReflectionAppAdapter(rows)
         binding.reflectionAppsList.layoutManager = LinearLayoutManager(this)
         binding.reflectionAppsList.adapter = adapter
+        setupReflectionAlphabetIndex(binding, rows, hiddenSuffix)
 
         val dialog = AlertDialog.Builder(this, R.style.ReflectionSetupDialog)
             .setView(binding.root)
@@ -175,6 +183,87 @@ class MainActivity : AppCompatActivity() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val widthPx = (resources.displayMetrics.widthPixels * 0.92f).toInt()
         dialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    /** 0–25 = A–Z, 26 = non-alphabet (# bucket). */
+    private fun normalizedLetterSortKey(label: String, hiddenSuffix: String): Int {
+        val clean = label.removeSuffix(hiddenSuffix).trim()
+        if (clean.isEmpty()) return 26
+        val head = clean.take(1).uppercase(Locale.getDefault())
+        if (head.isEmpty()) return 26
+        val c = head[0]
+        return if (c in 'A'..'Z') c.code - 'A'.code else 26
+    }
+
+    private fun bucketLetterChar(label: String, hiddenSuffix: String): Char {
+        val clean = label.removeSuffix(hiddenSuffix).trim()
+        if (clean.isEmpty()) return '#'
+        val head = clean.take(1).uppercase(Locale.getDefault())
+        if (head.isEmpty()) return '#'
+        val c = head[0]
+        return if (c in 'A'..'Z') c else '#'
+    }
+
+    /** Side index: “!” = reflection pause selected; else A–Z / # by first letter. */
+    private fun reflectionIndexLetter(row: ReflectionAppRow, hiddenSuffix: String): Char {
+        if (row.checked) return '!'
+        return bucketLetterChar(row.label, hiddenSuffix)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
+    private fun setupReflectionAlphabetIndex(
+        binding: DialogReflectionSetupBinding,
+        rows: List<ReflectionAppRow>,
+        hiddenSuffix: String,
+    ) {
+        val letterToPosition = mutableMapOf<Char, Int>()
+        for (i in rows.indices) {
+            val c = reflectionIndexLetter(rows[i], hiddenSuffix)
+            if (c !in letterToPosition) letterToPosition[c] = i
+        }
+
+        val alphabetStrip = binding.reflectionAlphabetIndex
+        alphabetStrip.removeAllViews()
+        val letters = listOf('!') + ('A'..'Z').toList() + '#'
+        val lm = binding.reflectionAppsList.layoutManager as LinearLayoutManager
+
+        letters.forEach { letter ->
+            val tv = TextView(this).apply {
+                text = when (letter) {
+                    '#' -> "#"
+                    '!' -> "!"
+                    else -> letter.toString()
+                }
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
+                setTextColor(getColor(R.color.whiteTrans80))
+                gravity = android.view.Gravity.CENTER
+                isClickable = false
+                isFocusable = false
+                val has = letterToPosition.containsKey(letter)
+                alpha = if (has) 1f else 0.35f
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    0,
+                    1f,
+                )
+            }
+            alphabetStrip.addView(tv)
+        }
+
+        alphabetStrip.setOnTouchListener { v, event ->
+            if (letterToPosition.isEmpty()) return@setOnTouchListener false
+            val y = event.y
+            val h = v.height.toFloat().coerceAtLeast(1f)
+            val idx = (y / h * letters.size).toInt().coerceIn(0, letters.size - 1)
+            val letter = letters[idx]
+            val pos = letterToPosition[letter] ?: return@setOnTouchListener true
+            when (event.action) {
+                MotionEvent.ACTION_DOWN,
+                MotionEvent.ACTION_MOVE,
+                -> lm.scrollToPositionWithOffset(pos, 0)
+            }
+            true
+        }
     }
 
     private data class ReflectionAppRow(
