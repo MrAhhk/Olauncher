@@ -36,6 +36,7 @@ import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.ActivityMainBinding
 import app.olauncher.databinding.DialogReflectionSetupBinding
+import app.olauncher.databinding.DialogReflectionUntickPauseBinding
 import app.olauncher.helper.getColorFromAttr
 import app.olauncher.helper.hasBeenDays
 import app.olauncher.helper.hasBeenHours
@@ -61,6 +62,9 @@ import java.util.Calendar
 import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
+
+    /** Avoid stacking multiple untick pause dialogs. */
+    private var reflectionUntickPauseDialog: AlertDialog? = null
 
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
@@ -125,11 +129,14 @@ class MainActivity : AppCompatActivity() {
         val setupDone = getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
             .getBoolean("reflection_setup_done", false)
         if (!setupDone) {
-            showReflectionSetupDialog()
+            showReflectionSetupDialog(isInitialSetup = true)
         }
     }
 
-    fun showReflectionSetupDialog() {
+    /**
+     * @param isInitialSetup First launch list (suggested apps): no 6s untick pause. From Settings, use default false.
+     */
+    fun showReflectionSetupDialog(isInitialSetup: Boolean = false) {
         val distractionList = DistractionList(this)
         val installedApps = distractionList.getAllAppsForReflectionSetup()
 
@@ -160,7 +167,15 @@ class MainActivity : AppCompatActivity() {
         )
 
         val binding = DialogReflectionSetupBinding.inflate(layoutInflater)
-        val adapter = ReflectionAppAdapter(rows)
+        lateinit var adapter: ReflectionAppAdapter
+        val useUntickPauseDialog = !isInitialSetup
+        adapter = ReflectionAppAdapter(
+            rows = rows,
+            useUntickPauseDialog = useUntickPauseDialog,
+            onUntickAttempt = { position ->
+                showReflectionUntickPauseDialog(adapter, rows, position)
+            },
+        )
         binding.reflectionAppsList.layoutManager = LinearLayoutManager(this)
         binding.reflectionAppsList.adapter = adapter
         setupReflectionAlphabetIndex(binding, rows, hiddenSuffix)
@@ -184,6 +199,63 @@ class MainActivity : AppCompatActivity() {
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         val widthPx = (resources.displayMetrics.widthPixels * 0.92f).toInt()
         dialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    /**
+     * User tried to untick: checkbox was reverted to checked first.
+     * After 6s: **Yes** = stay checked (dismiss); **No** = apply untick.
+     */
+    private fun showReflectionUntickPauseDialog(
+        reflectionAdapter: ReflectionAppAdapter,
+        rows: MutableList<ReflectionAppRow>,
+        position: Int,
+    ) {
+        if (reflectionUntickPauseDialog?.isShowing == true) return
+        if (position !in rows.indices) return
+
+        val pauseBinding = DialogReflectionUntickPauseBinding.inflate(layoutInflater)
+        pauseBinding.reflectionUntickPauseMessage.text =
+            getString(R.string.reflection_untick_any_seconds)
+        val btnYes = pauseBinding.reflectionUntickPauseYes
+        val btnNo = pauseBinding.reflectionUntickPauseNo
+        listOf(btnYes, btnNo).forEach { b ->
+            b.isEnabled = false
+            b.alpha = 0.3f
+        }
+
+        val pauseDialog = AlertDialog.Builder(this, R.style.ReflectionSetupDialog)
+            .setView(pauseBinding.root)
+            .setCancelable(false)
+            .create()
+        reflectionUntickPauseDialog = pauseDialog
+        pauseDialog.setOnDismissListener { reflectionUntickPauseDialog = null }
+
+        btnYes.setOnClickListener {
+            pauseDialog.dismiss()
+        }
+        btnNo.setOnClickListener {
+            rows.getOrNull(position)?.let { row ->
+                if (!row.isLocked) {
+                    row.checked = false
+                    reflectionAdapter.notifyItemChanged(position)
+                }
+            }
+            pauseDialog.dismiss()
+        }
+
+        pauseDialog.show()
+        pauseDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val widthPx = (resources.displayMetrics.widthPixels * 0.85f).toInt()
+        pauseDialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
+
+        lifecycleScope.launch {
+            delay(6000)
+            if (!pauseDialog.isShowing) return@launch
+            btnYes.isEnabled = true
+            btnYes.alpha = 1f
+            btnNo.isEnabled = true
+            btnNo.alpha = 1f
+        }
     }
 
     /** 0–25 = A–Z, 26 = non-alphabet (# bucket). */
@@ -284,6 +356,8 @@ class MainActivity : AppCompatActivity() {
 
     private class ReflectionAppAdapter(
         private val rows: List<ReflectionAppRow>,
+        private val useUntickPauseDialog: Boolean,
+        private val onUntickAttempt: (Int) -> Unit,
     ) : RecyclerView.Adapter<ReflectionAppAdapter.VH>() {
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -309,12 +383,33 @@ class MainActivity : AppCompatActivity() {
                 holder.itemView.applyLockedBlurEffect(false)
                 holder.checkbox.setOnCheckedChangeListener(null)
                 holder.checkbox.isChecked = row.checked
-                holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
-                    row.checked = isChecked
+                if (useUntickPauseDialog) {
+                    fun attachCheckboxListener() {
+                        holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+                            if (row.isLocked) return@setOnCheckedChangeListener
+                            // Do not commit untick yet: revert to checked, then prompt.
+                            if (row.checked && !isChecked) {
+                                holder.checkbox.setOnCheckedChangeListener(null)
+                                holder.checkbox.isChecked = true
+                                row.checked = true
+                                attachCheckboxListener()
+                                val pos = holder.bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    onUntickAttempt(pos)
+                                }
+                                return@setOnCheckedChangeListener
+                            }
+                            row.checked = isChecked
+                        }
+                    }
+                    attachCheckboxListener()
+                } else {
+                    holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+                        if (!row.isLocked) row.checked = isChecked
+                    }
                 }
                 holder.itemView.setOnClickListener {
-                    row.checked = !row.checked
-                    holder.checkbox.isChecked = row.checked
+                    holder.checkbox.toggle()
                 }
             }
         }

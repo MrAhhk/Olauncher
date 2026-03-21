@@ -178,5 +178,8 @@
     <string name="aqi" translatable="false">AQI</string>
     <string name="reflection_pause_dialog_title">Reflection pause will activate for:</string>
     <string name="reflection_list_hidden_suffix" translatable="false"> (Hidden)</string>
+    <string name="reflection_untick_any_seconds" translatable="false">Any seconds though?</string>
+    <string name="reflection_untick_yes_return" translatable="false">Yes</string>
+    <string name="reflection_untick_no_continue" translatable="false">No</string>
     <string name="done">Done</string>
 </resources>
