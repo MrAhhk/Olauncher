@@ -47,6 +47,7 @@ import app.olauncher.helper.rateApp
 import app.olauncher.helper.resetLauncherViaFakeActivity
 import app.olauncher.helper.setPlainWallpaper
 import app.olauncher.helper.shareApp
+import app.olauncher.helper.applyLockedBlurEffect
 import app.olauncher.helper.showLauncherSelector
 import app.olauncher.helper.showToast
 import kotlinx.coroutines.Job
@@ -135,10 +136,15 @@ class MainActivity : AppCompatActivity() {
         }
 
         val rows = installedApps.map { (label, pkg) ->
+            val isGame = distractionList.isGameCategory(pkg)
+            val isHidden = prefs.isPackageHidden(pkg)
+            val locked = isGame || isHidden
+            val checked = if (locked) true else distractionList.isDistraction(pkg)
             ReflectionAppRow(
                 label = label,
                 packageName = pkg,
-                checked = distractionList.isDistraction(pkg),
+                checked = checked,
+                isLocked = locked,
             )
         }.sortedWith(
             compareByDescending<ReflectionAppRow> { it.checked }
@@ -157,7 +163,8 @@ class MainActivity : AppCompatActivity() {
 
         binding.reflectionDialogDone.setOnClickListener {
             rows.forEach { row ->
-                distractionList.applyReflectionSelection(row.packageName, row.checked)
+                val wantPause = if (row.isLocked) true else row.checked
+                distractionList.applyReflectionSelection(row.packageName, wantPause)
             }
             getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
                 .edit().putBoolean("reflection_setup_done", true).apply()
@@ -174,6 +181,7 @@ class MainActivity : AppCompatActivity() {
         val label: String,
         val packageName: String,
         var checked: Boolean,
+        val isLocked: Boolean,
     )
 
     private class ReflectionAppAdapter(
@@ -189,14 +197,27 @@ class MainActivity : AppCompatActivity() {
         override fun onBindViewHolder(holder: VH, position: Int) {
             val row = rows[position]
             holder.label.text = row.label
-            holder.checkbox.setOnCheckedChangeListener(null)
-            holder.checkbox.isChecked = row.checked
-            holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
-                row.checked = isChecked
-            }
-            holder.itemView.setOnClickListener {
-                row.checked = !row.checked
+            if (row.isLocked) {
+                row.checked = true
+                holder.checkbox.setOnCheckedChangeListener(null)
+                holder.checkbox.isChecked = true
+                holder.checkbox.isEnabled = false
+                holder.checkbox.isClickable = false
+                holder.itemView.setOnClickListener(null)
+                holder.itemView.applyLockedBlurEffect(true)
+            } else {
+                holder.checkbox.isEnabled = true
+                holder.checkbox.isClickable = true
+                holder.itemView.applyLockedBlurEffect(false)
+                holder.checkbox.setOnCheckedChangeListener(null)
                 holder.checkbox.isChecked = row.checked
+                holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+                    row.checked = isChecked
+                }
+                holder.itemView.setOnClickListener {
+                    row.checked = !row.checked
+                    holder.checkbox.isChecked = row.checked
+                }
             }
         }
 

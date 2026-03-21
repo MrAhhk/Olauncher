@@ -3,12 +3,18 @@ package app.olauncher.data
 import android.content.Context
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
+import app.olauncher.R
+import java.util.HashSet
+import java.util.LinkedHashMap
+import java.util.Locale
 
 class DistractionList(private val context: Context) {
 
     private val prefs = context.getSharedPreferences(
         "app.olauncher", Context.MODE_PRIVATE
     )
+
+    private val appPrefs = Prefs(context)
 
     // Hardcoded popular distraction apps by package name
     private val defaultBlacklist = setOf(
@@ -83,6 +89,8 @@ class DistractionList(private val context: Context) {
         if (packageName in getUserWhitelist()) return false
         // User explicitly blacklisted → always distraction
         if (packageName in getUserBlacklist()) return true
+        // User hid this app → reflection pause applies (same as “selected” hidden apps)
+        if (appPrefs.isPackageHidden(packageName)) return true
         // Default blacklist
         if (packageName in defaultBlacklist) return true
         // Category check
@@ -90,6 +98,17 @@ class DistractionList(private val context: Context) {
             val info = context.packageManager
                 .getApplicationInfo(packageName, PackageManager.MATCH_ALL)
             info.category in distractionCategories
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    /** True if the installed app is in the GAME category (used for locked reflection rows). */
+    fun isGameCategory(packageName: String): Boolean {
+        return try {
+            val info = context.packageManager
+                .getApplicationInfo(packageName, PackageManager.MATCH_ALL)
+            info.category == ApplicationInfo.CATEGORY_GAME
         } catch (e: Exception) {
             false
         }
@@ -123,24 +142,53 @@ class DistractionList(private val context: Context) {
     }
 
     /**
-     * Non-system, launchable user apps (excluding this launcher), sorted by label.
+     * Launchable apps (excluding this launcher), plus any user-hidden apps missing from the
+     * scan, sorted by label.
+     *
+     * We do **not** filter [ApplicationInfo.FLAG_SYSTEM]: many store/updated apps use that flag
+     * but still have a launcher. Those apps used to appear only via the hidden-app merge; after
+     * unhide they would vanish because [addEligible] skipped them. Inclusion is: not self, has
+     * default launch intent.
      */
     fun getAllAppsForReflectionSetup(): List<Pair<String, String>> {
         val pm = context.packageManager
         val selfPackage = context.packageName
-        return pm.getInstalledApplications(PackageManager.GET_META_DATA)
-            .asSequence()
-            .filter { app ->
-                val isSystem = (app.flags and ApplicationInfo.FLAG_SYSTEM) != 0
-                if (isSystem) return@filter false
-                if (app.packageName == selfPackage) return@filter false
-                pm.getLaunchIntentForPackage(app.packageName) != null
+        val byPackage = LinkedHashMap<String, String>()
+
+        fun addEligible(app: ApplicationInfo) {
+            if (app.packageName == selfPackage) return
+            if (pm.getLaunchIntentForPackage(app.packageName) == null) return
+            byPackage[app.packageName] = pm.getApplicationLabel(app).toString()
+        }
+
+        pm.getInstalledApplications(PackageManager.GET_META_DATA).forEach { addEligible(it) }
+
+        // Ensure every user-hidden app appears. Do not skip FLAG_SYSTEM: updated/system apps
+        // (Chrome, YouTube, etc.) are often marked system and were incorrectly excluded here and
+        // in addEligible(), so hidden apps never showed up in the reflection list.
+        val hiddenSuffix = context.getString(R.string.reflection_list_hidden_suffix)
+        for (key in HashSet(appPrefs.hiddenApps)) {
+            val pkg = if (key.contains("|")) key.substringBefore("|") else key
+            if (pkg.isEmpty() || pkg == selfPackage) continue
+            if (pkg in byPackage) continue
+            try {
+                val info = pm.getApplicationInfo(pkg, PackageManager.MATCH_ALL)
+                val label = pm.getApplicationLabel(info).toString()
+                byPackage[pkg] = label
+            } catch (_: Exception) {
+                // Stale package id in prefs — ignore
             }
-            .map { app ->
-                val label = pm.getApplicationLabel(app).toString()
-                Pair(label, app.packageName)
+        }
+
+        return byPackage.entries
+            .map { (pkg, label) ->
+                val displayLabel = if (appPrefs.isPackageHidden(pkg)) {
+                    label.removeSuffix(hiddenSuffix).trimEnd() + hiddenSuffix
+                } else {
+                    label
+                }
+                Pair(displayLabel, pkg)
             }
-            .sortedBy { it.first }
-            .toList()
+            .sortedBy { it.first.lowercase(Locale.getDefault()) }
     }
 }

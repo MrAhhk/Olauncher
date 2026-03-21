@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import java.util.HashSet
 
 class Prefs(context: Context) {
     companion object {
@@ -239,8 +240,17 @@ class Prefs(context: Context) {
         set(value) = prefs.edit { putInt(APP_DRAWER_LAST_SHUFFLE_DATE, value).apply() }
 
     var hiddenApps: MutableSet<String>
-        get() = prefs.getStringSet(HIDDEN_APPS, mutableSetOf()) as MutableSet<String>
-        set(value) = prefs.edit { putStringSet(HIDDEN_APPS, value).apply() }
+        get() = HashSet(prefs.getStringSet(HIDDEN_APPS, emptySet()) ?: emptySet())
+        set(value) = prefs.edit { putStringSet(HIDDEN_APPS, HashSet(value)).apply() }
+
+    /** True if this package is in the user's hidden-apps set (any profile). */
+    fun isPackageHidden(packageName: String): Boolean {
+        if (packageName.isEmpty()) return false
+        return hiddenApps.any { key ->
+            if (key.contains("|")) key.substringBefore("|") == packageName
+            else key == packageName
+        }
+    }
 
     var hiddenAppsUpdated: Boolean
         get() = prefs.getBoolean(HIDDEN_APPS_UPDATED, false)

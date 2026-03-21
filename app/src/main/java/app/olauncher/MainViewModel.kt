@@ -59,15 +59,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun selectedApp(appModel: AppModel, flag: Int) {
         when (flag) {
             Constants.FLAG_LAUNCH_APP -> {
-                val distractionList = DistractionList(getApplication())
-                if (distractionList.isDistraction(appModel.appPackage)) {
-                    logDistractionOpen()
-                    if (Random.nextFloat() < getReflectionProbability()) {
-                        pendingApp = appModel
-                        showReflection.postValue(appModel)
-                        return
-                    }
-                }
+                if (tryReflectionPause(appModel)) return
                 when (appModel) {
                     is AppModel.PinnedShortcut -> launchShortcut(appModel)
                     is AppModel.App ->
@@ -77,6 +69,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             Constants.FLAG_HIDDEN_APPS -> {
                 if (appModel is AppModel.App) {
+                    if (tryReflectionPause(appModel)) return
                     launchApp(appModel.appPackage, appModel.activityClassName, appModel.user)
                 }
             }
@@ -100,6 +93,19 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Constants.FLAG_SET_CALENDAR_APP -> saveCalendarApp(appModel)
             Constants.FLAG_SET_SCREEN_TIME_APP -> saveScreenTimeApp(appModel)
         }
+    }
+
+    /** @return true if reflection sheet was shown and launch should be deferred */
+    private fun tryReflectionPause(appModel: AppModel): Boolean {
+        val distractionList = DistractionList(getApplication())
+        if (!distractionList.isDistraction(appModel.appPackage)) return false
+        logDistractionOpen()
+        if (Random.nextFloat() < getReflectionProbability()) {
+            pendingApp = appModel
+            showReflection.postValue(appModel)
+            return true
+        }
+        return false
     }
 
     private fun logDistractionOpen() {

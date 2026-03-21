@@ -1,7 +1,9 @@
 package app.olauncher.ui
 
 import android.content.Context
+import android.content.pm.ApplicationInfo
 import android.content.pm.LauncherApps
+import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.UserHandle
@@ -21,6 +23,7 @@ import app.olauncher.R
 import app.olauncher.data.AppModel
 import app.olauncher.data.Constants
 import app.olauncher.databinding.AdapterAppDrawerBinding
+import app.olauncher.helper.applyLockedBlurEffect
 import app.olauncher.helper.hideKeyboard
 import app.olauncher.helper.isSystemApp
 import app.olauncher.helper.showKeyboard
@@ -174,6 +177,9 @@ class AppDrawerAdapter(
             appHideListener: (AppModel, Int) -> Unit,
             appRenameListener: (AppModel, String) -> Unit,
         ) = with(binding) {
+            root.applyLockedBlurEffect(false)
+            appHide.isEnabled = true
+            appHide.alpha = 1f
             appHideLayout.visibility = View.GONE
             renameLayout.visibility = View.GONE
             appTitle.visibility = View.VISIBLE
@@ -294,6 +300,26 @@ class AppDrawerAdapter(
                 appTitle.visibility = View.VISIBLE
             }
             appHide.setOnClickListener { appHideListener(appModel, bindingAdapterPosition) }
+
+            if (flag == Constants.FLAG_HIDDEN_APPS &&
+                appModel is AppModel.App &&
+                appModel.appPackage.isNotEmpty()
+            ) {
+                val isGame = try {
+                    val info = root.context.packageManager.getApplicationInfo(
+                        appModel.appPackage,
+                        PackageManager.MATCH_ALL,
+                    )
+                    info.category == ApplicationInfo.CATEGORY_GAME
+                } catch (_: Exception) {
+                    false
+                }
+                if (isGame) {
+                    root.applyLockedBlurEffect(true)
+                    appHide.isEnabled = false
+                    appHide.alpha = 0.5f
+                }
+            }
         }
 
         private fun getAppName(context: Context, appPackage: String, user: UserHandle): String {
