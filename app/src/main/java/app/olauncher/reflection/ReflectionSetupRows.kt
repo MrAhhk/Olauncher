@@ -13,11 +13,13 @@ internal object ReflectionSetupRows {
     ): MutableList<ReflectionAppRow> {
         val rows = installedApps.map { (label, pkg) ->
             val locked = distractionList.isGameCategory(pkg) || prefs.isPackageHidden(pkg)
+            val pauseOn = if (locked) true else distractionList.isDistraction(pkg)
             ReflectionAppRow(
                 label = label,
                 packageName = pkg,
-                checked = if (locked) true else distractionList.isDistraction(pkg),
+                checked = pauseOn,
                 isLocked = locked,
+                reflectionPauseOnAtOpen = pauseOn,
             )
         }.toMutableList()
         ReflectionSetupRowSort.sort(rows, hiddenSuffix)

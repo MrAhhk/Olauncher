@@ -46,13 +46,20 @@ internal class ReflectionAppListAdapter(
                     holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
                         if (row.isLocked) return@setOnCheckedChangeListener
                         if (row.checked && !isChecked) {
-                            holder.checkbox.setOnCheckedChangeListener(null)
-                            holder.checkbox.isChecked = true
-                            row.checked = true
-                            attachCheckboxListener()
-                            val pos = holder.bindingAdapterPosition
-                            if (pos != RecyclerView.NO_POSITION) {
-                                onUntickAttempt(pos)
+                            // Only the 6s pause when disabling pause on an app that was already
+                            // paused when this screen opened (saved). Tick→untick same session skips it.
+                            val needUntickPause = row.reflectionPauseOnAtOpen
+                            if (needUntickPause) {
+                                holder.checkbox.setOnCheckedChangeListener(null)
+                                holder.checkbox.isChecked = true
+                                row.checked = true
+                                attachCheckboxListener()
+                                val pos = holder.bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    onUntickAttempt(pos)
+                                }
+                            } else {
+                                row.checked = false
                             }
                             return@setOnCheckedChangeListener
                         }
