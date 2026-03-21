@@ -6,23 +6,32 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import app.olauncher.data.Constants
 import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.ActivityMainBinding
+import app.olauncher.databinding.DialogReflectionSetupBinding
 import app.olauncher.helper.getColorFromAttr
 import app.olauncher.helper.hasBeenDays
 import app.olauncher.helper.hasBeenHours
@@ -44,6 +53,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -124,28 +134,78 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val checkedStates = BooleanArray(installedApps.size) { i ->
-            distractionList.isDistraction(installedApps[i].second)
-        }
-        val appNames = installedApps.map { it.first }.toTypedArray()
+        val rows = installedApps.map { (label, pkg) ->
+            ReflectionAppRow(
+                label = label,
+                packageName = pkg,
+                checked = distractionList.isDistraction(pkg),
+            )
+        }.sortedWith(
+            compareByDescending<ReflectionAppRow> { it.checked }
+                .thenBy { it.label.lowercase(Locale.getDefault()) }
+        )
 
-        AlertDialog.Builder(this)
-            .setTitle("Reflection pause will activate for:")
-            .setMultiChoiceItems(appNames, checkedStates) { _, which, isChecked ->
-                checkedStates[which] = isChecked
-            }
-            .setPositiveButton("Done") { _, _ ->
-                installedApps.forEachIndexed { index, (_, packageName) ->
-                    distractionList.applyReflectionSelection(
-                        packageName,
-                        checkedStates[index]
-                    )
-                }
-                getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
-                    .edit().putBoolean("reflection_setup_done", true).apply()
-            }
+        val binding = DialogReflectionSetupBinding.inflate(layoutInflater)
+        val adapter = ReflectionAppAdapter(rows)
+        binding.reflectionAppsList.layoutManager = LinearLayoutManager(this)
+        binding.reflectionAppsList.adapter = adapter
+
+        val dialog = AlertDialog.Builder(this, R.style.ReflectionSetupDialog)
+            .setView(binding.root)
             .setCancelable(false)
-            .show()
+            .create()
+
+        binding.reflectionDialogDone.setOnClickListener {
+            rows.forEach { row ->
+                distractionList.applyReflectionSelection(row.packageName, row.checked)
+            }
+            getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
+                .edit().putBoolean("reflection_setup_done", true).apply()
+            dialog.dismiss()
+        }
+
+        dialog.show()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        val widthPx = (resources.displayMetrics.widthPixels * 0.92f).toInt()
+        dialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
+    }
+
+    private data class ReflectionAppRow(
+        val label: String,
+        val packageName: String,
+        var checked: Boolean,
+    )
+
+    private class ReflectionAppAdapter(
+        private val rows: List<ReflectionAppRow>,
+    ) : RecyclerView.Adapter<ReflectionAppAdapter.VH>() {
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+            val v = LayoutInflater.from(parent.context)
+                .inflate(R.layout.item_reflection_app_row, parent, false)
+            return VH(v)
+        }
+
+        override fun onBindViewHolder(holder: VH, position: Int) {
+            val row = rows[position]
+            holder.label.text = row.label
+            holder.checkbox.setOnCheckedChangeListener(null)
+            holder.checkbox.isChecked = row.checked
+            holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
+                row.checked = isChecked
+            }
+            holder.itemView.setOnClickListener {
+                row.checked = !row.checked
+                holder.checkbox.isChecked = row.checked
+            }
+        }
+
+        override fun getItemCount() = rows.size
+
+        class VH(view: View) : RecyclerView.ViewHolder(view) {
+            val checkbox: AppCompatCheckBox = view.findViewById(R.id.reflection_row_checkbox)
+            val label: TextView = view.findViewById(R.id.reflection_row_label)
+        }
     }
 
     override fun onStart() {

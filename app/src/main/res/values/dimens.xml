@@ -22,4 +22,8 @@
     <dimen name="weather_widget_secondary_icon_size">14dp</dimen>
     <dimen name="weather_widget_secondary_text_size">13sp</dimen>
     <dimen name="weather_widget_row_spacing">6dp</dimen>
+
+    <dimen name="reflection_dialog_corner_radius">20dp</dimen>
+    <dimen name="reflection_dialog_button_corner_radius">12dp</dimen>
+    <dimen name="reflection_setup_list_height">380dp</dimen>
 </resources>

@@ -176,4 +176,6 @@
     <string name="humidity" translatable="false">Humidity</string>
     <string name="visibility" translatable="false">Visibility</string>
     <string name="aqi" translatable="false">AQI</string>
+    <string name="reflection_pause_dialog_title">Reflection pause will activate for:</string>
+    <string name="done">Done</string>
 </resources>

@@ -104,4 +104,9 @@
         <item name="cornerSize">0dp</item>
     </style>
 
+    <style name="ReflectionSetupDialog" parent="Theme.MaterialComponents.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+    </style>
+
 </resources>
