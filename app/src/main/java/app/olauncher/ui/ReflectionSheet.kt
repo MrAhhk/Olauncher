@@ -14,6 +14,7 @@ import app.olauncher.R
 import app.olauncher.data.AppModel
 import app.olauncher.data.Prefs
 import app.olauncher.helper.PromptRepository
+import app.olauncher.reflection.ReflectionConstants
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -51,12 +52,12 @@ class ReflectionSheet : BottomSheetDialogFragment() {
         tvPrompt.text = PromptRepository.getRandomPrompt(identityMode)
 
         btnOpenAnyway.isEnabled = false
-        btnOpenAnyway.alpha = 0.3f
+        btnOpenAnyway.alpha = ReflectionConstants.DISABLED_CONTROL_ALPHA
         btnContinueLater.isEnabled = false
-        btnContinueLater.alpha = 0.3f
+        btnContinueLater.alpha = ReflectionConstants.DISABLED_CONTROL_ALPHA
 
         lifecycleScope.launch {
-            delay(6000)
+            delay(ReflectionConstants.PROMPT_BUTTON_DELAY_MS)
             btnOpenAnyway.isEnabled = true
             btnOpenAnyway.alpha = 1.0f
             btnContinueLater.isEnabled = true

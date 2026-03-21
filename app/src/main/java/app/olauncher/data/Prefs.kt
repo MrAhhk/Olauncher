@@ -798,4 +798,9 @@ class Prefs(context: Context) {
     var identityMode: String
         get() = prefs.getString("identity_mode", "").toString()
         set(value) = prefs.edit { putString("identity_mode", value) }
+
+    /** One-time reflection setup list (games/hidden locked; choose pause apps). */
+    var reflectionSetupDone: Boolean
+        get() = prefs.getBoolean("reflection_setup_done", false)
+        set(value) = prefs.edit { putBoolean("reflection_setup_done", value) }
 }

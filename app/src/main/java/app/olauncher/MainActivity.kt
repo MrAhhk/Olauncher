@@ -2,41 +2,29 @@ package app.olauncher
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.TypedValue
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.HapticFeedbackConstants
-import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
-import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.AppCompatCheckBox
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import app.olauncher.data.Constants
 import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.ActivityMainBinding
 import app.olauncher.databinding.DialogReflectionSetupBinding
-import app.olauncher.databinding.DialogReflectionUntickPauseBinding
 import app.olauncher.helper.getColorFromAttr
 import app.olauncher.helper.hasBeenDays
 import app.olauncher.helper.hasBeenHours
@@ -52,19 +40,19 @@ import app.olauncher.helper.rateApp
 import app.olauncher.helper.resetLauncherViaFakeActivity
 import app.olauncher.helper.setPlainWallpaper
 import app.olauncher.helper.shareApp
-import app.olauncher.helper.applyLockedBlurEffect
+import app.olauncher.reflection.ReflectionAlphabetStrip
+import app.olauncher.reflection.ReflectionAppListAdapter
+import app.olauncher.reflection.ReflectionConstants
+import app.olauncher.reflection.ReflectionSetupRows
+import app.olauncher.reflection.ReflectionUntickPauseDialog
 import app.olauncher.helper.showLauncherSelector
 import app.olauncher.helper.showToast
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.Calendar
-import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
-
-    /** Avoid stacking multiple untick pause dialogs. */
-    private var reflectionUntickPauseDialog: AlertDialog? = null
 
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
@@ -126,9 +114,7 @@ class MainActivity : AppCompatActivity() {
 
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
 
-        val setupDone = getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
-            .getBoolean("reflection_setup_done", false)
-        if (!setupDone) {
+        if (!prefs.reflectionSetupDone) {
             showReflectionSetupDialog(isInitialSetup = true)
         }
     }
@@ -141,44 +127,26 @@ class MainActivity : AppCompatActivity() {
         val installedApps = distractionList.getAllAppsForReflectionSetup()
 
         if (installedApps.isEmpty()) {
-            getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
-                .edit().putBoolean("reflection_setup_done", true).apply()
+            prefs.reflectionSetupDone = true
             return
         }
 
         val hiddenSuffix = getString(R.string.reflection_list_hidden_suffix)
-        val rows = installedApps.map { (label, pkg) ->
-            val isGame = distractionList.isGameCategory(pkg)
-            val isHidden = prefs.isPackageHidden(pkg)
-            val locked = isGame || isHidden
-            val checked = if (locked) true else distractionList.isDistraction(pkg)
-            ReflectionAppRow(
-                label = label,
-                packageName = pkg,
-                checked = checked,
-                isLocked = locked,
-            )
-        }.toMutableList()
-        // Selected (reflection pause on) first, under the “!” index; then A–Z / # for the rest.
-        rows.sortWith(
-            compareBy<ReflectionAppRow> { if (it.checked) 0 else 1 }
-                .thenBy { if (!it.checked) normalizedLetterSortKey(it.label, hiddenSuffix) else 0 }
-                .thenBy { it.label.lowercase(Locale.getDefault()) }
-        )
+        val rows = ReflectionSetupRows.build(distractionList, prefs, installedApps, hiddenSuffix)
 
         val binding = DialogReflectionSetupBinding.inflate(layoutInflater)
-        lateinit var adapter: ReflectionAppAdapter
+        lateinit var adapter: ReflectionAppListAdapter
         val useUntickPauseDialog = !isInitialSetup
-        adapter = ReflectionAppAdapter(
+        adapter = ReflectionAppListAdapter(
             rows = rows,
             useUntickPauseDialog = useUntickPauseDialog,
             onUntickAttempt = { position ->
-                showReflectionUntickPauseDialog(adapter, rows, position)
+                ReflectionUntickPauseDialog.show(this, adapter, rows, position)
             },
         )
         binding.reflectionAppsList.layoutManager = LinearLayoutManager(this)
         binding.reflectionAppsList.adapter = adapter
-        setupReflectionAlphabetIndex(binding, rows, hiddenSuffix)
+        ReflectionAlphabetStrip.attach(this, binding, rows, hiddenSuffix)
 
         val dialog = AlertDialog.Builder(this, R.style.ReflectionSetupDialog)
             .setView(binding.root)
@@ -190,236 +158,12 @@ class MainActivity : AppCompatActivity() {
                 val wantPause = if (row.isLocked) true else row.checked
                 distractionList.applyReflectionSelection(row.packageName, wantPause)
             }
-            getSharedPreferences("app.olauncher", Context.MODE_PRIVATE)
-                .edit().putBoolean("reflection_setup_done", true).apply()
+            prefs.reflectionSetupDone = true
             dialog.dismiss()
         }
 
         dialog.show()
-        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val widthPx = (resources.displayMetrics.widthPixels * 0.92f).toInt()
-        dialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
-    }
-
-    /**
-     * User tried to untick: checkbox was reverted to checked first.
-     * After 6s: **Yes** = stay checked (dismiss); **No** = apply untick.
-     */
-    private fun showReflectionUntickPauseDialog(
-        reflectionAdapter: ReflectionAppAdapter,
-        rows: MutableList<ReflectionAppRow>,
-        position: Int,
-    ) {
-        if (reflectionUntickPauseDialog?.isShowing == true) return
-        if (position !in rows.indices) return
-
-        val pauseBinding = DialogReflectionUntickPauseBinding.inflate(layoutInflater)
-        pauseBinding.reflectionUntickPauseMessage.text =
-            getString(R.string.reflection_untick_any_seconds)
-        val btnYes = pauseBinding.reflectionUntickPauseYes
-        val btnNo = pauseBinding.reflectionUntickPauseNo
-        listOf(btnYes, btnNo).forEach { b ->
-            b.isEnabled = false
-            b.alpha = 0.3f
-        }
-
-        val pauseDialog = AlertDialog.Builder(this, R.style.ReflectionSetupDialog)
-            .setView(pauseBinding.root)
-            .setCancelable(false)
-            .create()
-        reflectionUntickPauseDialog = pauseDialog
-        pauseDialog.setOnDismissListener { reflectionUntickPauseDialog = null }
-
-        btnYes.setOnClickListener {
-            pauseDialog.dismiss()
-        }
-        btnNo.setOnClickListener {
-            rows.getOrNull(position)?.let { row ->
-                if (!row.isLocked) {
-                    row.checked = false
-                    reflectionAdapter.notifyItemChanged(position)
-                }
-            }
-            pauseDialog.dismiss()
-        }
-
-        pauseDialog.show()
-        pauseDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-        val widthPx = (resources.displayMetrics.widthPixels * 0.85f).toInt()
-        pauseDialog.window?.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
-
-        lifecycleScope.launch {
-            delay(6000)
-            if (!pauseDialog.isShowing) return@launch
-            btnYes.isEnabled = true
-            btnYes.alpha = 1f
-            btnNo.isEnabled = true
-            btnNo.alpha = 1f
-        }
-    }
-
-    /** 0–25 = A–Z, 26 = non-alphabet (# bucket). */
-    private fun normalizedLetterSortKey(label: String, hiddenSuffix: String): Int {
-        val clean = label.removeSuffix(hiddenSuffix).trim()
-        if (clean.isEmpty()) return 26
-        val head = clean.take(1).uppercase(Locale.getDefault())
-        if (head.isEmpty()) return 26
-        val c = head[0]
-        return if (c in 'A'..'Z') c.code - 'A'.code else 26
-    }
-
-    private fun bucketLetterChar(label: String, hiddenSuffix: String): Char {
-        val clean = label.removeSuffix(hiddenSuffix).trim()
-        if (clean.isEmpty()) return '#'
-        val head = clean.take(1).uppercase(Locale.getDefault())
-        if (head.isEmpty()) return '#'
-        val c = head[0]
-        return if (c in 'A'..'Z') c else '#'
-    }
-
-    /** Side index: “!” = reflection pause selected; else A–Z / # by first letter. */
-    private fun reflectionIndexLetter(row: ReflectionAppRow, hiddenSuffix: String): Char {
-        if (row.checked) return '!'
-        return bucketLetterChar(row.label, hiddenSuffix)
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private fun setupReflectionAlphabetIndex(
-        binding: DialogReflectionSetupBinding,
-        rows: List<ReflectionAppRow>,
-        hiddenSuffix: String,
-    ) {
-        // First list index for each index letter — scroll aligns that row to the top.
-        val letterToPosition = mutableMapOf<Char, Int>()
-        for (i in rows.indices) {
-            val c = reflectionIndexLetter(rows[i], hiddenSuffix)
-            if (c !in letterToPosition) letterToPosition[c] = i
-        }
-
-        val alphabetStrip = binding.reflectionAlphabetIndex
-        alphabetStrip.removeAllViews()
-        val letters = listOf('!') + ('A'..'Z').toList() + '#'
-        val recycler = binding.reflectionAppsList
-        val lm = recycler.layoutManager as LinearLayoutManager
-
-        letters.forEach { letter ->
-            val firstPos = letterToPosition[letter]
-            val tv = TextView(this).apply {
-                text = when (letter) {
-                    '#' -> "#"
-                    '!' -> "!"
-                    else -> letter.toString()
-                }
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 10f)
-                setTextColor(getColor(R.color.whiteTrans80))
-                gravity = android.view.Gravity.CENTER
-                val has = firstPos != null
-                alpha = if (has) 1f else 0.35f
-                isClickable = false
-                isFocusable = false
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    0,
-                    1f,
-                )
-            }
-            alphabetStrip.addView(tv)
-        }
-
-        // Xiaomi-style: drag along the letter strip to jump the list (no scrollbar on list).
-        var lastSlotIndex = -1
-        alphabetStrip.setOnTouchListener { strip, event ->
-            val y = event.y.coerceIn(0f, strip.height.toFloat())
-            val h = strip.height.toFloat().coerceAtLeast(1f)
-            val slot = (y / h * letters.size).toInt().coerceIn(0, letters.size - 1)
-            if (slot != lastSlotIndex) {
-                lastSlotIndex = slot
-                val letter = letters[slot]
-                letterToPosition[letter]?.let { pos ->
-                    recycler.post { lm.scrollToPositionWithOffset(pos, 0) }
-                    strip.performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK)
-                }
-            }
-            if (event.action == MotionEvent.ACTION_UP || event.action == MotionEvent.ACTION_CANCEL) {
-                lastSlotIndex = -1
-            }
-            true
-        }
-    }
-
-    private data class ReflectionAppRow(
-        val label: String,
-        val packageName: String,
-        var checked: Boolean,
-        val isLocked: Boolean,
-    )
-
-    private class ReflectionAppAdapter(
-        private val rows: List<ReflectionAppRow>,
-        private val useUntickPauseDialog: Boolean,
-        private val onUntickAttempt: (Int) -> Unit,
-    ) : RecyclerView.Adapter<ReflectionAppAdapter.VH>() {
-
-        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
-            val v = LayoutInflater.from(parent.context)
-                .inflate(R.layout.item_reflection_app_row, parent, false)
-            return VH(v)
-        }
-
-        override fun onBindViewHolder(holder: VH, position: Int) {
-            val row = rows[position]
-            holder.label.text = row.label
-            if (row.isLocked) {
-                row.checked = true
-                holder.checkbox.setOnCheckedChangeListener(null)
-                holder.checkbox.isChecked = true
-                holder.checkbox.isEnabled = false
-                holder.checkbox.isClickable = false
-                holder.itemView.setOnClickListener(null)
-                holder.itemView.applyLockedBlurEffect(true)
-            } else {
-                holder.checkbox.isEnabled = true
-                holder.checkbox.isClickable = true
-                holder.itemView.applyLockedBlurEffect(false)
-                holder.checkbox.setOnCheckedChangeListener(null)
-                holder.checkbox.isChecked = row.checked
-                if (useUntickPauseDialog) {
-                    fun attachCheckboxListener() {
-                        holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
-                            if (row.isLocked) return@setOnCheckedChangeListener
-                            // Do not commit untick yet: revert to checked, then prompt.
-                            if (row.checked && !isChecked) {
-                                holder.checkbox.setOnCheckedChangeListener(null)
-                                holder.checkbox.isChecked = true
-                                row.checked = true
-                                attachCheckboxListener()
-                                val pos = holder.bindingAdapterPosition
-                                if (pos != RecyclerView.NO_POSITION) {
-                                    onUntickAttempt(pos)
-                                }
-                                return@setOnCheckedChangeListener
-                            }
-                            row.checked = isChecked
-                        }
-                    }
-                    attachCheckboxListener()
-                } else {
-                    holder.checkbox.setOnCheckedChangeListener { _, isChecked ->
-                        if (!row.isLocked) row.checked = isChecked
-                    }
-                }
-                holder.itemView.setOnClickListener {
-                    holder.checkbox.toggle()
-                }
-            }
-        }
-
-        override fun getItemCount() = rows.size
-
-        class VH(view: View) : RecyclerView.ViewHolder(view) {
-            val checkbox: AppCompatCheckBox = view.findViewById(R.id.reflection_row_checkbox)
-            val label: TextView = view.findViewById(R.id.reflection_row_label)
-        }
+        ReflectionAlphabetStrip.styleDialogWindow(dialog, ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN)
     }
 
     override fun onStart() {
