@@ -181,5 +181,7 @@
     <string name="reflection_untick_any_seconds" translatable="false">Any seconds though?</string>
     <string name="reflection_untick_yes_return" translatable="false">Yes</string>
     <string name="reflection_untick_no_continue" translatable="false">No</string>
+    <string name="reflection_sheet_open_anyway">Open anyway</string>
+    <string name="reflection_sheet_continue_later">Continue later</string>
     <string name="done">Done</string>
 </resources>

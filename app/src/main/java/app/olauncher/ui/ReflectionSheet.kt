@@ -1,12 +1,14 @@
 package app.olauncher.ui
 
-import android.content.res.Resources
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import app.olauncher.MainViewModel
@@ -15,11 +17,11 @@ import app.olauncher.data.AppModel
 import app.olauncher.data.Prefs
 import app.olauncher.helper.PromptRepository
 import app.olauncher.reflection.ReflectionConstants
-import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-class ReflectionSheet : BottomSheetDialogFragment() {
+/** Centered reflection prompt (same card style as settings); not a bottom sheet. */
+class ReflectionSheet : DialogFragment() {
 
     private val viewModel: MainViewModel by activityViewModels()
 
@@ -27,25 +29,24 @@ class ReflectionSheet : BottomSheetDialogFragment() {
         fun newInstance(): ReflectionSheet = ReflectionSheet()
     }
 
-    override fun getTheme(): Int = R.style.ReflectionSheetTheme
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setStyle(DialogFragment.STYLE_NORMAL, R.style.ReflectionSheetTheme)
         isCancelable = false
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View = inflater.inflate(R.layout.fragment_reflection_sheet, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val tvPrompt = view.findViewById<TextView>(R.id.tvPrompt)
-        val btnOpenAnyway = view.findViewById<Button>(R.id.btnOpenAnyway)
-        val btnContinueLater = view.findViewById<Button>(R.id.btnContinueLater)
+        val btnOpenAnyway = view.findViewById<TextView>(R.id.btnOpenAnyway)
+        val btnContinueLater = view.findViewById<TextView>(R.id.btnContinueLater)
 
         val prefs = Prefs(requireContext())
         val identityMode = prefs.identityMode
@@ -56,7 +57,7 @@ class ReflectionSheet : BottomSheetDialogFragment() {
         btnContinueLater.isEnabled = false
         btnContinueLater.alpha = ReflectionConstants.DISABLED_CONTROL_ALPHA
 
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             delay(ReflectionConstants.PROMPT_BUTTON_DELAY_MS)
             btnOpenAnyway.isEnabled = true
             btnOpenAnyway.alpha = 1.0f
@@ -66,11 +67,17 @@ class ReflectionSheet : BottomSheetDialogFragment() {
 
         btnOpenAnyway.setOnClickListener {
             val app = viewModel.pendingApp
-            if (app == null) { dismiss(); return@setOnClickListener }
+            if (app == null) {
+                dismiss()
+                return@setOnClickListener
+            }
             dismiss()
             when (app) {
                 is AppModel.App -> viewModel.launchApp(
-                    app.appPackage, app.activityClassName, app.user)
+                    app.appPackage,
+                    app.activityClassName,
+                    app.user,
+                )
                 is AppModel.PinnedShortcut -> viewModel.launchShortcut(app)
             }
             viewModel.pendingApp = null
@@ -85,9 +92,12 @@ class ReflectionSheet : BottomSheetDialogFragment() {
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.let { window ->
-            val height = (Resources.getSystem().displayMetrics.heightPixels * 0.5).toInt()
-            window.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, height)
+        dialog?.window?.let { w ->
+            w.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val widthPx =
+                (resources.displayMetrics.widthPixels * ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN).toInt()
+            w.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
+            w.setGravity(Gravity.CENTER)
         }
     }
 }
