@@ -49,6 +49,8 @@ import app.olauncher.data.AppModel
 import app.olauncher.data.Constants
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.FragmentHomeBinding
+import app.olauncher.data.BlockManager
+import app.olauncher.helper.applyLockedBlurEffect
 import app.olauncher.helper.appUsagePermissionGranted
 import app.olauncher.helper.dpToPx
 import app.olauncher.helper.expandNotificationDrawer
@@ -96,6 +98,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private lateinit var prefs: Prefs
     private lateinit var viewModel: MainViewModel
     private lateinit var deviceManager: DevicePolicyManager
+    private val blockManager by lazy { BlockManager(requireContext()) }
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
@@ -354,7 +357,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private data class HomePinnedItem(
         val location: Int,
-        val title: String
+        val title: String,
+        val packageName: String,
+        val isBlocked: Boolean
     )
 
     private inner class PinnedAppsAdapter : RecyclerView.Adapter<PinnedAppsAdapter.PinnedAppViewHolder>() {
@@ -375,6 +380,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             val item = items[position]
             holder.title.text = item.title
             holder.itemView.tag = item.location
+            holder.itemView.applyLockedBlurEffect(item.isBlocked)
             holder.itemView.setOnClickListener(this@HomeFragment)
             holder.itemView.setOnLongClickListener(this@HomeFragment)
         }
@@ -546,10 +552,13 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 appInfo.shortcutId
             )
             if (!hasValidApp) clearHomeAppSlot(index)
+            val isBlocked = hasValidApp && appInfo.packageName.isNotBlank() && blockManager.isBlocked(appInfo.packageName)
             pinnedItems.add(
                 HomePinnedItem(
                     location = index,
-                    title = if (hasValidApp && appInfo.appName.isNotBlank()) appInfo.appName else getString(R.string.add_an_app)
+                    title = if (hasValidApp && appInfo.appName.isNotBlank()) appInfo.appName else getString(R.string.add_an_app),
+                    packageName = appInfo.packageName,
+                    isBlocked = isBlocked
                 )
             )
         }
@@ -602,6 +611,10 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     ) {
         if (appName.isEmpty()) {
             showLongPressToast()
+            return
+        }
+        if (packageName.isNotBlank() && blockManager.isBlocked(packageName)) {
+            BlockedAppSheet.newInstance(packageName).show(childFragmentManager, "blocked")
             return
         }
         if (isShortcut && !shortcutId.isNullOrEmpty()) {
@@ -665,6 +678,10 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun openSwipeRightApp() {
         if (prefs.swipeRightEnabled && prefs.appPackageSwipeRight.isNotBlank()) {
+            if (blockManager.isBlocked(prefs.appPackageSwipeRight)) {
+                BlockedAppSheet.newInstance(prefs.appPackageSwipeRight).show(childFragmentManager, "blocked")
+                return
+            }
             launchApp(
                 prefs.appNameSwipeRight,
                 prefs.appPackageSwipeRight,
@@ -678,6 +695,10 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun openSwipeLeftApp() {
         if (prefs.swipeLeftEnabled && prefs.appPackageSwipeLeft.isNotBlank()) {
+            if (blockManager.isBlocked(prefs.appPackageSwipeLeft)) {
+                BlockedAppSheet.newInstance(prefs.appPackageSwipeLeft).show(childFragmentManager, "blocked")
+                return
+            }
             launchApp(
                 prefs.appNameSwipeLeft,
                 prefs.appPackageSwipeLeft,

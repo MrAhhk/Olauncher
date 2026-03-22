@@ -15,6 +15,7 @@ import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import app.olauncher.data.AppModel
+import app.olauncher.data.BlockManager
 import app.olauncher.data.Constants
 import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
@@ -52,6 +53,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     val checkForMessages = SingleLiveEvent<Unit?>()
     val resetLauncherLiveData = SingleLiveEvent<Unit?>()
     val requestWeatherRefresh = MutableLiveData(false)
+    private val blockManager: BlockManager by lazy { BlockManager(getApplication()) }
 
     val showReflection: SingleLiveEvent<AppModel> = SingleLiveEvent()
     var pendingApp: AppModel? = null
@@ -97,10 +99,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     /** @return true if reflection sheet was shown and launch should be deferred */
     private fun tryReflectionPause(appModel: AppModel): Boolean {
+        val packageName = appModel.appPackage
         val distractionList = DistractionList(getApplication())
-        if (!distractionList.isDistraction(appModel.appPackage)) return false
+        if (!distractionList.isDistraction(packageName)) return false
+
+        if (blockManager.isBlocked(packageName)) return true
+
+        blockManager.recordOpen(packageName)
+        if (blockManager.checkThresholdExceeded(packageName)) {
+            blockManager.blockApp(packageName)
+            return true
+        }
+
         logDistractionOpen()
-        if (Random.nextFloat() < getReflectionProbability()) {
+        val finalProb = (getReflectionProbability() *
+            blockManager.getThresholdProximityMultiplier()).coerceAtMost(1.0f)
+        if (Random.nextFloat() < finalProb) {
             pendingApp = appModel
             showReflection.postValue(appModel)
             return true

@@ -184,4 +184,5 @@
     <string name="reflection_sheet_open_anyway">Open anyway</string>
     <string name="reflection_sheet_continue_later">Continue later</string>
     <string name="done">Done</string>
+    <string name="blocked_app_dialog_ok">OK</string>
 </resources>

@@ -469,6 +469,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun populateSwipeApps() {
+        binding.swipeLeftRow.visibility = View.GONE
+        binding.swipeRightRow.visibility = View.GONE
         binding.swipeLeftApp.text = prefs.appNameSwipeLeft
         binding.swipeRightApp.text = prefs.appNameSwipeRight
         if (!prefs.swipeLeftEnabled)

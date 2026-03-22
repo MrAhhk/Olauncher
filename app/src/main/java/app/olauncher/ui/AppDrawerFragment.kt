@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView.Recycler
 import app.olauncher.MainViewModel
 import app.olauncher.R
 import app.olauncher.data.AppModel
+import app.olauncher.data.BlockManager
 import app.olauncher.data.Constants
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.FragmentAppDrawerBinding
@@ -119,10 +120,16 @@ class AppDrawerFragment : Fragment() {
     }
 
     private fun initAdapter() {
+        val blockManager = BlockManager(requireContext())
         adapter = AppDrawerAdapter(
             flag,
             prefs.appLabelAlignment,
+            blockManager,
+            showBlockedDialog = { packageName ->
+                BlockedAppSheet.newInstance(packageName).show(childFragmentManager, "blocked")
+            },
             appClickListener = { appModel ->
+                if (appModel.appPackage.isBlank()) return@AppDrawerAdapter
                 viewModel.selectedApp(appModel, flag)
                 if (viewModel.pendingApp == null) {
                     if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)

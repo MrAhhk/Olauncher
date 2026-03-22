@@ -803,4 +803,28 @@ class Prefs(context: Context) {
     var reflectionSetupDone: Boolean
         get() = prefs.getBoolean("reflection_setup_done", false)
         set(value) = prefs.edit { putBoolean("reflection_setup_done", value) }
+
+    var blockedApps: Set<String>
+        get() = prefs.getStringSet("blocked_apps", emptySet()) ?: emptySet()
+        set(value) = prefs.edit { putStringSet("blocked_apps", value).apply() }
+
+    var lastBlockTimestamp: Long
+        get() = prefs.getLong("last_block_timestamp", 0L)
+        set(value) = prefs.edit { putLong("last_block_timestamp", value).apply() }
+
+    var blockCount: Int
+        get() = prefs.getInt("block_count_today", 0)
+        set(value) = prefs.edit { putInt("block_count_today", value).apply() }
+
+    var appOpenCountsToday: Set<String>
+        get() = prefs.getStringSet("app_open_counts_today", emptySet()) ?: emptySet()
+        set(value) = prefs.edit { putStringSet("app_open_counts_today", value).apply() }
+
+    var appOpenCountsDate: String
+        get() = prefs.getString("app_open_counts_date", "").toString()
+        set(value) = prefs.edit { putString("app_open_counts_date", value).apply() }
+
+    var resetTimestamp: Long
+        get() = prefs.getLong("block_reset_timestamp", 0L)
+        set(value) = prefs.edit { putLong("block_reset_timestamp", value).apply() }
 }

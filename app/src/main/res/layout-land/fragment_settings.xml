@@ -676,6 +676,7 @@
                     android:textColor="?attr/primaryColor" />
 
                 <LinearLayout
+                    android:id="@+id/swipeLeftRow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -705,6 +706,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/swipeRightRow"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"

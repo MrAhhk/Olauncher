@@ -21,6 +21,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import app.olauncher.R
 import app.olauncher.data.AppModel
+import app.olauncher.data.BlockManager
 import app.olauncher.data.Constants
 import app.olauncher.databinding.AdapterAppDrawerBinding
 import app.olauncher.helper.applyLockedBlurEffect
@@ -33,6 +34,8 @@ import java.text.Normalizer
 class AppDrawerAdapter(
     private var flag: Int,
     private val appLabelGravity: Int,
+    private val blockManager: BlockManager,
+    private val showBlockedDialog: (packageName: String) -> Unit,
     private val appClickListener: (AppModel) -> Unit,
     private val appInfoListener: (AppModel) -> Unit,
     private val appDeleteListener: (AppModel) -> Unit,
@@ -55,6 +58,7 @@ class AppDrawerAdapter(
             override fun areContentsTheSame(oldItem: AppModel, newItem: AppModel): Boolean =
                 oldItem == newItem
         }
+
     }
 
     private var autoLaunch = true
@@ -83,6 +87,8 @@ class AppDrawerAdapter(
                 flag,
                 appLabelGravity,
                 myUserHandle,
+                blockManager,
+                showBlockedDialog,
                 appModel,
                 { currentSearchQuery },
                 appClickListener,
@@ -169,6 +175,8 @@ class AppDrawerAdapter(
             flag: Int,
             appLabelGravity: Int,
             myUserHandle: UserHandle,
+            blockManager: BlockManager,
+            showBlockedDialog: (String) -> Unit,
             appModel: AppModel,
             currentSearchQueryProvider: () -> String,
             clickListener: (AppModel) -> Unit,
@@ -318,6 +326,16 @@ class AppDrawerAdapter(
                     root.applyLockedBlurEffect(true)
                     appHide.isEnabled = false
                     appHide.alpha = 0.5f
+                }
+            }
+
+            if (appModel is AppModel.App && appModel.appPackage.isNotEmpty()) {
+                val isBlocked = blockManager.isBlocked(appModel.appPackage)
+                if (isBlocked) {
+                    root.applyLockedBlurEffect(true)
+                    appTitle.setOnClickListener {
+                        showBlockedDialog(appModel.appPackage)
+                    }
                 }
             }
         }
