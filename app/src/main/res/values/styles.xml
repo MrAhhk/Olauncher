@@ -92,14 +92,14 @@
     </style>
 
     <!-- Centered dialog for [ReflectionSheet] (same window pattern as reflection setup). -->
-    <style name="ReflectionSheetTheme" parent="Theme.MaterialComponents.Dialog.Alert">
+    <style name="ReflectionSheetTheme" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
         <item name="android:backgroundDimEnabled">true</item>
         <item name="android:backgroundDimAmount">0.5</item>
     </style>
 
-    <style name="ReflectionSetupDialog" parent="Theme.MaterialComponents.Dialog.Alert">
+    <style name="ReflectionSetupDialog" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowBackground">@android:color/transparent</item>
         <item name="android:windowIsFloating">true</item>
     </style>
