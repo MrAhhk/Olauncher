@@ -379,6 +379,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         override fun onBindViewHolder(holder: PinnedAppViewHolder, position: Int) {
             val item = items[position]
             holder.title.text = item.title
+            holder.title.setTextColor(
+                requireContext().getColor(android.R.color.white)
+            )
             holder.itemView.tag = item.location
             holder.itemView.applyLockedBlurEffect(item.isBlocked)
             holder.itemView.setOnClickListener(this@HomeFragment)
@@ -393,7 +396,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             notifyDataSetChanged()
             this@HomeFragment.lastEdgeFirstVisible = -1
             this@HomeFragment.lastEdgeLastVisible = -1
-            binding.pinnedAppsRecyclerView.post { updateFadeOverlays() }
+            binding.pinnedAppsRecyclerView.post {
+                binding.pinnedAppsRecyclerView.post { updateFadeOverlays() }
+            }
         }
     }
 
@@ -467,7 +472,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         if (firstVisible < 0 || lastVisible < 0) return
         val edgeStateChanged = firstVisible != lastEdgeFirstVisible || lastVisible != lastEdgeLastVisible ||
             canScrollUp != lastEdgeCanScrollUp || canScrollDown != lastEdgeCanScrollDown
-        if (!edgeStateChanged) return
+        if (!edgeStateChanged && pinnedEdgeTextColor != 0) return
         lastEdgeFirstVisible = firstVisible
         lastEdgeLastVisible = lastVisible
         lastEdgeCanScrollUp = canScrollUp
