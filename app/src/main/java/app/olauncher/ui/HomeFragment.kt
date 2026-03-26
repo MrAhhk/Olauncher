@@ -640,6 +640,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             )
         } else {
             fallback?.invoke()
+            return
+        }
+        // App may have just been blocked on this tap: show dialog and refresh pinned app blur
+        if (packageName.isNotBlank() && blockManager.isBlocked(packageName)) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                BlockedAppSheet.newInstance(packageName).show(childFragmentManager, "blocked")
+                viewModel.refreshHome(false)
+            }
         }
     }
 

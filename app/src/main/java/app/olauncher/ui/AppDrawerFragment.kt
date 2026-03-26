@@ -10,7 +10,9 @@ import android.widget.TextView
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
@@ -131,11 +133,23 @@ class AppDrawerFragment : Fragment() {
             appClickListener = { appModel ->
                 if (appModel.appPackage.isBlank()) return@AppDrawerAdapter
                 viewModel.selectedApp(appModel, flag)
-                if (viewModel.pendingApp == null) {
-                    if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
-                        findNavController().popBackStack(R.id.mainFragment, false)
-                    else
-                        findNavController().popBackStack()
+                when {
+                    viewModel.pendingApp != null -> { /* reflection sheet shown, stay */ }
+                    blockManager.isBlocked(appModel.appPackage) -> {
+                        // App was just blocked on this tap: show dialog and refresh blur state
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            BlockedAppSheet.newInstance(appModel.appPackage)
+                                .show(childFragmentManager, "blocked")
+                            if (flag == Constants.FLAG_HIDDEN_APPS) viewModel.getHiddenApps()
+                            else viewModel.getAppList()
+                        }
+                    }
+                    else -> {
+                        if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
+                            findNavController().popBackStack(R.id.mainFragment, false)
+                        else
+                            findNavController().popBackStack()
+                    }
                 }
             },
             appInfoListener = {

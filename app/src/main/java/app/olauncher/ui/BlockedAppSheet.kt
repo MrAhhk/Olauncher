@@ -50,7 +50,7 @@ class BlockedAppSheet : DialogFragment() {
         } catch (_: Exception) {
             packageName
         }
-        tvMessage.text = "$appName — come back tomorrow"
+        tvMessage.text = "Enough for $appName today — come back tomorrow"
 
         btnOk.setOnClickListener { dismiss() }
     }
