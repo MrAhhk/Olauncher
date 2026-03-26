@@ -991,17 +991,17 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             return
         }
         val (lat, lon) = coords
-        lifecycleScope.launch {
+        viewLifecycleOwner.lifecycleScope.launch {
             try {
+                if (_binding == null) return@launch
                 val info = withContext(Dispatchers.IO) { fetchWeatherInfo(lat, lon) } ?: return@launch
                 cacheWeatherInfo(info, lat, lon)
                 val locationName = withContext(Dispatchers.IO) { getLocationName(lat, lon) }
                 if (!locationName.isNullOrBlank()) {
                     cacheLocationName(locationName)
                 }
-                if (_binding != null) {
-                    applyWeatherInfo(info)
-                }
+                if (_binding == null) return@launch
+                applyWeatherInfo(info)
             } catch (_: Exception) {}
         }
     }

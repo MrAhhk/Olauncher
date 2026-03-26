@@ -358,7 +358,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun backToHomeScreen() {
-        binding.messageLayout.visibility = View.GONE
+        try {
+            binding.messageLayout.visibility = View.GONE
+        } catch (e: Exception) { }
         if (navController.currentDestination?.id != R.id.mainFragment)
             navController.popBackStack(R.id.mainFragment, false)
     }
@@ -380,8 +382,10 @@ class MainActivity : AppCompatActivity() {
         if (forceRestart || prefs.launcherRestartTimestamp.hasBeenHours(4)) {
             prefs.launcherRestartTimestamp = System.currentTimeMillis()
             lifecycleScope.launch(kotlinx.coroutines.Dispatchers.IO) {
-                cacheDir.deleteRecursively()
-                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) { recreate() }
+                try { cacheDir.deleteRecursively() } catch (e: Exception) { }
+                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                    if (!isFinishing && !isDestroyed) recreate()
+                }
             }
         } else
             checkTheme()
