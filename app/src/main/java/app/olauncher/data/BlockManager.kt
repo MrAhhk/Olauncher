@@ -89,6 +89,7 @@ class BlockManager(private val context: Context) {
         prefs.resetTimestamp = System.currentTimeMillis()
         cachedDistractionTimeAt = 0L
         prefs.blockCount = prefs.blockCount + 1
+        prefs.appOpenCountsToday = emptySet()
     }
 
     private fun getCurrentThresholdMs(): Long {

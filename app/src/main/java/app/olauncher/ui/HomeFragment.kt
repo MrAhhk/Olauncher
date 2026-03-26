@@ -397,7 +397,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             this@HomeFragment.lastEdgeFirstVisible = -1
             this@HomeFragment.lastEdgeLastVisible = -1
             binding.pinnedAppsRecyclerView.post {
-                binding.pinnedAppsRecyclerView.post { updateFadeOverlays() }
+            binding.pinnedAppsRecyclerView.post {
+                if (_binding != null) updateFadeOverlays()
+            }
             }
         }
     }
