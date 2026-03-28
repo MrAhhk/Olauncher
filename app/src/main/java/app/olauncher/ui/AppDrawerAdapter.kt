@@ -23,6 +23,7 @@ import app.olauncher.R
 import app.olauncher.data.AppModel
 import app.olauncher.data.BlockManager
 import app.olauncher.data.Constants
+import app.olauncher.data.DistractionList
 import app.olauncher.databinding.AdapterAppDrawerBinding
 import app.olauncher.helper.applyLockedBlurEffect
 import app.olauncher.helper.hideKeyboard
@@ -311,22 +312,12 @@ class AppDrawerAdapter(
 
             if (flag == Constants.FLAG_HIDDEN_APPS &&
                 appModel is AppModel.App &&
-                appModel.appPackage.isNotEmpty()
+                appModel.appPackage.isNotEmpty() &&
+                DistractionList(root.context).isGameCategory(appModel.appPackage)
             ) {
-                val isGame = try {
-                    val info = root.context.packageManager.getApplicationInfo(
-                        appModel.appPackage,
-                        PackageManager.MATCH_ALL,
-                    )
-                    info.category == ApplicationInfo.CATEGORY_GAME
-                } catch (_: Exception) {
-                    false
-                }
-                if (isGame) {
-                    root.applyLockedBlurEffect(true)
-                    appHide.isEnabled = false
-                    appHide.alpha = 0.5f
-                }
+                root.applyLockedBlurEffect(true)
+                appHide.isEnabled = false
+                appHide.alpha = 0.5f
             }
 
             if (appModel is AppModel.App && appModel.appPackage.isNotEmpty()) {

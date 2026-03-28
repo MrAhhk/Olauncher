@@ -4,6 +4,9 @@ import android.app.Application
 import android.content.ComponentName
 import android.content.Context
 import android.content.pm.LauncherApps
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.UserHandle
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
@@ -57,6 +60,33 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     val showReflection: SingleLiveEvent<AppModel> = SingleLiveEvent()
     var pendingApp: AppModel? = null
+
+    private val launcherAppsService by lazy {
+        appContext.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
+    }
+
+    private val packageCallback = object : LauncherApps.Callback() {
+        override fun onPackageAdded(packageName: String, user: UserHandle) {
+            if (DistractionList(appContext).isGameCategory(packageName)) {
+                getAppList()
+            }
+        }
+        override fun onPackageRemoved(packageName: String, user: UserHandle) {
+            getAppList()
+        }
+        override fun onPackageChanged(packageName: String, user: UserHandle) {}
+        override fun onPackagesAvailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) {}
+        override fun onPackagesUnavailable(packageNames: Array<out String>, user: UserHandle, replacing: Boolean) {}
+    }
+
+    init {
+        launcherAppsService.registerCallback(packageCallback, Handler(Looper.getMainLooper()))
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        launcherAppsService.unregisterCallback(packageCallback)
+    }
 
     fun selectedApp(appModel: AppModel, flag: Int) {
         when (flag) {

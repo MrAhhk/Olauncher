@@ -47,9 +47,11 @@ import app.olauncher.reflection.ReflectionSetupRows
 import app.olauncher.reflection.ReflectionUntickPauseDialog
 import app.olauncher.helper.showLauncherSelector
 import app.olauncher.helper.showToast
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
@@ -124,46 +126,51 @@ class MainActivity : AppCompatActivity() {
      */
     fun showReflectionSetupDialog(isInitialSetup: Boolean = false) {
         val distractionList = DistractionList(this)
-        val installedApps = distractionList.getAllAppsForReflectionSetup()
-
-        if (installedApps.isEmpty()) {
-            prefs.reflectionSetupDone = true
-            return
-        }
-
         val hiddenSuffix = getString(R.string.reflection_list_hidden_suffix)
-        val rows = ReflectionSetupRows.build(distractionList, prefs, installedApps, hiddenSuffix)
 
-        val binding = DialogReflectionSetupBinding.inflate(layoutInflater)
-        lateinit var adapter: ReflectionAppListAdapter
-        val useUntickPauseDialog = !isInitialSetup
-        adapter = ReflectionAppListAdapter(
-            rows = rows,
-            useUntickPauseDialog = useUntickPauseDialog,
-            onUntickAttempt = { position ->
-                ReflectionUntickPauseDialog.show(this, adapter, rows, position)
-            },
-        )
-        binding.reflectionAppsList.layoutManager = LinearLayoutManager(this)
-        binding.reflectionAppsList.adapter = adapter
-        ReflectionAlphabetStrip.attach(this, binding, rows, hiddenSuffix)
-
-        val dialog = AlertDialog.Builder(this, R.style.ReflectionSetupDialog)
-            .setView(binding.root)
-            .setCancelable(false)
-            .create()
-
-        binding.reflectionDialogDone.setOnClickListener {
-            rows.forEach { row ->
-                val wantPause = if (row.isLocked) true else row.checked
-                distractionList.applyReflectionSelection(row.packageName, wantPause)
+        lifecycleScope.launch {
+            val (installedApps, rows) = withContext(Dispatchers.IO) {
+                val apps = distractionList.getAllAppsForReflectionSetup()
+                val r = if (apps.isEmpty()) null
+                        else ReflectionSetupRows.build(distractionList, prefs, apps, hiddenSuffix)
+                Pair(apps, r)
             }
-            prefs.reflectionSetupDone = true
-            dialog.dismiss()
-        }
 
-        dialog.show()
-        ReflectionAlphabetStrip.styleDialogWindow(dialog, ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN)
+            if (installedApps.isEmpty() || rows == null) {
+                prefs.reflectionSetupDone = true
+                return@launch
+            }
+
+            val binding = DialogReflectionSetupBinding.inflate(layoutInflater)
+            lateinit var adapter: ReflectionAppListAdapter
+            val useUntickPauseDialog = !isInitialSetup
+            adapter = ReflectionAppListAdapter(
+                rows = rows,
+                useUntickPauseDialog = useUntickPauseDialog,
+                onUntickAttempt = { position ->
+                    ReflectionUntickPauseDialog.show(this@MainActivity, adapter, rows, position)
+                },
+            )
+            binding.reflectionAppsList.layoutManager = LinearLayoutManager(this@MainActivity)
+            binding.reflectionAppsList.adapter = adapter
+            ReflectionAlphabetStrip.attach(this@MainActivity, binding, rows, hiddenSuffix)
+
+            val dialog = AlertDialog.Builder(this@MainActivity, R.style.ReflectionSetupDialog)
+                .setView(binding.root)
+                .setCancelable(false)
+                .create()
+
+            binding.reflectionDialogDone.setOnClickListener {
+                lifecycleScope.launch(Dispatchers.IO) {
+                    distractionList.applyReflectionSelectionBatch(rows)
+                    prefs.reflectionSetupDone = true
+                    withContext(Dispatchers.Main) { dialog.dismiss() }
+                }
+            }
+
+            dialog.show()
+            ReflectionAlphabetStrip.styleDialogWindow(dialog, ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN)
+        }
     }
 
     override fun onStart() {
