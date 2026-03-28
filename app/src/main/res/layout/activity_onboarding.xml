@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#141414">
+
+    <include
+        android:id="@+id/pageReason"
+        layout="@layout/onboarding_page_reason" />
+
+    <include
+        android:id="@+id/pageApps"
+        layout="@layout/onboarding_page_apps"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/pageAccess"
+        layout="@layout/onboarding_page_access"
+        android:visibility="gone" />
+
+</FrameLayout>

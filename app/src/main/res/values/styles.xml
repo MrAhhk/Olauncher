@@ -91,6 +91,13 @@
         <item name="android:textColor">@drawable/text_colors_light</item>
     </style>
 
+    <!-- Fullscreen dark onboarding — light status/nav bar icons disabled so they appear white. -->
+    <style name="OnboardingTheme" parent="AppTheme">
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowLightNavigationBar" tools:targetApi="o_mr1">false</item>
+        <item name="android:windowBackground">#141414</item>
+    </style>
+
     <!-- Centered dialog for [ReflectionSheet] (same window pattern as reflection setup). -->
     <style name="ReflectionSheetTheme" parent="Theme.AppCompat.Dialog.Alert">
         <item name="android:windowBackground">@android:color/transparent</item>

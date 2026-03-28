@@ -10,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import app.olauncher.R
 import app.olauncher.databinding.DialogReflectionSetupBinding
 
@@ -23,13 +24,19 @@ internal object ReflectionAlphabetStrip {
         binding: DialogReflectionSetupBinding,
         rows: List<ReflectionAppRow>,
         hiddenSuffix: String,
+    ) = attach(activity, binding.reflectionAlphabetIndex, binding.reflectionAppsList, rows, hiddenSuffix)
+
+    fun attach(
+        activity: Activity,
+        alphabetStrip: LinearLayout,
+        recycler: RecyclerView,
+        rows: List<ReflectionAppRow>,
+        hiddenSuffix: String,
     ) {
         val letterToPosition = ReflectionLetterIndex.firstIndexPerLetter(rows, hiddenSuffix)
-        val alphabetStrip = binding.reflectionAlphabetIndex
         alphabetStrip.removeAllViews()
 
         val letters = ReflectionLetterIndex.stripLetters
-        val recycler = binding.reflectionAppsList
         val lm = recycler.layoutManager as LinearLayoutManager
 
         letters.forEach { letter ->
