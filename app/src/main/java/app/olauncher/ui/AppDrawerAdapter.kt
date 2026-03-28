@@ -333,6 +333,11 @@ class AppDrawerAdapter(
                 val isBlocked = blockManager.isBlocked(appModel.appPackage)
                 if (isBlocked) {
                     root.applyLockedBlurEffect(true)
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        appTitle.typeface = Typeface.create(appTitle.typeface, 200, false)
+                    } else {
+                        appTitle.paint.isFakeBoldText = false
+                    }
                     appTitle.setOnClickListener {
                         showBlockedDialog(appModel.appPackage)
                     }
