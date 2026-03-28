@@ -827,4 +827,12 @@ class Prefs(context: Context) {
     var resetTimestamp: Long
         get() = prefs.getLong("block_reset_timestamp", 0L)
         set(value) = prefs.edit { putLong("block_reset_timestamp", value).apply() }
+
+    var onboardingComplete: Boolean
+        get() = prefs.getBoolean("onboarding_complete", false)
+        set(value) = prefs.edit { putBoolean("onboarding_complete", value) }
+
+    var onboardingReason: String
+        get() = prefs.getString("onboarding_reason", "").toString()
+        set(value) = prefs.edit { putString("onboarding_reason", value) }
 }

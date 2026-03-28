@@ -40,6 +40,7 @@ import app.olauncher.helper.rateApp
 import app.olauncher.helper.resetLauncherViaFakeActivity
 import app.olauncher.helper.setPlainWallpaper
 import app.olauncher.helper.shareApp
+import app.olauncher.ui.OnboardingFlow
 import app.olauncher.reflection.ReflectionAlphabetStrip
 import app.olauncher.reflection.ReflectionAppListAdapter
 import app.olauncher.reflection.ReflectionConstants
@@ -116,7 +117,9 @@ class MainActivity : AppCompatActivity() {
 
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
 
-        if (!prefs.reflectionSetupDone) {
+        if (!prefs.onboardingComplete) {
+            OnboardingFlow.start(this, prefs)
+        } else if (!prefs.reflectionSetupDone) {
             showReflectionSetupDialog(isInitialSetup = true)
         }
     }
