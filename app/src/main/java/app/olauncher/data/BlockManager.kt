@@ -1,6 +1,7 @@
 package app.olauncher.data
 
 import android.content.Context
+import android.os.Build
 import app.olauncher.helper.appUsagePermissionGranted
 import app.olauncher.helper.usageStats.EventLogWrapper
 import java.text.SimpleDateFormat
@@ -73,7 +74,7 @@ class BlockManager(private val context: Context) {
         if (!distractionList.isDistraction(packageName)) return false
         if (isBlocked(packageName)) return false
 
-        return if (context.appUsagePermissionGranted()) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && context.appUsagePermissionGranted()) {
             getDistractionTimeToday() >= getCurrentThresholdMs()
         } else {
             ensureOpenCountDate()
@@ -116,7 +117,7 @@ class BlockManager(private val context: Context) {
     }
 
     fun getDistractionTimeToday(): Long {
-        if (!context.appUsagePermissionGranted()) return 0L
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || !context.appUsagePermissionGranted()) return 0L
 
         val now = System.currentTimeMillis()
         if (now - cachedDistractionTimeAt < 60_000L) return cachedDistractionTimeMs
@@ -149,7 +150,7 @@ class BlockManager(private val context: Context) {
     }
 
     fun getThresholdProximityMultiplier(): Float {
-        val ratio = if (context.appUsagePermissionGranted()) {
+        val ratio = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && context.appUsagePermissionGranted()) {
             val time = getDistractionTimeToday().toFloat()
             val threshold = getCurrentThresholdMs().toFloat()
             if (threshold <= 0f) return 3.0f

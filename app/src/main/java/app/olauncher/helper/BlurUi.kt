@@ -1,6 +1,5 @@
 package app.olauncher.helper
 
-import android.os.Build
 import android.view.View
 
 /**
@@ -8,7 +7,4 @@ import android.view.View
  */
 fun View.applyLockedBlurEffect(locked: Boolean) {
     alpha = if (locked) 0.35f else 1f
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        setRenderEffect(null)
-    }
 }

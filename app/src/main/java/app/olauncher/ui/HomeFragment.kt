@@ -371,19 +371,19 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PinnedAppViewHolder {
             val view = layoutInflater.inflate(R.layout.item_home_pinned_app, parent, false)
             val holder = PinnedAppViewHolder(view)
-            holder.title.setTextColor(requireContext().getColor(android.R.color.white))
+            holder.title.setTextColor(pinnedNormalTextColor)
+            // Set once here — not on every bind — for better scroll performance
+            holder.itemView.setOnClickListener(this@HomeFragment)
+            holder.itemView.setOnLongClickListener(this@HomeFragment)
             return holder
         }
 
         override fun onBindViewHolder(holder: PinnedAppViewHolder, position: Int) {
             val item = items[position]
             holder.title.text = item.title
-            // Reset to normal color; updateFadeOverlays() handles edge dimming after layout
             holder.title.setTextColor(pinnedNormalTextColor)
             holder.itemView.tag = item.location
             holder.itemView.applyLockedBlurEffect(item.isBlocked)
-            holder.itemView.setOnClickListener(this@HomeFragment)
-            holder.itemView.setOnLongClickListener(this@HomeFragment)
         }
 
         override fun getItemCount(): Int = items.size
@@ -547,24 +547,17 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
         // If it's a shortcut, verify it still exists
         if (isShortcut) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return false
             val launcherApps = requireContext().getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
-
-            // Query for the specific shortcut
             val query = LauncherApps.ShortcutQuery().apply {
                 setPackage(packageName)
                 setQueryFlags(LauncherApps.ShortcutQuery.FLAG_MATCH_PINNED)
             }
-
-            try {
-                val shortcuts = launcherApps.getShortcuts(query, userHandle)
-                // Check if our shortcut still exists
-                if (shortcuts?.any { it.id == shortcutId } == true) {
-                    return true
-                }
-                return false
+            return try {
+                launcherApps.getShortcuts(query, userHandle)?.any { it.id == shortcutId } == true
             } catch (e: Exception) {
                 e.printStackTrace()
-                return false
+                false
             }
         }
 
@@ -866,6 +859,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
             override fun onLongClick() {
                 super.onLongClick()
+                // If the touch started on a child view (e.g. a pinned app item), that
+                // child's own onLongClickListener handles it — don't open settings here.
+                if (binding.mainLayout.childHandledLastDown) return
                 try {
                     findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
                     viewModel.firstOpen(false)
