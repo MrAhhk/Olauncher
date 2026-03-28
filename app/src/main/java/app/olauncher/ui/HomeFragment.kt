@@ -18,7 +18,6 @@ import android.os.BatteryManager
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.view.GestureDetector
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -40,8 +39,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import app.olauncher.MainViewModel
 import app.olauncher.R
@@ -379,18 +378,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         override fun onBindViewHolder(holder: PinnedAppViewHolder, position: Int) {
             val item = items[position]
             holder.title.text = item.title
-            if (pinnedEdgeTextColor == 0) {
-                pinnedEdgeTextColor = requireContext().getColor(R.color.home_pinned_edge_text)
-                pinnedNormalTextColor = requireContext().getColor(android.R.color.white)
-            }
-            val rv = binding.pinnedAppsRecyclerView
-            val lm = rv.layoutManager as? LinearLayoutManager
-            val firstVisible = lm?.findFirstVisibleItemPosition() ?: -1
-            val lastVisible = lm?.findLastVisibleItemPosition() ?: -1
-            val canScrollUp = rv.canScrollVertically(-1)
-            val canScrollDown = rv.canScrollVertically(1)
-            val useGray = (position == firstVisible && canScrollUp) || (position == lastVisible && canScrollDown)
-            holder.title.setTextColor(if (useGray) pinnedEdgeTextColor else pinnedNormalTextColor)
+            // Reset to normal color; updateFadeOverlays() handles edge dimming after layout
+            holder.title.setTextColor(pinnedNormalTextColor)
             holder.itemView.tag = item.location
             holder.itemView.applyLockedBlurEffect(item.isBlocked)
             holder.itemView.setOnClickListener(this@HomeFragment)
@@ -400,9 +389,21 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         override fun getItemCount(): Int = items.size
 
         fun submitList(newItems: List<HomePinnedItem>) {
+            if (newItems == items) return
+            val oldItems = items.toList()
             items.clear()
             items.addAll(newItems)
-            notifyDataSetChanged()
+            // DiffUtil instead of notifyDataSetChanged: only changed items rebind.
+            // Unchanged items — including edge items already showing gray — keep their
+            // view state untouched, eliminating the white-flash-then-gray flicker.
+            DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+                override fun getOldListSize() = oldItems.size
+                override fun getNewListSize() = newItems.size
+                override fun areItemsTheSame(old: Int, new: Int) =
+                    oldItems[old].location == newItems[new].location
+                override fun areContentsTheSame(old: Int, new: Int) =
+                    oldItems[old] == newItems[new]
+            }).dispatchUpdatesTo(this)
             this@HomeFragment.lastEdgeFirstVisible = -1
             this@HomeFragment.lastEdgeLastVisible = -1
             binding.pinnedAppsRecyclerView.post {
@@ -416,7 +417,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.pinnedAppsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.pinnedAppsRecyclerView.setHasFixedSize(true)
         binding.pinnedAppsRecyclerView.adapter = pinnedAppsAdapter
-        LinearSnapHelper().attachToRecyclerView(binding.pinnedAppsRecyclerView)
         binding.pinnedAppsRecyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
@@ -424,42 +424,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             }
         })
         updatePinnedViewportHeight()
-        initPinnedAppsGestureBridge()
-    }
-
-    private fun initPinnedAppsGestureBridge() {
-        val detector = GestureDetector(requireContext(), object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(
-                event1: MotionEvent?,
-                event2: MotionEvent,
-                velocityX: Float,
-                velocityY: Float
-            ): Boolean {
-                val startEvent = event1 ?: return false
-                val diffY = event2.y - startEvent.y
-                val diffX = event2.x - startEvent.x
-                val swipeThreshold = 100
-                val velocityThreshold = 100
-                if (kotlin.math.abs(diffX) > kotlin.math.abs(diffY)) {
-                    if (kotlin.math.abs(diffX) > swipeThreshold && kotlin.math.abs(velocityX) > velocityThreshold) {
-                        if (diffX > 0) openSwipeRightApp() else openSwipeLeftApp()
-                    }
-                } else if (kotlin.math.abs(diffY) > swipeThreshold && kotlin.math.abs(velocityY) > velocityThreshold) {
-                    if (diffY < 0 && !binding.pinnedAppsRecyclerView.canScrollVertically(1)) {
-                        handleSwipeUpAction()
-                    } else if (diffY > 0 && !binding.pinnedAppsRecyclerView.canScrollVertically(-1)) {
-                        handleSwipeDownAction()
-                    }
-                }
-                return false
-            }
-        })
-        binding.pinnedAppsRecyclerView.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
-            override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-                detector.onTouchEvent(e)
-                return false
-            }
-        })
+        pinnedEdgeTextColor = requireContext().getColor(R.color.home_pinned_edge_text)
+        pinnedNormalTextColor = requireContext().getColor(android.R.color.white)
     }
 
     private fun updatePinnedViewportHeight() {
@@ -486,10 +452,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         lastEdgeLastVisible = lastVisible
         lastEdgeCanScrollUp = canScrollUp
         lastEdgeCanScrollDown = canScrollDown
-        if (pinnedEdgeTextColor == 0) {
-            pinnedEdgeTextColor = requireContext().getColor(R.color.home_pinned_edge_text)
-            pinnedNormalTextColor = requireContext().getColor(android.R.color.white)
-        }
         for (position in firstVisible..lastVisible) {
             val holder = recyclerView.findViewHolderForAdapterPosition(position) as? PinnedAppsAdapter.PinnedAppViewHolder ?: continue
             val useGray = (position == firstVisible && canScrollUp) || (position == lastVisible && canScrollDown)

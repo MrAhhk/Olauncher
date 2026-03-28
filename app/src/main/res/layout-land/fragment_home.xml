@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<app.olauncher.ui.GestureInterceptFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
     android:clipChildren="false"
     android:clipToPadding="false"
     android:orientation="vertical"
@@ -321,7 +321,7 @@
             android:focusable="true"
             android:padding="2dp"
             android:src="@drawable/ic_phone_home"
-            android:tint="@android:color/white" />
+            app:tint="@android:color/white" />
 
         <ImageView
             android:id="@+id/cameraCornerAction"
@@ -334,6 +334,6 @@
             android:focusable="true"
             android:padding="2dp"
             android:src="@drawable/ic_camera_home"
-            android:tint="@android:color/white" />
+            app:tint="@android:color/white" />
     </FrameLayout>
-</FrameLayout>
+</app.olauncher.ui.GestureInterceptFrameLayout>
