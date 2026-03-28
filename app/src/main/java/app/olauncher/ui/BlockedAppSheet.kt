@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import app.olauncher.R
+import app.olauncher.helper.PromptRepository
 import app.olauncher.reflection.ReflectionConstants
 
 /** Centered popup card for blocked app (same style as ReflectionSheet). */
@@ -50,7 +51,7 @@ class BlockedAppSheet : DialogFragment() {
         } catch (_: Exception) {
             packageName
         }
-        tvMessage.text = "Enough for $appName today — come back tomorrow"
+        tvMessage.text = PromptRepository.getBlockedPrompt()
 
         btnOk.setOnClickListener { dismiss() }
     }

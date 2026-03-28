@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import app.olauncher.R
 import app.olauncher.databinding.DialogReflectionUntickPauseBinding
+import app.olauncher.helper.PromptRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -30,7 +31,7 @@ internal object ReflectionUntickPauseDialog {
 
         val pauseBinding = DialogReflectionUntickPauseBinding.inflate(activity.layoutInflater)
         pauseBinding.reflectionUntickPauseMessage.text =
-            activity.getString(R.string.reflection_untick_any_seconds)
+            PromptRepository.getUnblockPrompt()
         val btnYes = pauseBinding.reflectionUntickPauseYes
         val btnNo = pauseBinding.reflectionUntickPauseNo
         listOf(btnYes, btnNo).forEach { b ->

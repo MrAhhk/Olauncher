@@ -49,8 +49,7 @@ class ReflectionSheet : DialogFragment() {
         val btnContinueLater = view.findViewById<TextView>(R.id.btnContinueLater)
 
         val prefs = Prefs(requireContext())
-        val identityMode = prefs.identityMode
-        tvPrompt.text = PromptRepository.getRandomPrompt(identityMode)
+        tvPrompt.text = PromptRepository.getRandomPrompt()
 
         btnOpenAnyway.isEnabled = false
         btnOpenAnyway.alpha = ReflectionConstants.DISABLED_CONTROL_ALPHA

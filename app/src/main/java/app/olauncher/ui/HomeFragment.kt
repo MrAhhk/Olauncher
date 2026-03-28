@@ -379,9 +379,18 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         override fun onBindViewHolder(holder: PinnedAppViewHolder, position: Int) {
             val item = items[position]
             holder.title.text = item.title
-            holder.title.setTextColor(
-                requireContext().getColor(android.R.color.white)
-            )
+            if (pinnedEdgeTextColor == 0) {
+                pinnedEdgeTextColor = requireContext().getColor(R.color.home_pinned_edge_text)
+                pinnedNormalTextColor = requireContext().getColor(android.R.color.white)
+            }
+            val rv = binding.pinnedAppsRecyclerView
+            val lm = rv.layoutManager as? LinearLayoutManager
+            val firstVisible = lm?.findFirstVisibleItemPosition() ?: -1
+            val lastVisible = lm?.findLastVisibleItemPosition() ?: -1
+            val canScrollUp = rv.canScrollVertically(-1)
+            val canScrollDown = rv.canScrollVertically(1)
+            val useGray = (position == firstVisible && canScrollUp) || (position == lastVisible && canScrollDown)
+            holder.title.setTextColor(if (useGray) pinnedEdgeTextColor else pinnedNormalTextColor)
             holder.itemView.tag = item.location
             holder.itemView.applyLockedBlurEffect(item.isBlocked)
             holder.itemView.setOnClickListener(this@HomeFragment)
@@ -397,9 +406,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             this@HomeFragment.lastEdgeFirstVisible = -1
             this@HomeFragment.lastEdgeLastVisible = -1
             binding.pinnedAppsRecyclerView.post {
-            binding.pinnedAppsRecyclerView.post {
                 if (_binding != null) updateFadeOverlays()
-            }
             }
         }
     }
