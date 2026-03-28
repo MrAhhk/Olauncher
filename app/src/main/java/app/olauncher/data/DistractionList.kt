@@ -23,19 +23,63 @@ class DistractionList(private val context: Context) {
     private var infoCache: Map<String, ApplicationInfo> = emptyMap()
 
     private val defaultBlacklist = setOf(
+        // Meta
         "com.facebook.katana", "com.facebook.lite",
         "com.instagram.android", "com.instagram.barcelona",
+        // YouTube
         "com.google.android.youtube", "com.google.android.apps.youtube.music",
         "com.google.android.apps.youtube.kids",
+        // TikTok
         "com.zhiliaoapp.musically", "com.zhiliaoapp.musically.lite",
         "com.ss.android.ugc.trill",
+        // Other social / short video
         "com.twitter.android",
         "com.snapchat.android",
         "com.reddit.frontpage",
         "com.pinterest",
+        "video.like", "com.kwai.video", "com.tumblr",
+        "com.bereal.ft",
+        // Streaming
         "com.netflix.mediaclient", "com.disney.disneyplus",
         "com.hbo.hbomax", "tv.twitch.android.app",
-        "video.like", "com.kwai.video", "com.tumblr"
+        // Dating
+        "com.tinder",
+        "com.bumble.app",
+        "co.hinge.app",
+        "com.okcupid.okcupid",
+        "com.badoo.mobile",
+        "com.pof.android",
+        "com.grindr.android",
+        "com.scruff.android",
+        "com.perry.jack",
+        "com.myyearbook.m",
+        "com.zoosk.zoosk",
+        "com.coffeemeetsbagel",
+        "com.ftw_and_co.happn",
+        "net.lovoo.android",
+        "com.skout.android",
+        "com.tag.hi",
+        "com.feeld.datingapp",
+        "com.spark.com",
+        // Livestream
+        "sg.bigo.live",
+        "com.talkwithstranger.liveme",
+        "com.younow.android",
+        "com.hago.android",
+        "com.mico",
+        "com.yalla.io",
+        "com.nonolive.go",
+        "com.streamkar.app",
+        // AI companion / girlfriend
+        "ai.replika.app",
+        "ai.character.app",
+        "com.anima.android",
+        "com.chai.chai",
+        "com.eva.ai",
+        "com.candyai.android",
+        // Virtual social / avatar
+        "com.naver.zepeto",
+        "com.powerapp.party"
     )
 
     private fun getInfo(packageName: String): ApplicationInfo? =
