@@ -16,6 +16,8 @@ class Prefs(context: Context) {
 
     private val FIRST_OPEN = "FIRST_OPEN"
     private val FIRST_OPEN_TIME = "FIRST_OPEN_TIME"
+    private val SHOWN_30_DAY_MESSAGE = "SHOWN_30_DAY_MESSAGE"
+    private val SHOWN_90_DAY_MESSAGE = "SHOWN_90_DAY_MESSAGE"
     private val FIRST_SETTINGS_OPEN = "FIRST_SETTINGS_OPEN"
     private val FIRST_HIDE = "FIRST_HIDE"
     private val USER_STATE = "USER_STATE"
@@ -132,6 +134,14 @@ class Prefs(context: Context) {
     var firstOpenTime: Long
         get() = prefs.getLong(FIRST_OPEN_TIME, 0L)
         set(value) = prefs.edit { putLong(FIRST_OPEN_TIME, value).apply() }
+
+    var shown30DayMessage: Boolean
+        get() = prefs.getBoolean(SHOWN_30_DAY_MESSAGE, false)
+        set(value) = prefs.edit { putBoolean(SHOWN_30_DAY_MESSAGE, value).apply() }
+
+    var shown90DayMessage: Boolean
+        get() = prefs.getBoolean(SHOWN_90_DAY_MESSAGE, false)
+        set(value) = prefs.edit { putBoolean(SHOWN_90_DAY_MESSAGE, value).apply() }
 
     var firstSettingsOpen: Boolean
         get() = prefs.getBoolean(FIRST_SETTINGS_OPEN, true)

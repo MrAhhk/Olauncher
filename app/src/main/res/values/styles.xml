@@ -111,4 +111,16 @@
         <item name="android:windowIsFloating">true</item>
     </style>
 
+    <style name="MilestoneDialogWindowAnim" parent="@android:style/Animation.Dialog">
+        <item name="android:windowEnterAnimation">@anim/milestone_dialog_none</item>
+        <item name="android:windowExitAnimation">@anim/milestone_dialog_none</item>
+    </style>
+
+    <!-- 30/90-day milestones: match [ReflectionSetupDialog] (custom dim was breaking layout on some devices). -->
+    <style name="MilestoneDialogTheme" parent="Theme.AppCompat.Dialog.Alert">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowAnimationStyle">@style/MilestoneDialogWindowAnim</item>
+    </style>
+
 </resources>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/choiceRow"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_milestone_choice_option"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:minHeight="56dp">
+
+    <TextView
+        android:id="@+id/choiceLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center_vertical"
+        android:letterSpacing="0.02"
+        android:lineSpacingMultiplier="1.15"
+        android:paddingHorizontal="18dp"
+        android:paddingVertical="18dp"
+        android:textColor="@color/white"
+        android:textSize="17sp" />
+
+</FrameLayout>

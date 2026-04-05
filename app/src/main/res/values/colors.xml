@@ -6,6 +6,7 @@
 
     <!--White-->
     <color name="white">#FFFFFF</color>
+    <color name="whiteTrans95">#F2FFFFFF</color>
     <color name="whiteTrans90">#E6FFFFFF</color>
     <color name="whiteTrans80">#CCFFFFFF</color>
     <color name="whiteTrans50">#80FFFFFF</color>

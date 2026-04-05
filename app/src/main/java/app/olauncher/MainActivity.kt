@@ -7,12 +7,16 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
 import android.provider.Settings
 import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
@@ -28,6 +32,7 @@ import app.olauncher.data.Constants
 import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.ActivityMainBinding
+import app.olauncher.databinding.DialogMilestoneBinding
 import app.olauncher.databinding.DialogReflectionSetupBinding
 import app.olauncher.helper.getColorFromAttr
 import app.olauncher.helper.hasBeenHours
@@ -72,6 +77,8 @@ class MainActivity : AppCompatActivity() {
     private var lastOnStopElapsedRealtime = 0L
     /** One automatic "set default launcher" right after onboarding; avoids missing the prompt when stop→resume is very short. */
     private var offerLauncherImmediatelyAfterOnboarding = false
+    /** Avoid repeated PackageManager.getPackageInfo on every resume when [Prefs.firstOpenTime] is still 0. */
+    private var installTimeBackfillAttempted = false
 
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
@@ -188,6 +195,145 @@ class MainActivity : AppCompatActivity() {
     }
 
     /**
+     * Install-time milestones (session 5). Uses [Prefs.firstOpenTime] epoch ms (set on first launch).
+     * If user is eligible for the 90-day prompt, the 30-day prompt is skipped/marked done as well.
+     */
+    private fun maybeShowInstallMilestoneDialogs() {
+        var installMs = prefs.firstOpenTime
+        if (installMs <= 0L && !installTimeBackfillAttempted) {
+            installTimeBackfillAttempted = true
+            installMs = try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    packageManager.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0)).firstInstallTime
+                } else {
+                    @Suppress("DEPRECATION")
+                    packageManager.getPackageInfo(packageName, 0).firstInstallTime
+                }
+            } catch (_: Exception) {
+                0L
+            }
+            if (installMs > 0L) prefs.firstOpenTime = installMs
+        }
+        if (installMs <= 0L) return
+        val daysSinceInstall = (System.currentTimeMillis() - installMs) / 86400000L
+        if (daysSinceInstall >= 90 && !prefs.shown90DayMessage) {
+            show90DayMilestoneDialog()
+        } else if (daysSinceInstall >= 30 && !prefs.shown30DayMessage) {
+            show30DayMilestoneDialog()
+        }
+    }
+
+    /** Style after [AlertDialog.show] so width/dim apply in one frame (avoids flicker vs [Dialog.setOnShowListener]). */
+    private fun showMilestoneAlert(dialog: AlertDialog) {
+        dialog.show()
+        ReflectionAlphabetStrip.styleDialogWindow(dialog, ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN)
+    }
+
+    private fun show30DayMilestoneDialog() {
+        val b = DialogMilestoneBinding.inflate(layoutInflater)
+        b.milestoneTitle.visibility = View.VISIBLE
+        b.milestoneTitle.text = "Have you changed?"
+        b.milestoneScroll.visibility = View.GONE
+        b.milestoneChoices.visibility = View.GONE
+        b.milestoneBtnPrimary.visibility = View.VISIBLE
+        b.milestoneBtnPrimary.text = "YES"
+        b.milestoneBtnSecondary.visibility = View.VISIBLE
+        b.milestoneBtnSecondary.text = "NOT YET"
+        val dialog = AlertDialog.Builder(this, R.style.MilestoneDialogTheme)
+            .setView(b.root)
+            .setCancelable(false)
+            .create()
+        b.milestoneBtnPrimary.setOnClickListener {
+            prefs.shown30DayMessage = true
+            val msg =
+                "30 days of choosing differently.\n\nThat's not habit — that's character.\n\nThe phone is a tool now.\nYou are the one holding it.\n\nThis app did its job.\nNow so can you."
+            dialog.setOnDismissListener {
+                dialog.setOnDismissListener(null)
+                showMilestoneFollowUpDialog(msg)
+            }
+            dialog.dismiss()
+        }
+        b.milestoneBtnSecondary.setOnClickListener {
+            prefs.shown30DayMessage = true
+            val msg =
+                "30 days.\n\nYou kept coming back.\nThat's the whole practice.\n\nChange doesn't announce itself —\nit shows up in the pauses\nyou didn't know you were taking.\n\nKeep going.\nYou're not behind."
+            dialog.setOnDismissListener {
+                dialog.setOnDismissListener(null)
+                showMilestoneFollowUpDialog(msg)
+            }
+            dialog.dismiss()
+        }
+        showMilestoneAlert(dialog)
+    }
+
+    private fun show90DayMilestoneDialog() {
+        val options = listOf(
+            "I'm different now",
+            "Still fighting",
+            "I relapsed but came back",
+            "I don't know"
+        )
+        val responses = listOf(
+            "Then you've done the real work. Most people never get here.",
+            "Good. The fight is the practice. Keep showing up.",
+            "Coming back is the skill. Not everyone does.",
+            "That's honest.\n\nNot knowing means you're still paying attention.\nMost people stop asking.\n\nThe answer will come\nwhen it's ready."
+        )
+        val b = DialogMilestoneBinding.inflate(layoutInflater)
+        b.milestoneTitle.visibility = View.VISIBLE
+        b.milestoneTitle.text = "Are you still going?"
+        b.milestoneScroll.visibility = View.GONE
+        b.milestoneBtnPrimary.visibility = View.GONE
+        b.milestoneBtnSecondary.visibility = View.GONE
+        b.milestoneChoices.visibility = View.VISIBLE
+        val dialog = AlertDialog.Builder(this, R.style.MilestoneDialogTheme)
+            .setView(b.root)
+            .setCancelable(false)
+            .create()
+        val gapPx = (8 * resources.displayMetrics.density).toInt()
+        options.forEachIndexed { idx, label ->
+            val row = layoutInflater.inflate(R.layout.item_milestone_choice, b.milestoneChoices, false)
+            row.findViewById<TextView>(R.id.choiceLabel).text = label
+            row.setOnClickListener {
+                prefs.shown90DayMessage = true
+                prefs.shown30DayMessage = true
+                val msg = responses[idx]
+                dialog.setOnDismissListener {
+                    dialog.setOnDismissListener(null)
+                    showMilestoneFollowUpDialog(msg)
+                }
+                dialog.dismiss()
+            }
+            val lp = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply {
+                if (idx < options.lastIndex) bottomMargin = gapPx
+            }
+            b.milestoneChoices.addView(row, lp)
+        }
+        showMilestoneAlert(dialog)
+    }
+
+    private fun showMilestoneFollowUpDialog(message: String) {
+        val b = DialogMilestoneBinding.inflate(layoutInflater)
+        b.milestoneTitle.visibility = View.GONE
+        b.milestoneScroll.visibility = View.VISIBLE
+        (b.milestoneScroll.layoutParams as? ViewGroup.MarginLayoutParams)?.topMargin = 0
+        b.milestoneBody.text = message
+        b.milestoneChoices.visibility = View.GONE
+        b.milestoneBtnSecondary.visibility = View.GONE
+        b.milestoneBtnPrimary.visibility = View.VISIBLE
+        b.milestoneBtnPrimary.text = "OK"
+        val dialog = AlertDialog.Builder(this, R.style.MilestoneDialogTheme)
+            .setView(b.root)
+            .setCancelable(false)
+            .create()
+        b.milestoneBtnPrimary.setOnClickListener { dialog.dismiss() }
+        showMilestoneAlert(dialog)
+    }
+
+    /**
      * @param isInitialSetup First launch list (suggested apps): no 6s untick pause. From Settings, use default false.
      */
     fun showReflectionSetupDialog(isInitialSetup: Boolean = false) {
@@ -298,6 +444,13 @@ class MainActivity : AppCompatActivity() {
         if (now - lastAutoLauncherPromptElapsedRealtime < AUTO_LAUNCHER_PROMPT_COOLDOWN_MS) return
         lastAutoLauncherPromptElapsedRealtime = now
         viewModel.resetLauncherLiveData.call()
+    }
+
+    override fun onPostResume() {
+        super.onPostResume()
+        if (!prefs.onboardingComplete || !prefs.reflectionSetupDone) return
+        if (prefs.shown30DayMessage && prefs.shown90DayMessage) return
+        if (!isFinishing && !isDestroyed) maybeShowInstallMilestoneDialogs()
     }
 
     private fun initObservers(viewModel: MainViewModel) {

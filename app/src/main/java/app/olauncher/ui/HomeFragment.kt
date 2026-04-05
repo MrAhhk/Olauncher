@@ -117,6 +117,10 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private var lastEdgeCanScrollUp = false
     private var lastEdgeCanScrollDown = false
 
+    private var homeDateFormatter: SimpleDateFormat? = null
+    private var homeDateFormatterLocale: Locale? = null
+    private var lastSyncedBatteryBarWidth = -1
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -330,8 +334,13 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.clock.isVisible = Constants.DateTime.isTimeVisible(prefs.dateTimeVisibility)
         binding.date.isVisible = Constants.DateTime.isDateVisible(prefs.dateTimeVisibility)
 
-        val dateText = SimpleDateFormat("EEE, d MMM yyyy", Locale.getDefault()).format(Date())
-        binding.date.text = dateText.replace(".,", ",")
+        val locale = Locale.getDefault()
+        if (homeDateFormatter == null || homeDateFormatterLocale != locale) {
+            homeDateFormatterLocale = locale
+            homeDateFormatter = SimpleDateFormat("EEE, d MMM yyyy", locale)
+        }
+        val dateText = homeDateFormatter!!.format(Date()).replace(".,", ",")
+        if (binding.date.text?.toString() != dateText) binding.date.text = dateText
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -920,7 +929,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.clock.post {
             if (_binding == null) return@post
             val clockWidth = binding.clock.width
-            if (clockWidth > 0) {
+            if (clockWidth > 0 && clockWidth != lastSyncedBatteryBarWidth) {
+                lastSyncedBatteryBarWidth = clockWidth
                 val lp = binding.batteryProgress.layoutParams
                 lp.width = clockWidth
                 binding.batteryProgress.layoutParams = lp
@@ -1213,8 +1223,11 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
+        homeDateFormatter = null
+        homeDateFormatterLocale = null
+        lastSyncedBatteryBarWidth = -1
         unregisterBatteryReceiver()
         _binding = null
+        super.onDestroyView()
     }
 }
