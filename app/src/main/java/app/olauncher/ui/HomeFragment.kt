@@ -28,7 +28,6 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -42,6 +41,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import app.olauncher.MainActivity
 import app.olauncher.MainViewModel
 import app.olauncher.R
 import app.olauncher.data.AppModel
@@ -54,6 +54,8 @@ import app.olauncher.helper.appUsagePermissionGranted
 import app.olauncher.helper.dpToPx
 import app.olauncher.helper.expandNotificationDrawer
 import app.olauncher.helper.getChangedAppTheme
+import app.olauncher.helper.isDeviceLocationEnabled
+import app.olauncher.helper.openDeviceLocationSettingsOrPanel
 import app.olauncher.helper.getUserHandleFromString
 import app.olauncher.helper.isPackageInstalled
 import app.olauncher.helper.openAlarmApp
@@ -111,14 +113,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private var lastEdgeLastVisible = -1
     private var lastEdgeCanScrollUp = false
     private var lastEdgeCanScrollDown = false
-    private var locationPermissionRequested = false
-
-    private val requestLocationPermission = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { granted ->
-        locationPermissionRequested = false
-        if (granted.values.any { it }) refreshWeatherIfNeeded()
-    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -153,12 +147,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         else hideStatusBar()
         registerBatteryReceiver()
         syncBatteryBarWidth()
-        if (viewModel.requestWeatherRefresh.value == true) {
-            viewModel.requestWeatherRefresh.value = false
-            refreshWeatherIfNeeded(force = true)
-        } else {
-            refreshWeatherIfNeeded()
-        }
+        refreshWeatherIfNeeded()
         renderCachedWeather()
     }
 
@@ -289,6 +278,12 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             if (pkg.isNullOrBlank()) return@observe
             BlockedAppSheet.newInstance(pkg).show(childFragmentManager, "blocked")
             viewModel.refreshHome(false)
+        }
+        viewModel.requestWeatherRefresh.observe(viewLifecycleOwner) { need ->
+            if (need == true && _binding != null) {
+                viewModel.requestWeatherRefresh.value = false
+                refreshWeatherIfNeeded(force = true)
+            }
         }
     }
 
@@ -963,17 +958,25 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             val lastTs = sp.getLong(KEY_TS, 0L)
             if (System.currentTimeMillis() - lastTs < WEATHER_REFRESH_MS) return
         }
+        // User asked for update / widget on: prompt for permission even if we still have cached coords.
+        if (force && !hasLocationPermission() && prefs.onboardingComplete) {
+            (requireActivity() as MainActivity).requestWeatherLocationPermission()
+            return
+        }
+        if (force && hasLocationPermission() && !requireContext().isDeviceLocationEnabled()) {
+            requireContext().openDeviceLocationSettingsOrPanel()
+        }
         val coords = getWeatherCoordinates()
         if (coords == null) {
             // Never show the runtime dialog from home until onboarding finished (onboarding has its own step).
             if (!prefs.onboardingComplete) return
-            // After onboarding, only prompt if we have not already asked (skip/grant path sets KEY_LOCATION_ASKED).
-            if (!hasLocationPermission() && !sp.contains(KEY_TS) &&
-                !locationPermissionRequested && !sp.getBoolean(KEY_LOCATION_ASKED, false)) {
-                locationPermissionRequested = true
-                requestLocationPermission.launch(
-                    arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
-                )
+            // Ask for permission when user forced refresh / turned widget on, or first time without cache.
+            if (!hasLocationPermission()) {
+                val shouldPrompt = force ||
+                    (!sp.contains(KEY_TS) && !sp.getBoolean(KEY_LOCATION_ASKED, false))
+                if (shouldPrompt) {
+                    (requireActivity() as MainActivity).requestWeatherLocationPermission()
+                }
             }
             return
         }

@@ -1,7 +1,9 @@
 package app.olauncher.ui
 
+import android.Manifest
 import android.app.Activity
 import android.app.admin.DevicePolicyManager
+import android.content.pm.PackageManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -15,6 +17,7 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -32,7 +35,9 @@ import app.olauncher.helper.appUsagePermissionGranted
 import app.olauncher.helper.getColorFromAttr
 import app.olauncher.helper.isAccessServiceEnabled
 import app.olauncher.helper.isOlauncherDefault
+import app.olauncher.helper.isDeviceLocationEnabled
 import app.olauncher.helper.openAppInfo
+import app.olauncher.helper.openDeviceLocationSettingsOrPanel
 import app.olauncher.helper.openUrl
 import app.olauncher.helper.rateApp
 import app.olauncher.helper.shareApp
@@ -113,10 +118,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.weatherWidgetOnOff -> binding.weatherWidgetSelectLayout.visibility = View.VISIBLE
             R.id.weatherWidgetOn -> setWeatherWidgetEnabled(true)
             R.id.weatherWidgetOff -> setWeatherWidgetEnabled(false)
-            R.id.updateWeatherButton -> {
-                viewModel.requestWeatherRefresh.value = true
-                requireContext().showToast(getString(R.string.updating_weather))
-            }
+            R.id.updateWeatherButton -> requestLocationThenRefreshWeather()
             R.id.weatherTempUnitText -> binding.weatherTempUnitSelectLayout.visibility = View.VISIBLE
             R.id.weatherTempSystem -> setWeatherTempUnit("system")
             R.id.weatherTempCelsius -> setWeatherTempUnit("celsius")
@@ -305,8 +307,34 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun setWeatherWidgetEnabled(enabled: Boolean) {
+        val wasEnabled = prefs.showWeatherWidget
         prefs.showWeatherWidget = enabled
         populateWeatherWidget()
+        if (enabled && !wasEnabled) requestLocationThenRefreshWeather()
+    }
+
+    private fun hasLocationPermission(): Boolean {
+        val ctx = requireContext()
+        return ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED ||
+            ContextCompat.checkSelfPermission(ctx, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+    }
+
+    /** Ask for runtime permission if needed; then signal home to refresh (uses cache if device GPS is off). */
+    private fun requestLocationThenRefreshWeather() {
+        if (!prefs.onboardingComplete) {
+            viewModel.requestWeatherRefresh.value = true
+            requireContext().showToast(getString(R.string.updating_weather))
+            return
+        }
+        if (hasLocationPermission()) {
+            viewModel.requestWeatherRefresh.value = true
+            requireContext().showToast(getString(R.string.updating_weather))
+            if (!requireContext().isDeviceLocationEnabled()) {
+                requireContext().openDeviceLocationSettingsOrPanel()
+            }
+            return
+        }
+        (requireActivity() as MainActivity).requestWeatherLocationPermission()
     }
 
     private fun populateWeatherWidget() {

@@ -3,6 +3,7 @@ package app.olauncher
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.role.RoleManager
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -30,6 +31,8 @@ import app.olauncher.databinding.ActivityMainBinding
 import app.olauncher.databinding.DialogReflectionSetupBinding
 import app.olauncher.helper.getColorFromAttr
 import app.olauncher.helper.hasBeenHours
+import app.olauncher.helper.isDeviceLocationEnabled
+import app.olauncher.helper.openDeviceLocationSettingsOrPanel
 import app.olauncher.helper.isDarkThemeOn
 import app.olauncher.helper.isDefaultLauncher
 import app.olauncher.helper.isEinkDisplay
@@ -90,6 +93,31 @@ class MainActivity : AppCompatActivity() {
                 offerLauncherImmediatelyAfterOnboarding = true
             }
         }
+    }
+
+    /**
+     * Host-level permission request so the result is delivered reliably (Settings sits above Home on the back stack;
+     * Fragment-owned launchers can miss callbacks in that setup).
+     */
+    private val requestWeatherLocationLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { granted ->
+        if (granted.values.any { it }) {
+            viewModel.requestWeatherRefresh.value = true
+            showToast(getString(R.string.updating_weather))
+            if (!isDeviceLocationEnabled()) {
+                openDeviceLocationSettingsOrPanel()
+            }
+        }
+    }
+
+    fun requestWeatherLocationPermission() {
+        requestWeatherLocationLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        )
     }
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding

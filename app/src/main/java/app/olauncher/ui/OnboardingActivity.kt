@@ -17,6 +17,8 @@ import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.databinding.ActivityOnboardingBinding
 import app.olauncher.helper.dpToPx
+import app.olauncher.helper.isDeviceLocationEnabled
+import app.olauncher.helper.openDeviceLocationSettingsOrPanel
 import app.olauncher.reflection.ReflectionAlphabetStrip
 import app.olauncher.reflection.ReflectionAppListAdapter
 import app.olauncher.reflection.ReflectionAppRow
@@ -45,8 +47,17 @@ class OnboardingActivity : AppCompatActivity() {
 
     private val requestLocationPermission = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
-    ) {
-        navigateTo(binding.pageLocation.root, binding.pageAccess.root)
+    ) { granted ->
+        val allowed = granted.values.any { it }
+        // Post so navigation runs after the permission activity tears down; avoids no-op transitions on some devices.
+        if (isDestroyed) return@registerForActivityResult
+        binding.root.post {
+            if (isDestroyed) return@post
+            navigateTo(binding.pageLocation.root, binding.pageAccess.root)
+            if (allowed && !isDeviceLocationEnabled()) {
+                openDeviceLocationSettingsOrPanel()
+            }
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

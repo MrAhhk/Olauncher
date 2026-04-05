@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.LauncherApps
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.content.res.Resources
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.UserHandle
@@ -103,6 +105,80 @@ fun Context.searchOnPlayStore(query: String? = null): Boolean {
         e.printStackTrace()
         false
     }
+}
+
+/** Device Location master switch (quick settings), not app runtime permission. */
+fun Context.isDeviceLocationEnabled(): Boolean {
+    val lm = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        lm.isLocationEnabled
+    } else {
+        @Suppress("DEPRECATION")
+        lm.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+            lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+}
+
+/**
+ * Resolves an implicit intent to a **non-local** activity and starts it explicitly.
+ * Avoids [UnsafeImplicitIntentLaunch]: implicit system actions can incorrectly match this app's
+ * own non-exported activities after manifest merge / OEM quirks.
+ */
+private fun Context.startImplicitIntentOnExternalHandler(implicit: Intent): Boolean {
+    val candidates: List<ResolveInfo> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.queryIntentActivities(
+                implicit,
+                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.queryIntentActivities(implicit, PackageManager.MATCH_DEFAULT_ONLY)
+        }
+    val mine = packageName
+    val info = candidates.firstOrNull { it.activityInfo.packageName != mine }?.activityInfo
+        ?: return false
+    val explicit = Intent(implicit).apply {
+        component = ComponentName(info.packageName, info.name)
+    }
+    return try {
+        startActivity(explicit)
+        true
+    } catch (_: Exception) {
+        false
+    }
+}
+
+/**
+ * Opens system UI so the user can turn Location on. Apps cannot enable GPS programmatically;
+ * this is the supported follow-up right after granting [ACCESS_FINE_LOCATION].
+ */
+private fun Context.startLocationSettingsAospPackageFallback() {
+    try {
+        val scoped = Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS).apply {
+            setPackage("com.android.settings")
+        }
+        val ri = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            packageManager.resolveActivity(
+                scoped,
+                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_DEFAULT_ONLY.toLong())
+            )
+        } else {
+            @Suppress("DEPRECATION")
+            packageManager.resolveActivity(scoped, PackageManager.MATCH_DEFAULT_ONLY)
+        }
+        val ai = ri?.activityInfo ?: return
+        startActivity(
+            Intent(scoped).apply {
+                component = ComponentName(ai.packageName, ai.name)
+            }
+        )
+    } catch (_: Exception) {}
+}
+
+fun Context.openDeviceLocationSettingsOrPanel() {
+    if (startImplicitIntentOnExternalHandler(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))) return
+    startLocationSettingsAospPackageFallback()
 }
 
 fun Context.isPackageInstalled(packageName: String, userHandle: UserHandle = android.os.Process.myUserHandle()): Boolean {
