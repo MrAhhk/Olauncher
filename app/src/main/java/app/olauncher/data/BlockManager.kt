@@ -14,7 +14,7 @@ class BlockManager(private val context: Context) {
     private val prefs = Prefs(context)
 
     companion object {
-        const val TIME_THRESHOLD_MS = 5_400_000L
+        const val TIME_THRESHOLD_MS = 3_600_000L
         const val OPEN_THRESHOLD = 8
         const val BLOCK_DURATION_MS = 24 * 60 * 60 * 1000L
     }

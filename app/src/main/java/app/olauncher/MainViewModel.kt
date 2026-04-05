@@ -166,10 +166,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val recent = prefs.distractionOpensLog
             .filter { it.toLongOrNull() ?: 0L > System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L }
         return when (recent.size) {
-            in 0..4   -> 0.2f
-            in 5..14  -> 0.4f
-            in 15..29 -> 0.7f
-            else      -> 1.0f
+            in 0..4   -> 1.0f
+            in 5..14  -> 0.7f
+            in 15..29 -> 0.4f
+            else      -> 0.2f
         }
     }
 
