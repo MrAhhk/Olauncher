@@ -1,9 +1,7 @@
 package app.olauncher.helper
 
-import android.app.Activity
 import android.app.AppOpsManager
 import android.app.SearchManager
-import android.app.role.RoleManager
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -39,16 +37,6 @@ fun View.showKeyboard(show: Boolean = true) {
         }, 100)
 }
 
-
-@RequiresApi(Build.VERSION_CODES.Q)
-fun Activity.showLauncherSelector(requestCode: Int) {
-    val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
-    if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME)) {
-        val intent = roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME)
-        startActivityForResult(intent, requestCode)
-    } else
-        resetDefaultLauncher()
-}
 
 fun Context.resetDefaultLauncher() {
     try {

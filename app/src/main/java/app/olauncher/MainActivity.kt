@@ -2,6 +2,7 @@ package app.olauncher
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.role.RoleManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
@@ -44,8 +45,8 @@ import app.olauncher.reflection.ReflectionAppListAdapter
 import app.olauncher.reflection.ReflectionConstants
 import app.olauncher.reflection.ReflectionSetupRows
 import app.olauncher.reflection.ReflectionUntickPauseDialog
-import app.olauncher.helper.showLauncherSelector
 import app.olauncher.helper.showToast
+import app.olauncher.ui.ReflectionSheet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -71,6 +72,13 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
+
+    private val homeRoleLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK)
+            resetLauncherViaFakeActivity()
+    }
 
     private val onboardingLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
@@ -270,10 +278,18 @@ class MainActivity : AppCompatActivity() {
         }
         viewModel.resetLauncherLiveData.observe(this) {
             if (isDefaultLauncher()) return@observe
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                showLauncherSelector(Constants.REQUEST_CODE_LAUNCHER_SELECTOR)
-            else
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                val roleManager = getSystemService(Context.ROLE_SERVICE) as RoleManager
+                if (roleManager.isRoleAvailable(RoleManager.ROLE_HOME))
+                    homeRoleLauncher.launch(roleManager.createRequestRoleIntent(RoleManager.ROLE_HOME))
+                else
+                    resetLauncherViaFakeActivity()
+            } else
                 resetLauncherViaFakeActivity()
+        }
+        viewModel.showReflection.observe(this) {
+            if (supportFragmentManager.findFragmentByTag("reflection") == null)
+                ReflectionSheet.newInstance().show(supportFragmentManager, "reflection")
         }
         viewModel.checkForMessages.observe(this) {
             checkForMessages()
@@ -411,19 +427,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    @Deprecated("Deprecated in Java")
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            Constants.REQUEST_CODE_ENABLE_ADMIN -> {
-                if (resultCode == Activity.RESULT_OK)
-                    prefs.lockModeOn = true
-            }
-
-            Constants.REQUEST_CODE_LAUNCHER_SELECTOR -> {
-                if (resultCode == Activity.RESULT_OK)
-                    resetLauncherViaFakeActivity()
-            }
-        }
-    }
 }

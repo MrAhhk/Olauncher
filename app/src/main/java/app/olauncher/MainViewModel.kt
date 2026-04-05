@@ -32,11 +32,28 @@ import app.olauncher.helper.isOlauncherDefault
 import app.olauncher.helper.isPackageInstalled
 import app.olauncher.helper.showToast
 import app.olauncher.helper.usageStats.EventLogWrapper
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import kotlin.random.Random
 
+data class DrawerNavHint(
+    val stayOnDrawer: Boolean = false,
+    val popToMain: Boolean = false,
+    val popOnce: Boolean = false,
+    val blockedPackage: String? = null,
+    val refreshAppList: Boolean = false,
+    val refreshHiddenApps: Boolean = false,
+)
+
+private sealed class PauseOutcome {
+    data object ProceedLaunch : PauseOutcome()
+    data class SilentBlocked(val packageName: String) : PauseOutcome()
+    data class ThresholdBlocked(val packageName: String) : PauseOutcome()
+    data class Reflection(val model: AppModel) : PauseOutcome()
+}
 
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val appContext by lazy { application.applicationContext }
@@ -60,6 +77,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val blockManager: BlockManager by lazy { BlockManager(getApplication()) }
 
     val showReflection: SingleLiveEvent<AppModel> = SingleLiveEvent()
+    val drawerNavHint: SingleLiveEvent<DrawerNavHint> = SingleLiveEvent()
+    /** Fires when a home-screen launch attempt ends blocked (e.g. threshold) so UI can show [BlockedAppSheet]. */
+    val showBlockedAfterHomeLaunch: SingleLiveEvent<String> = SingleLiveEvent()
     var pendingApp: AppModel? = null
 
     private val launcherAppsService by lazy {
@@ -89,21 +109,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         launcherAppsService.unregisterCallback(packageCallback)
     }
 
-    fun selectedApp(appModel: AppModel, flag: Int) {
+    fun selectedApp(appModel: AppModel, flag: Int, isDrawerLaunchContext: Boolean = false) {
         when (flag) {
             Constants.FLAG_LAUNCH_APP -> {
-                if (tryReflectionPause(appModel)) return
-                when (appModel) {
-                    is AppModel.PinnedShortcut -> launchShortcut(appModel)
-                    is AppModel.App ->
-                        launchApp(appModel.appPackage, appModel.activityClassName, appModel.user)
+                viewModelScope.launch {
+                    val outcome = withContext(Dispatchers.Default) { evaluatePauseLaunch(appModel) }
+                    withContext(Dispatchers.Main.immediate) {
+                        applyPauseLaunchOutcome(appModel, flag, outcome, isDrawerLaunchContext)
+                    }
                 }
             }
 
             Constants.FLAG_HIDDEN_APPS -> {
-                if (appModel is AppModel.App) {
-                    if (tryReflectionPause(appModel)) return
-                    launchApp(appModel.appPackage, appModel.activityClassName, appModel.user)
+                if (appModel !is AppModel.App) return
+                viewModelScope.launch {
+                    val outcome = withContext(Dispatchers.Default) { evaluatePauseLaunch(appModel) }
+                    withContext(Dispatchers.Main.immediate) {
+                        applyPauseLaunchOutcome(appModel, flag, outcome, isDrawerLaunchContext)
+                    }
                 }
             }
 
@@ -128,29 +151,87 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** @return true if reflection sheet was shown and launch should be deferred */
-    private fun tryReflectionPause(appModel: AppModel): Boolean {
+    /** Runs on a background thread; usage-stats aggregation must not run on main. */
+    private fun evaluatePauseLaunch(appModel: AppModel): PauseOutcome {
         val packageName = appModel.appPackage
-        val distractionList = DistractionList(getApplication())
-        if (!distractionList.isDistraction(packageName)) return false
+        val distractionList = DistractionList(appContext)
+        if (!distractionList.isDistraction(packageName)) return PauseOutcome.ProceedLaunch
 
-        if (blockManager.isBlocked(packageName)) return true
+        if (blockManager.isLaunchBlocked(packageName))
+            return PauseOutcome.SilentBlocked(packageName)
 
         blockManager.recordOpen(packageName)
         if (blockManager.checkThresholdExceeded(packageName)) {
             blockManager.blockApp(packageName)
-            return true
+            getAppList()
+            return PauseOutcome.ThresholdBlocked(packageName)
         }
 
         logDistractionOpen()
         val finalProb = (getReflectionProbability() *
             blockManager.getThresholdProximityMultiplier()).coerceAtMost(1.0f)
-        if (Random.nextFloat() < finalProb) {
-            pendingApp = appModel
-            showReflection.postValue(appModel)
-            return true
+        return if (Random.nextFloat() < finalProb) PauseOutcome.Reflection(appModel)
+        else PauseOutcome.ProceedLaunch
+    }
+
+    private fun applyPauseLaunchOutcome(
+        appModel: AppModel,
+        flag: Int,
+        outcome: PauseOutcome,
+        drawerCtx: Boolean,
+    ) {
+        when (outcome) {
+            PauseOutcome.ProceedLaunch -> {
+                pendingApp = null
+                when (appModel) {
+                    is AppModel.PinnedShortcut -> launchShortcut(appModel)
+                    is AppModel.App ->
+                        launchApp(appModel.appPackage, appModel.activityClassName, appModel.user)
+                }
+                if (drawerCtx) {
+                    drawerNavHint.value = DrawerNavHint(
+                        popToMain = flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS,
+                        popOnce = flag != Constants.FLAG_LAUNCH_APP && flag != Constants.FLAG_HIDDEN_APPS,
+                    )
+                }
+            }
+
+            is PauseOutcome.SilentBlocked -> {
+                pendingApp = null
+                if (drawerCtx) {
+                    drawerNavHint.value = DrawerNavHint(
+                        stayOnDrawer = true,
+                        blockedPackage = outcome.packageName,
+                        refreshAppList = flag != Constants.FLAG_HIDDEN_APPS,
+                        refreshHiddenApps = flag == Constants.FLAG_HIDDEN_APPS,
+                    )
+                } else {
+                    showBlockedAfterHomeLaunch.value = outcome.packageName
+                }
+            }
+
+            is PauseOutcome.ThresholdBlocked -> {
+                pendingApp = null
+                if (drawerCtx) {
+                    drawerNavHint.value = DrawerNavHint(
+                        stayOnDrawer = true,
+                        blockedPackage = outcome.packageName,
+                        refreshAppList = flag != Constants.FLAG_HIDDEN_APPS,
+                        refreshHiddenApps = flag == Constants.FLAG_HIDDEN_APPS,
+                    )
+                } else {
+                    showBlockedAfterHomeLaunch.value = outcome.packageName
+                }
+            }
+
+            is PauseOutcome.Reflection -> {
+                pendingApp = outcome.model
+                showReflection.value = outcome.model
+                if (drawerCtx) {
+                    drawerNavHint.value = DrawerNavHint(stayOnDrawer = true)
+                }
+            }
         }
-        return false
     }
 
     private fun logDistractionOpen() {
@@ -373,29 +454,31 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun getTodaysScreenTime() {
         if (prefs.screenTimeLastUpdated.hasBeenMinutes(1).not()) return
 
-        try {
-            val eventLogWrapper = EventLogWrapper(appContext)
-            val calendar = Calendar.getInstance().apply {
-                set(Calendar.HOUR_OF_DAY, 0)
-                set(Calendar.MINUTE, 0)
-                set(Calendar.SECOND, 0)
-                set(Calendar.MILLISECOND, 0)
-            }
-            val startTime = calendar.timeInMillis
-            val endTime = System.currentTimeMillis()
+        viewModelScope.launch(Dispatchers.Default) {
+            try {
+                val eventLogWrapper = EventLogWrapper(appContext)
+                val calendar = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, 0)
+                    set(Calendar.MINUTE, 0)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                val startTime = calendar.timeInMillis
+                val endTime = System.currentTimeMillis()
 
-            val timeSpent = eventLogWrapper.aggregateSimpleUsageStats(
-                eventLogWrapper.aggregateForegroundStats(
-                    eventLogWrapper.getForegroundStatsByTimestamps(startTime, endTime)
+                val timeSpent = eventLogWrapper.aggregateSimpleUsageStats(
+                    eventLogWrapper.aggregateForegroundStats(
+                        eventLogWrapper.getForegroundStatsByTimestamps(startTime, endTime)
+                    )
                 )
-            )
-            val viewTimeSpent = appContext.formattedTimeSpent(timeSpent)
-            screenTimeValue.postValue(viewTimeSpent)
-            prefs.screenTimeLastUpdated = endTime
-        } catch (e: SecurityException) {
-            screenTimeValue.postValue("")
-        } catch (e: Exception) {
-            screenTimeValue.postValue("")
+                val viewTimeSpent = appContext.formattedTimeSpent(timeSpent)
+                screenTimeValue.postValue(viewTimeSpent)
+                prefs.screenTimeLastUpdated = endTime
+            } catch (e: SecurityException) {
+                screenTimeValue.postValue("")
+            } catch (e: Exception) {
+                screenTimeValue.postValue("")
+            }
         }
     }
 

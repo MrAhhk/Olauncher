@@ -91,9 +91,6 @@ object Constants {
             || flag in FLAG_SET_HOME_APP_9..FLAG_SET_HOME_APP_12
     }
 
-    const val REQUEST_CODE_ENABLE_ADMIN = 666
-    const val REQUEST_CODE_LAUNCHER_SELECTOR = 678
-
     const val HINT_RATE_US = 15
 
     const val LONG_PRESS_DELAY_MS = 500L

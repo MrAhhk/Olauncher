@@ -45,10 +45,18 @@ class BlockManager(private val context: Context) {
         }
     }
 
-    fun isBlocked(packageName: String): Boolean {
+    /** True only for apps explicitly in the block set (drawer blur / home pin styling). */
+    fun showsBlockedStyle(packageName: String): Boolean {
         checkAndResetIfNeeded()
-        if (prefs.blockCount >= 3) return DistractionList(context).isDistraction(packageName)
         return packageName in prefs.blockedApps
+    }
+
+    /** True if opening this app should be prevented (explicit block or cascade level 3+). */
+    fun isLaunchBlocked(packageName: String): Boolean {
+        checkAndResetIfNeeded()
+        if (packageName in prefs.blockedApps) return true
+        if (prefs.blockCount >= 3) return DistractionList(context).isDistraction(packageName)
+        return false
     }
 
     fun recordOpen(packageName: String) {
@@ -72,7 +80,7 @@ class BlockManager(private val context: Context) {
         checkAndResetIfNeeded()
         val distractionList = DistractionList(context)
         if (!distractionList.isDistraction(packageName)) return false
-        if (isBlocked(packageName)) return false
+        if (isLaunchBlocked(packageName)) return false
 
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && context.appUsagePermissionGranted()) {
             getDistractionTimeToday() >= getCurrentThresholdMs()

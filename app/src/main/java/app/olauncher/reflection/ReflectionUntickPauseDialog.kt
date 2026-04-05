@@ -11,6 +11,7 @@ import app.olauncher.databinding.DialogReflectionUntickPauseBinding
 import app.olauncher.helper.PromptRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.lang.ref.WeakReference
 
 /**
  * When the user tries to disable reflection pause on an app, buttons stay disabled briefly
@@ -18,7 +19,7 @@ import kotlinx.coroutines.launch
  */
 internal object ReflectionUntickPauseDialog {
 
-    private var dialogRef: AlertDialog? = null
+    private var dialogRef: WeakReference<AlertDialog>? = null
 
     fun show(
         activity: AppCompatActivity,
@@ -26,7 +27,7 @@ internal object ReflectionUntickPauseDialog {
         rows: MutableList<ReflectionAppRow>,
         position: Int,
     ) {
-        if (dialogRef?.isShowing == true) return
+        if (dialogRef?.get()?.isShowing == true) return
         if (position !in rows.indices) return
 
         val pauseBinding = DialogReflectionUntickPauseBinding.inflate(activity.layoutInflater)
@@ -43,7 +44,7 @@ internal object ReflectionUntickPauseDialog {
             .setView(pauseBinding.root)
             .setCancelable(false)
             .create()
-        dialogRef = pauseDialog
+        dialogRef = WeakReference(pauseDialog)
         pauseDialog.setOnDismissListener { dialogRef = null }
 
         btnYes.setOnClickListener {

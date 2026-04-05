@@ -81,26 +81,23 @@ class AppDrawerAdapter(
         )
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        try {
-            if (appFilteredList.size == 0 || position == RecyclerView.NO_POSITION) return
-            val appModel = appFilteredList[holder.bindingAdapterPosition]
-            holder.bind(
-                flag,
-                appLabelGravity,
-                myUserHandle,
-                blockManager,
-                showBlockedDialog,
-                appModel,
-                { currentSearchQuery },
-                appClickListener,
-                appDeleteListener,
-                appInfoListener,
-                appHideListener,
-                appRenameListener
-            )
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        val pos = holder.bindingAdapterPosition
+        if (pos == RecyclerView.NO_POSITION || appFilteredList.isEmpty() || pos >= appFilteredList.size) return
+        val appModel = appFilteredList[pos]
+        holder.bind(
+            flag,
+            appLabelGravity,
+            myUserHandle,
+            blockManager,
+            showBlockedDialog,
+            appModel,
+            { currentSearchQuery },
+            appClickListener,
+            appDeleteListener,
+            appInfoListener,
+            appHideListener,
+            appRenameListener
+        )
     }
 
     override fun getFilter(): Filter = this.appFilter
@@ -321,7 +318,7 @@ class AppDrawerAdapter(
             }
 
             if (appModel is AppModel.App && appModel.appPackage.isNotEmpty()) {
-                val isBlocked = blockManager.isBlocked(appModel.appPackage)
+                val isBlocked = blockManager.showsBlockedStyle(appModel.appPackage)
                 if (isBlocked) {
                     root.applyLockedBlurEffect(true)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

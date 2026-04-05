@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Recycler
+import app.olauncher.DrawerNavHint
 import app.olauncher.MainViewModel
 import app.olauncher.R
 import app.olauncher.data.AppModel
@@ -95,14 +96,8 @@ class AppDrawerFragment : Fragment() {
                     submittedQuery == app.appLabel.trim()
                 }
                 if (exactMatch != null) {
-                    viewModel.selectedApp(exactMatch, flag)
-                    if (viewModel.pendingApp != null) {
-                        return true
-                    }
-                    if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
-                        findNavController().popBackStack(R.id.mainFragment, false)
-                    else
-                        findNavController().popBackStack()
+                    val drawerLaunch = flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS
+                    viewModel.selectedApp(exactMatch, flag, drawerLaunch)
                 }
                 return true
             }
@@ -132,25 +127,8 @@ class AppDrawerFragment : Fragment() {
             },
             appClickListener = { appModel ->
                 if (appModel.appPackage.isBlank()) return@AppDrawerAdapter
-                viewModel.selectedApp(appModel, flag)
-                when {
-                    viewModel.pendingApp != null -> { /* reflection sheet shown, stay */ }
-                    blockManager.isBlocked(appModel.appPackage) -> {
-                        // App was just blocked on this tap: show dialog and refresh blur state
-                        viewLifecycleOwner.lifecycleScope.launch {
-                            BlockedAppSheet.newInstance(appModel.appPackage)
-                                .show(childFragmentManager, "blocked")
-                            if (flag == Constants.FLAG_HIDDEN_APPS) viewModel.getHiddenApps()
-                            else viewModel.getAppList()
-                        }
-                    }
-                    else -> {
-                        if (flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS)
-                            findNavController().popBackStack(R.id.mainFragment, false)
-                        else
-                            findNavController().popBackStack()
-                    }
-                }
+                val drawerLaunch = flag == Constants.FLAG_LAUNCH_APP || flag == Constants.FLAG_HIDDEN_APPS
+                viewModel.selectedApp(appModel, flag, drawerLaunch)
             },
             appInfoListener = {
                 openAppInfo(
@@ -266,12 +244,24 @@ class AppDrawerFragment : Fragment() {
                 }
             }
         }
-        viewModel.showReflection.observe(viewLifecycleOwner) {
-            val tag = "reflection"
-            if (childFragmentManager.findFragmentByTag(tag) == null) {
-                ReflectionSheet.newInstance()
-                    .show(childFragmentManager, tag)
+        viewModel.drawerNavHint.observe(viewLifecycleOwner) { hint ->
+            applyDrawerNavHint(hint)
+        }
+    }
+
+    private fun applyDrawerNavHint(hint: DrawerNavHint) {
+        if (hint.refreshAppList) viewModel.getAppList()
+        if (hint.refreshHiddenApps) viewModel.getHiddenApps()
+        val pkg = hint.blockedPackage
+        if (pkg != null) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                BlockedAppSheet.newInstance(pkg).show(childFragmentManager, "blocked")
             }
+        }
+        when {
+            hint.stayOnDrawer -> { /* reflection or blocked: keep drawer open */ }
+            hint.popToMain -> findNavController().popBackStack(R.id.mainFragment, false)
+            hint.popOnce -> findNavController().popBackStack()
         }
     }
 

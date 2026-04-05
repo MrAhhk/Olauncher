@@ -139,7 +139,10 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         initPinnedAppsRecycler()
         initSwipeTouchListener()
         initClickListeners()
-        binding.weatherWidget.post { applyWeatherWidgetOffsets() }
+        binding.weatherWidget.post {
+            if (_binding == null) return@post
+            applyWeatherWidgetOffsets()
+        }
     }
 
     override fun onResume() {
@@ -282,12 +285,10 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         viewModel.screenTimeValue.observe(viewLifecycleOwner) {
             it?.let { binding.tvScreenTime.text = it }
         }
-        viewModel.showReflection.observe(viewLifecycleOwner) {
-            val tag = "reflection"
-            if (childFragmentManager.findFragmentByTag(tag) == null) {
-                ReflectionSheet.newInstance()
-                    .show(childFragmentManager, tag)
-            }
+        viewModel.showBlockedAfterHomeLaunch.observe(viewLifecycleOwner) { pkg ->
+            if (pkg.isNullOrBlank()) return@observe
+            BlockedAppSheet.newInstance(pkg).show(childFragmentManager, "blocked")
+            viewModel.refreshHome(false)
         }
     }
 
@@ -530,7 +531,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 appInfo.shortcutId
             )
             if (!hasValidApp) clearHomeAppSlot(index)
-            val isBlocked = hasValidApp && appInfo.packageName.isNotBlank() && blockManager.isBlocked(appInfo.packageName)
+            val isBlocked = hasValidApp && appInfo.packageName.isNotBlank() && blockManager.showsBlockedStyle(appInfo.packageName)
             pinnedItems.add(
                 HomePinnedItem(
                     location = index,
@@ -584,7 +585,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             showLongPressToast()
             return
         }
-        if (packageName.isNotBlank() && blockManager.isBlocked(packageName)) {
+        if (packageName.isNotBlank() && blockManager.isLaunchBlocked(packageName)) {
             BlockedAppSheet.newInstance(packageName).show(childFragmentManager, "blocked")
             return
         }
@@ -605,13 +606,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         } else {
             fallback?.invoke()
             return
-        }
-        // App may have just been blocked on this tap: show dialog and refresh pinned app blur
-        if (packageName.isNotBlank() && blockManager.isBlocked(packageName)) {
-            viewLifecycleOwner.lifecycleScope.launch {
-                BlockedAppSheet.newInstance(packageName).show(childFragmentManager, "blocked")
-                viewModel.refreshHome(false)
-            }
         }
     }
 
@@ -657,7 +651,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun openSwipeRightApp() {
         if (prefs.swipeRightEnabled && prefs.appPackageSwipeRight.isNotBlank()) {
-            if (blockManager.isBlocked(prefs.appPackageSwipeRight)) {
+            if (blockManager.isLaunchBlocked(prefs.appPackageSwipeRight)) {
                 BlockedAppSheet.newInstance(prefs.appPackageSwipeRight).show(childFragmentManager, "blocked")
                 return
             }
@@ -674,7 +668,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun openSwipeLeftApp() {
         if (prefs.swipeLeftEnabled && prefs.appPackageSwipeLeft.isNotBlank()) {
-            if (blockManager.isBlocked(prefs.appPackageSwipeLeft)) {
+            if (blockManager.isLaunchBlocked(prefs.appPackageSwipeLeft)) {
                 BlockedAppSheet.newInstance(prefs.appPackageSwipeLeft).show(childFragmentManager, "blocked")
                 return
             }
@@ -1088,7 +1082,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private fun getLocationName(lat: Double, lon: Double): String? {
         return try {
-            val geocoder = Geocoder(requireContext(), Locale.getDefault())
+            val geocoder = Geocoder(requireContext().applicationContext, Locale.getDefault())
             @Suppress("DEPRECATION")
             val addresses = geocoder.getFromLocation(lat, lon, 1)
             addresses?.firstOrNull()?.let { addr ->
