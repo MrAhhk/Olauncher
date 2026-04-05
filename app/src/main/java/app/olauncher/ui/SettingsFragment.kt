@@ -65,7 +65,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         checkAdminPermission()
 
         binding.homeAppsNum.text = prefs.homeAppsNum.toString()
-        populateProMessage()
         populateKeyboardText()
         populateScreenTimeOnOff()
         populateLockSettings()
@@ -78,6 +77,8 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateActionHints()
         initClickListeners()
         initObservers()
+        if (prefs.firstSettingsOpen)
+            prefs.firstSettingsOpen = false
     }
 
     override fun onClick(view: View) {
@@ -227,10 +228,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     }
 
     private fun initObservers() {
-        if (prefs.firstSettingsOpen) {
-            viewModel.showDialog.postValue(Constants.Dialog.ABOUT)
-            prefs.firstSettingsOpen = false
-        }
         viewModel.isOlauncherDefault.observe(viewLifecycleOwner) {
             if (it) {
                 binding.setLauncher.text = getString(R.string.change_default_launcher)
@@ -509,20 +506,12 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             binding.rate.setCompoundDrawablesWithIntrinsicBounds(0, android.R.drawable.arrow_down_float, 0, 0)
     }
 
-    private fun populateProMessage() {
-        if (prefs.proMessageShown.not() && prefs.userState == Constants.UserState.SHARE) {
-            prefs.proMessageShown = true
-            viewModel.showDialog.postValue(Constants.Dialog.PRO_MESSAGE)
-        }
-    }
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
 
     override fun onDestroy() {
-        viewModel.checkForMessages.call()
         super.onDestroy()
     }
 }

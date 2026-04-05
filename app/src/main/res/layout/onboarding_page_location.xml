@@ -67,7 +67,7 @@
         android:layout_marginEnd="28dp"
         android:layout_marginTop="16dp"
         android:fontFamily="sans-serif-light"
-        android:text="Olauncher can show live weather on your home screen. Location is only used for this — never stored or shared.\n\nNot required — you can grant this later in Settings."
+        android:text="Subconsciously can show live weather on your home screen. Location is only used for this — never stored or shared.\n\nNot required — you can grant this later in Settings."
         android:textColor="@color/whiteTrans50"
         android:textSize="15sp"
         android:lineSpacingMultiplier="1.4"
