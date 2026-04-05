@@ -60,6 +60,8 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         private const val AUTO_LAUNCHER_PROMPT_COOLDOWN_MS = 12_000L
+        /** If we return to MainActivity sooner than this after [onStop], treat it as a transient system UI (e.g. home role), not a real "left the app" return. */
+        private const val SHORT_BACKGROUND_FOR_LAUNCHER_NUDGE_MS = 1_500L
     }
 
     /**
@@ -68,6 +70,9 @@ class MainActivity : AppCompatActivity() {
      * [MainViewModel.resetLauncherLiveData] directly and is unaffected.
      */
     private var lastAutoLauncherPromptElapsedRealtime = 0L
+    private var lastOnStopElapsedRealtime = 0L
+    /** One automatic "set default launcher" right after onboarding; avoids missing the prompt when stop→resume is very short. */
+    private var offerLauncherImmediatelyAfterOnboarding = false
 
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
@@ -78,6 +83,9 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             prefs.onboardingComplete = true
             prefs.reflectionSetupDone = true
+            if (!isDefaultLauncher()) {
+                offerLauncherImmediatelyAfterOnboarding = true
+            }
         }
     }
     private lateinit var viewModel: MainViewModel
@@ -208,6 +216,9 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         backToHomeScreen()
         super.onStop()
+        if (!isChangingConfigurations) {
+            lastOnStopElapsedRealtime = SystemClock.elapsedRealtime()
+        }
     }
 
     override fun onUserLeaveHint() {
@@ -241,6 +252,18 @@ class MainActivity : AppCompatActivity() {
         viewModel.isOlauncherDefault()
         if (!prefs.onboardingComplete || isDefaultLauncher()) return
         val now = SystemClock.elapsedRealtime()
+
+        if (offerLauncherImmediatelyAfterOnboarding) {
+            offerLauncherImmediatelyAfterOnboarding = false
+            lastAutoLauncherPromptElapsedRealtime = now
+            viewModel.resetLauncherLiveData.call()
+            return
+        }
+
+        // Only auto-nudge after a real background stint — not immediately after closing role / picker (brief onStop).
+        val msSinceStop =
+            if (lastOnStopElapsedRealtime > 0L) now - lastOnStopElapsedRealtime else Long.MAX_VALUE
+        if (msSinceStop < SHORT_BACKGROUND_FOR_LAUNCHER_NUDGE_MS) return
         if (now - lastAutoLauncherPromptElapsedRealtime < AUTO_LAUNCHER_PROMPT_COOLDOWN_MS) return
         lastAutoLauncherPromptElapsedRealtime = now
         viewModel.resetLauncherLiveData.call()
