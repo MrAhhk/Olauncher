@@ -65,8 +65,6 @@
         \n\nVeuillez rechercher Digital Wellbeing dans les paramètres de votre téléphone et l\'activer.</string>
     <string name="app_usage_message">Pour afficher/masquer le temps d\'écran sur l\'écran d\'accueil, autorisez ou refusez l\'autorisation d\'utilisation de l\'application.
         \n\nRemarque : Aucune donnée d\'utilisation de l\'application n\'est collectée. Tout est traité sur votre appareil.</string>
-    <string name="pro_message">Subconsciously a également une version pro appelée Pro Launcher. Elle dispose de fonctionnalités supplémentaires telles que la météo, les widgets, les polices, les dossiers, les fonds d\'écran AMOLED, etc.
-        \n\nC\'est aussi le meilleur moyen de soutenir les développeurs d\'Subconsciously. Jetez-y un œil !</string>
     <string name="wallpaper_message">Subconsciously propose de superbes fonds d\'écran nouveaux chaque jour. Donne un nouveau look à ton écran d\'accueil chaque jour, gratuitement!
         \n\nTu veux essayer?</string>
     <string name="accessibility_service_description">L\'autorisation d\'accessibilité est requise pour activer le double appui pour verrouiller. Toutes les données acquises par Subconsciously via ce service ne quitteront pas votre appareil.</string>
@@ -139,7 +137,6 @@
     <string name="alignment_changed">Alignement changé ✅</string>
     <string name="home_screen">Écran d\'accueil</string>
     <string name="hey">Salut</string>
-    <string name="more_features">Plus de fonctionnalités…</string>
     <string name="new_year_wish">À une année meilleure que toutes les précédentes. Bonne année !</string>
     <string name="new_year_wish_1">" Peu importe comment s'est passé le mois de janvier. Tu as encore le reste de l'année pour faire mieux que jamais."</string>
     <string name="cheers">Santé!</string>

@@ -33,6 +33,7 @@ fun View.showKeyboard(show: Boolean = true) {
     if (show.not()) return
     if (this.requestFocus())
         postDelayed({
+            if (!isAttachedToWindow) return@postDelayed
             val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY)
         }, 100)

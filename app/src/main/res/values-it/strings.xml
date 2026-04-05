@@ -66,8 +66,6 @@
         \n\nCerca Benessere digitale nelle impostazioni del telefono e attivalo.</string>
     <string name="app_usage_message">Per visualizzare/nascondere il tempo di utilizzo dello schermo sulla schermata iniziale, conceda o neghi il permesso di utilizzo dell\'app.
         \n\nNota: Non vengono raccolti dati sull\'utilizzo dell\'app. Tutto viene elaborato sul tuo dispositivo.</string>
-    <string name="pro_message">Subconsciously ha anche una versione pro chiamata Pro Launcher. Ha funzionalità extra come meteo, widget, font, cartelle, sfondi AMOLED, e così via.
-        \n\nÈ anche il modo migliore per supportare gli sviluppatori di Subconsciously. Dai un\'occhiata!</string>
     <string name="wallpaper_message">Subconsciously offre bellissimi sfondi nuovi ogni giorno. Dai un aspetto fresco alla tua schermata principale ogni giorno, gratuitamente!
         \n\nVuoi provarlo?</string>
     <string name="accessibility_service_description">L\'autorizzazione di accessibilità è necessaria per abilitare il doppio tocco per il blocco schermo. Qualsiasi dato acquisito da Subconsciously tramite questo servizio rimarrà all’interno del telefono</string>
@@ -138,7 +136,6 @@
     <string name="alignment_changed">Allineamento cambiato ✅</string>
     <string name="home_screen">Schermata principale</string>
     <string name="hey">Ciao</string>
-    <string name="more_features">Altre funzionalità…</string>
     <string name="new_year_wish">A un anno migliore di tutti i precedenti. Buon anno nuovo!</string>
     <string name="new_year_wish_1">" Non importa come sia andato gennaio. Hai ancora il resto dell'anno per fare meglio che mai."</string>
     <string name="cheers">Saluti!</string>

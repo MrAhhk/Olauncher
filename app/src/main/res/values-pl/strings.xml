@@ -97,8 +97,6 @@
         \n\nWyszukaj opcję Cyfrowa równowaga w ustawieniach telefonu i włącz ją.</string>
     <string name="app_usage_message">Aby wyświetlić/ukryć czas ekranu na ekranie głównym, pozwól lub zabroń aplikacji na dostęp do danych o użyciu.
         \n\nUwaga: Nie są gromadzone żadne dane o użyciu aplikacji. Wszystko jest przetwarzane na Twoim urządzeniu.</string>
-    <string name="pro_message">Subconsciously ma również wersję pro o nazwie Pro Launcher. Posiada dodatkowe funkcje, takie jak pogoda, widgety, czcionki, foldery, tapety AMOLED itp.
-        \n\nTo także najlepszy sposób na wsparcie deweloperów Subconsciously. Sprawdź to!</string>
     <string name="wallpaper_message">Subconsciously oferuje piękne nowe tapety codziennie. Nadaj swojemu ekranowi głównemu świeży wygląd każdego dnia, za darmo!
         \n\nChcesz spróbować?</string>
     <string name="accessibility_service_description">Uprawnienia dostępu są wymagane, aby włączyć podwójne dotknięcie, aby zablokować. Wszelkie dane pozyskane przez Subconsciously za pośrednictwem tej usługi nie opuszczą Twojego urządzenia.</string>
@@ -136,7 +134,6 @@
     <string name="alignment_changed">Wyrównanie zmienione ✅</string>
     <string name="home_screen">Ekran główny</string>
     <string name="hey">Hej</string>
-    <string name="more_features">Więcej funkcji…</string>
     <string name="new_year_wish">Za rok lepszy niż wszystkie poprzednie. Szczęśliwego nowego roku!</string>
     <string name="new_year_wish_1">Nie ma znaczenia, jak minął styczeń. Wciąż masz resztę roku, aby poradzić sobie lepiej niż kiedykolwiek.</string>
     <string name="cheers">Na zdrowie!</string>

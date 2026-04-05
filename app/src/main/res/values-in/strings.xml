@@ -65,8 +65,6 @@
         \n\nSilakan cari Digital Wellbeing di pengaturan ponsel Anda dan aktifkan.</string>
     <string name="app_usage_message">Untuk menampilkan/menyembunyikan waktu layar di layar utama, izinkan atau tolak izin penggunaan aplikasi.
         \n\nCatatan: Tidak ada data penggunaan aplikasi yang dikumpulkan. Semua diproses di perangkat Anda.</string>
-    <string name="pro_message">Subconsciously juga memiliki versi pro yang disebut Pro Launcher. Ini memiliki fitur tambahan seperti cuaca, widget, font, folder, wallpaper AMOLED, dan banyak lagi.
-        \n\nIni juga merupakan cara terbaik untuk mendukung pengembang Subconsciously. Cek it out!</string>
     <string name="wallpaper_message">Subconsciously menawarkan wallpaper baru yang indah setiap hari. Berikan tampilan baru pada layar utama Anda setiap hari, secara gratis!
         \n\nIngin mencobanya?</string>
     <string name="accessibility_service_description">Izin aksesibilitas diperlukan untuk mengaktifkan ketuk dua kali untuk mengunci. Data apa pun yang diperoleh Subconsciously melalui layanan ini tidak akan meninggalkan perangkat Anda.</string>
@@ -135,7 +133,6 @@
     <string name="alignment_changed">Penyelarasan diubah ✅</string>
     <string name="home_screen">Layar beranda</string>
     <string name="hey">Hai</string>
-    <string name="more_features">Fitur lainnya…</string>
     <string name="new_year_wish">Untuk tahun yang lebih baik dari sebelumnya. Selamat tahun baru!</string>
     <string name="new_year_wish_1">Tidak peduli bagaimana bulan Januari berlalu. Anda masih punya sisa tahun untuk melakukan yang lebih baik dari sebelumnya.</string>
     <string name="cheers">Bersulang!</string>

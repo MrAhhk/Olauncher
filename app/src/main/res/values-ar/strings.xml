@@ -96,8 +96,6 @@
         \n\nيرجى البحث عن الرفاهية الرقمية في إعدادات هاتفك وتمكينها.</string>
     <string name="app_usage_message">لعرض/إخفاء وقت استخدام الشاشة على الشاشة الرئيسية، يرجى السماح أو منع إذن استخدام التطبيق.
         \n\nملاحظة: لا يتم جمع أي بيانات حول استخدام التطبيقات. يتم معالجة كل شيء على جهازك.</string>
-    <string name="pro_message">يحتوي Subconsciously أيضًا على إصدار احترافي يسمى Pro Launcher. يحتوي على ميزات إضافية مثل الطقس، والأدوات، والخطوط، والمجلدات، وخلفيات AMOLED، وما إلى ذلك.
-        \n\nإنه أيضًا أفضل طريقة لدعم مطوري Subconsciously. تحقق من ذلك!</string>
     <string name="wallpaper_message">يقدم Subconsciously خلفيات جميلة جديدة يوميًا. امنح شاشتك الرئيسية مظهرًا جديدًا كل يوم، مجانًا!
         \n\nهل ترغب في تجربته؟</string>
     <string name="accessibility_service_description">إذن الوصول مطلوب لتمكين النقر المزدوج للقفل. أي بيانات حصل عليها Subconsciously عبر هذه الخدمة لن تترك جهازك.</string>
@@ -133,7 +131,6 @@
     <string name="alignment_changed">تم تغيير المحاذاة ✅</string>
     <string name="home_screen">الشاشة الرئيسية</string>
     <string name="hey">مرحبا</string>
-    <string name="more_features">مزايا إضافية…</string>
     <string name="new_year_wish">إليك عامًا أفضل من كل ما سبقه. سنة جديدة سعيدة!</string>
     <string name="new_year_wish_1">لا يهم كيف مضى شهر يناير. لا يزال لديك بقية العام لتقدم أداءً أفضل من أي وقت مضى.</string>
     <string name="cheers">هتافات!</string>

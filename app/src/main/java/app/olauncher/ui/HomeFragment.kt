@@ -900,7 +900,13 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 binding.batteryProgress.progress = pct
             }
         }
-        requireContext().registerReceiver(batteryReceiver, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+        val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requireContext().registerReceiver(batteryReceiver, filter, Context.RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            requireContext().registerReceiver(batteryReceiver, filter)
+        }
     }
 
     private fun unregisterBatteryReceiver() {

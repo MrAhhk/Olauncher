@@ -65,8 +65,6 @@
         \n\nProcure Bem-estar Digital nas configurações do seu telefone e ative-o.</string>
     <string name="app_usage_message">Para exibir/ocultar o tempo de tela na tela inicial, permita ou negue a permissão de uso do aplicativo.
         \n\nNota: Não são coletados dados de uso do aplicativo. Tudo é processado no seu dispositivo.</string>
-    <string name="pro_message">Subconsciously também tem uma versão pro chamada Pro Launcher. Tem recursos extras como clima, widgets, fontes, pastas, papéis de parede AMOLED, e assim por diante.
-        \n\nÉ também a melhor maneira de apoiar os desenvolvedores do Subconsciously. Confira!</string>
     <string name="wallpaper_message">Subconsciously oferece lindos papéis de parede novos todos os dias. Dê uma nova aparência à sua tela inicial todos os dias, gratuitamente!
         \n\nQuer tentar?</string>
     <string name="accessibility_service_description">A permissão de acessibilidade é necessária para ativar o toque duplo para bloquear. Quaisquer dados adquiridos pelo Subconsciously através deste serviço não sairão do seu dispositivo.</string>
@@ -137,7 +135,6 @@
     <string name="alignment_changed">Alinhamento alterado ✅</string>
     <string name="home_screen">Tela inicial</string>
     <string name="hey">Oi</string>
-    <string name="more_features">Mais recursos…</string>
     <string name="new_year_wish">A um ano melhor do que qualquer um anterior. Feliz ano novo!</string>
     <string name="new_year_wish_1">Não importa como foi janeiro. Você ainda tem o resto do ano para se sair melhor do que nunca.</string>
     <string name="cheers">Saúde!</string>

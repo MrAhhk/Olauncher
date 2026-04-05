@@ -65,8 +65,6 @@
         \n\nPotražite Digital Wellbeing u postavkama telefona i omogućite ga.</string>
     <string name="app_usage_message">Da biste prikazali/sakrili vrijeme korištenja ekrana na početnom zaslonu, molimo dozvolite ili onemogućite dopuštenje korištenja aplikacije.
         \n\nNapomena: Ne prikupljaju se podaci o korištenju aplikacije. Sve se obrađuje na vašem uređaju.</string>
-    <string name="pro_message">Subconsciously također ima pro verziju pod nazivom Pro Launcher. Ima dodatne značajke poput vremena, widgeta, fontova, mapa, AMOLED pozadina itd.
-        \n\nTo je također najbolji način da podržite programere Subconsciously-a. Pogledajte!</string>
     <string name="wallpaper_message">Subconsciously nudi predivne nove pozadine svaki dan. Daj svom početnom ekranu svjež izgled svaki dan, besplatno!
         \n\nŽeliš li isprobati?</string>
     <string name="accessibility_service_description">Dozvola za pristupačnost potrebna je za omogućavanje zaključavanja dvostrukim dodirom. Bilo koji podatci prikupljeni ovim servisom neće napustiti tvoj uređaj.</string>
@@ -136,7 +134,6 @@
     <string name="alignment_changed">Poravnanje promijenjeno ✅</string>
     <string name="home_screen">Početni ekran</string>
     <string name="hey">Bok</string>
-    <string name="more_features">Više značajki…</string>
     <string name="new_year_wish">Neka je ova godina bolja od svih prije. Sretna nova godina!</string>
     <string name="new_year_wish_1">Nije važno kako je prošao siječanj. Još uvijek imate ostatak godine da budete bolji nego ikad.</string>
     <string name="cheers">Živjeli!</string>

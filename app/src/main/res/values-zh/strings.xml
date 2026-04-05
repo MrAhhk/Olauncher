@@ -99,8 +99,6 @@
         \n\n请在手机设置中搜索数字健康并启用它。</string>
     <string name="app_usage_message">要在主屏幕上显示/隐藏您的屏幕时间，请允许或拒绝应用程序使用权限。
         \n\n注意：不收集应用程序使用数据。所有数据都在您的设备上处理。</string>
-    <string name="pro_message">Subconsciously 还有一个名为 Pro Launcher 的专业版。它具有额外的功能，如天气、部件、字体、文件夹、AMOLED 壁纸等。
-        \n\n这也是支持 Subconsciously 开发者的最佳方式。快来看看吧！</string>
     <string name="wallpaper_message">Subconsciously每天提供美丽的新壁纸。让你的主屏幕每天焕然一新，免费！
         \n\n想试试吗？</string>
     <string name="accessibility_service_description">请在手机设置中搜索数字健康并启用它。</string>
@@ -138,7 +136,6 @@
     <string name="alignment_changed">对齐已更改 ✅</string>
     <string name="home_screen">主屏幕</string>
     <string name="hey">嘿</string>
-    <string name="more_features">更多功能…</string>
     <string name="new_year_wish">愿新的一年胜过以往所有。新年快乐！</string>
     <string name="new_year_wish_1">月过得如何并不重要。你还有一年的时间做到比以往任何时候都更好。</string>
     <string name="cheers">干杯!</string>

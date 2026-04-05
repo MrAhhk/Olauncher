@@ -119,7 +119,6 @@
     <string name="adapter_hide">הסתרה</string>
     <string name="are_you_using_your_phone_or_is_your_phone_using_you">האם אתם משתמשים בטלפון, או שהוא משתמש בכם?</string>
     <string name="hey">היי</string>
-    <string name="more_features">עוד תכונות…</string>
     <string name="new_year_wish">לעבר שנה טובה יותר מכל מה שקדם. שנה טובה!</string>
     <string name="new_year_wish_1">לא משנה איך עבר ינואר. עדיין יש לך את שאר השנה להצליח יותר מתמיד</string>
     <string name="cheers">לחיים!</string>
@@ -133,6 +132,5 @@
     <string name="home_screen">מסך הבית</string>
     <string name="digital_wellbeing_message">אם ברצונך להגדיר מגבלות זמן עבור אפליקציות מסוימות, תכונת Digital Wellbeing של אנדרואיד יכולה לעזור לך לעשות זאת. חפש את Digital Wellbeing בהגדרות הטלפון שלך והפעל אותה.</string>
     <string name="app_usage_message">כדי להציג/להסתיר את זמן המסך שלך במסך הבית, אנא אפשר או בטל את הרשאת השימוש באפליקציה. הערה: לא נאספים נתוני שימוש באפליקציה. הכל מעובד במכשיר שלך.</string>
-    <string name="pro_message">ל-Subconsciously יש גם גרסת Pro בשם Pro Launcher. יש לה תכונות נוספות כמו מזג אוויר, ווידג\'טים, גופנים, תיקיות, טפטים של AMOLED וכן הלאה. זוהי גם הדרך הטובה ביותר לתמוך במפתחי Subconsciously. תבדקו!</string>
     <string name="notification_bar">שורת ההתראות</string>
 </resources>

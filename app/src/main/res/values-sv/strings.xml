@@ -65,8 +65,6 @@
         \n\nVänligen sök efter Digitalt välmående i dina telefoninställningar och aktivera den.</string>
     <string name="app_usage_message">För att visa/dölja din skärmtid på startsidan, vänligen tillåt eller neka appanvändningsbehörigheten.
         \n\nObs: Inga data om appanvändning samlas in. Allt bearbetas på din enhet.</string>
-    <string name="pro_message">Subconsciously har också en pro-version som kallas Pro Launcher. Den har extra funktioner som väder, widgets, typsnitt, mappar, AMOLED-bakgrunder och så vidare.
-        \n\nDet är också det bästa sättet att stödja utvecklarna av Subconsciously. Kolla in det!</string>
     <string name="wallpaper_message">Subconsciously erbjuder vackra nya bakgrundsbilder varje dag. Ge din hemskärm ett fräscht utseende varje dag, gratis!
         \n\nVill du prova?</string>
     <string name="accessibility_service_description">Tillgänglighetsbehörigheten krävs för att aktivera dubbeltryck för att låsa. Eventuella data förvärvade av Subconsciously genom denna tjänst kommer inte att lämna din enhet.</string>
@@ -136,7 +134,6 @@
     <string name="alignment_changed">Justering ändrad ✅</string>
     <string name="home_screen">Startskärm</string>
     <string name="hey">Hej</string>
-    <string name="more_features">Fler funktioner…</string>
     <string name="new_year_wish">För ett år bättre än alla tidigare. Gott nytt år!</string>
     <string name="new_year_wish_1">Det spelar ingen roll hur januari gick. Du har fortfarande resten av året på dig att göra bättre ifrån dig än någonsin.</string>
     <string name="cheers">Skål!</string>
