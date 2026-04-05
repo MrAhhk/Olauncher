@@ -8,6 +8,7 @@ import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
@@ -57,6 +58,17 @@ import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
+    companion object {
+        private const val AUTO_LAUNCHER_PROMPT_COOLDOWN_MS = 12_000L
+    }
+
+    /**
+     * Prevents a tight loop: onResume → open "set default launcher" UI → return → onResume → open again,
+     * which can freeze the app (not a memory leak). Manual "set default" from Home still calls
+     * [MainViewModel.resetLauncherLiveData] directly and is unaffected.
+     */
+    private var lastAutoLauncherPromptElapsedRealtime = 0L
+
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
 
@@ -66,9 +78,6 @@ class MainActivity : AppCompatActivity() {
         if (result.resultCode == Activity.RESULT_OK) {
             prefs.onboardingComplete = true
             prefs.reflectionSetupDone = true
-            if (!isDefaultLauncher()) {
-                viewModel.resetLauncherLiveData.call()
-            }
         }
     }
     private lateinit var viewModel: MainViewModel
@@ -227,15 +236,26 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.isOlauncherDefault()
+        if (!prefs.onboardingComplete || isDefaultLauncher()) return
+        val now = SystemClock.elapsedRealtime()
+        if (now - lastAutoLauncherPromptElapsedRealtime < AUTO_LAUNCHER_PROMPT_COOLDOWN_MS) return
+        lastAutoLauncherPromptElapsedRealtime = now
+        viewModel.resetLauncherLiveData.call()
+    }
+
     private fun initObservers(viewModel: MainViewModel) {
         viewModel.launcherResetFailed.observe(this) {
             openLauncherChooser(it)
         }
         viewModel.resetLauncherLiveData.observe(this) {
-            if (isDefaultLauncher() || Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-                resetLauncherViaFakeActivity()
-            else
+            if (isDefaultLauncher()) return@observe
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                 showLauncherSelector(Constants.REQUEST_CODE_LAUNCHER_SELECTOR)
+            else
+                resetLauncherViaFakeActivity()
         }
         viewModel.checkForMessages.observe(this) {
             checkForMessages()

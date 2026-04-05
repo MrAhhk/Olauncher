@@ -190,6 +190,7 @@ class OnboardingActivity : AppCompatActivity() {
             )
         }
         binding.pageLocation.btnSkip.setOnClickListener {
+            markLocationAsked()
             navigateTo(binding.pageLocation.root, binding.pageAccess.root)
         }
     }

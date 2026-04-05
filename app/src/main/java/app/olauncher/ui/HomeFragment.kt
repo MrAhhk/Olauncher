@@ -965,6 +965,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         }
         val coords = getWeatherCoordinates()
         if (coords == null) {
+            // Never show the runtime dialog from home until onboarding finished (onboarding has its own step).
+            if (!prefs.onboardingComplete) return
+            // After onboarding, only prompt if we have not already asked (skip/grant path sets KEY_LOCATION_ASKED).
             if (!hasLocationPermission() && !sp.contains(KEY_TS) &&
                 !locationPermissionRequested && !sp.getBoolean(KEY_LOCATION_ASKED, false)) {
                 locationPermissionRequested = true
