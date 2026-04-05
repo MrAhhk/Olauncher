@@ -67,6 +67,9 @@ import app.olauncher.helper.setPlainWallpaperByTheme
 import app.olauncher.helper.showToast
 import app.olauncher.listener.OnSwipeTouchListener
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
@@ -147,8 +150,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         else hideStatusBar()
         registerBatteryReceiver()
         syncBatteryBarWidth()
-        refreshWeatherIfNeeded()
         renderCachedWeather()
+        // Check once on resume; background worker handles the 15m intervals.
+        refreshWeatherIfNeeded()
     }
 
     override fun onPause() {
@@ -305,7 +309,14 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.tvScreenTime.setOnClickListener(this)
         binding.tvScreenTime.setOnLongClickListener(this)
         binding.batteryProgress.setOnClickListener { openBatterySettings() }
-        binding.weatherWidget.setOnClickListener { openWeatherPage() }
+        binding.weatherWidget.setOnClickListener {
+            requireContext().showToast(R.string.updating_weather)
+            refreshWeatherIfNeeded(force = true)
+        }
+        binding.weatherWidget.setOnLongClickListener {
+            openWeatherPage()
+            true
+        }
     }
 
     private fun setHomeAlignment(horizontalGravity: Int = prefs.homeAlignment) {

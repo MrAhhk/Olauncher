@@ -25,6 +25,7 @@ import app.olauncher.data.DistractionList
 import app.olauncher.data.Prefs
 import app.olauncher.helper.SingleLiveEvent
 import app.olauncher.helper.WallpaperWorker
+import app.olauncher.helper.WeatherWorker
 import app.olauncher.helper.formattedTimeSpent
 import app.olauncher.helper.getAppsList
 import app.olauncher.helper.hasBeenMinutes
@@ -102,6 +103,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
     init {
         launcherAppsService.registerCallback(packageCallback, Handler(Looper.getMainLooper()))
+        if (prefs.showWeatherWidget) {
+            setWeatherWorker()
+        }
     }
 
     override fun onCleared() {
@@ -444,6 +448,27 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         WorkManager.getInstance(appContext).cancelUniqueWork(Constants.WALLPAPER_WORKER_NAME)
         prefs.dailyWallpaperUrl = ""
         prefs.dailyWallpaper = false
+    }
+
+    fun setWeatherWorker() {
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
+        val weatherWorkRequest = PeriodicWorkRequestBuilder<WeatherWorker>(15, TimeUnit.MINUTES)
+            .setBackoffCriteria(BackoffPolicy.LINEAR, 5, TimeUnit.MINUTES)
+            .setConstraints(constraints)
+            .build()
+        WorkManager
+            .getInstance(appContext)
+            .enqueueUniquePeriodicWork(
+                Constants.WEATHER_WORKER_NAME,
+                ExistingPeriodicWorkPolicy.KEEP,
+                weatherWorkRequest
+            )
+    }
+
+    fun cancelWeatherWorker() {
+        WorkManager.getInstance(appContext).cancelUniqueWork(Constants.WEATHER_WORKER_NAME)
     }
 
     fun updateHomeAlignment(gravity: Int) {
