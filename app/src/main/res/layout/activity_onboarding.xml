@@ -14,6 +14,11 @@
         android:visibility="gone" />
 
     <include
+        android:id="@+id/pageLocation"
+        layout="@layout/onboarding_page_location"
+        android:visibility="gone" />
+
+    <include
         android:id="@+id/pageAccess"
         layout="@layout/onboarding_page_access"
         android:visibility="gone" />

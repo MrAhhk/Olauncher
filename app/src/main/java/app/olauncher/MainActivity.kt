@@ -12,6 +12,7 @@ import android.provider.Settings
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
@@ -58,6 +59,18 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
+
+    private val onboardingLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            prefs.onboardingComplete = true
+            prefs.reflectionSetupDone = true
+            if (!isDefaultLauncher()) {
+                viewModel.resetLauncherLiveData.call()
+            }
+        }
+    }
     private lateinit var viewModel: MainViewModel
     private lateinit var binding: ActivityMainBinding
     private var timerJob: Job? = null
@@ -106,7 +119,6 @@ class MainActivity : AppCompatActivity() {
             prefs.firstOpen = false
             prefs.firstOpenTime = System.currentTimeMillis()
             viewModel.setDefaultClockApp()
-            viewModel.resetLauncherLiveData.call()
         }
 
         initClickListeners()
@@ -116,10 +128,14 @@ class MainActivity : AppCompatActivity() {
 
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
 
-        if (!prefs.onboardingComplete) {
-            startActivity(Intent(this, app.olauncher.ui.OnboardingActivity::class.java))
-        } else if (!prefs.reflectionSetupDone) {
-            showReflectionSetupDialog(isInitialSetup = true)
+        // Avoid stacking a second OnboardingActivity when MainActivity is recreated (rotation, etc.)
+        // while onboarding is still incomplete in prefs.
+        if (savedInstanceState == null) {
+            if (!prefs.onboardingComplete) {
+                onboardingLauncher.launch(Intent(this, app.olauncher.ui.OnboardingActivity::class.java))
+            } else if (!prefs.reflectionSetupDone) {
+                showReflectionSetupDialog(isInitialSetup = true)
+            }
         }
     }
 

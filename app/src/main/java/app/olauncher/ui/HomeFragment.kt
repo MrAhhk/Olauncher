@@ -83,6 +83,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         private const val DEFAULT_LAT = 40.7128
         private const val DEFAULT_LON = -74.0060
         private const val PREF_WEATHER = "weather_cache"
+        const val KEY_LOCATION_ASKED = "location_asked"
         private const val KEY_TEMP = "temp"
         private const val KEY_HUMIDITY = "humidity"
         private const val KEY_VISIBILITY = "visibility_m"
@@ -110,10 +111,12 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private var lastEdgeLastVisible = -1
     private var lastEdgeCanScrollUp = false
     private var lastEdgeCanScrollDown = false
+    private var locationPermissionRequested = false
 
     private val requestLocationPermission = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { granted ->
+        locationPermissionRequested = false
         if (granted.values.any { it }) refreshWeatherIfNeeded()
     }
 
@@ -231,8 +234,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             }
 
             R.id.setDefaultLauncher -> {
-                prefs.hideSetDefaultLauncher = true
-                binding.setDefaultLauncher.visibility = View.GONE
                 if (viewModel.isOlauncherDefault.value != true) {
                     requireContext().showToast(R.string.set_as_default_launcher)
                     findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
@@ -269,7 +270,8 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
                 setHomeAlignment()
             }
             if (binding.firstRunTips.visibility == View.VISIBLE) return@Observer
-            binding.setDefaultLauncher.isVisible = it.not() && prefs.hideSetDefaultLauncher.not()
+            // Show until Olauncher is actually default (do not hide via long-press permanently).
+            binding.setDefaultLauncher.isVisible = it != true
         })
         viewModel.homeAppAlignment.observe(viewLifecycleOwner) {
             setHomeAlignment(it)
@@ -963,7 +965,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         }
         val coords = getWeatherCoordinates()
         if (coords == null) {
-            if (!hasLocationPermission() && !sp.contains(KEY_TS)) {
+            if (!hasLocationPermission() && !sp.contains(KEY_TS) &&
+                !locationPermissionRequested && !sp.getBoolean(KEY_LOCATION_ASKED, false)) {
+                locationPermissionRequested = true
                 requestLocationPermission.launch(
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
                 )

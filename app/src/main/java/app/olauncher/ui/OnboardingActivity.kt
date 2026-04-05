@@ -1,5 +1,6 @@
 package app.olauncher.ui
 
+import android.Manifest
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -41,15 +43,23 @@ class OnboardingActivity : AppCompatActivity() {
     private var appRows: MutableList<ReflectionAppRow>? = null
     private var awaitingAccessReturn = false
 
+    private val requestLocationPermission = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) {
+        navigateTo(binding.pageLocation.root, binding.pageAccess.root)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefs = Prefs(this)
+        if (prefs.onboardingComplete) { setResult(RESULT_OK); finish(); return }
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
 
         setupReasonPage()
         setupAppsPageButtons()
+        setupLocationPage()
         setupAccessPage()
     }
 
@@ -116,7 +126,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun setupAppsPageButtons() {
         binding.pageApps.btnSkip.setOnClickListener {
-            navigateTo(binding.pageApps.root, binding.pageAccess.root)
+            navigateToLocation(binding.pageApps.root)
         }
         // btnConfirm is wired after rows are loaded in loadAppsAsync()
     }
@@ -134,7 +144,7 @@ class OnboardingActivity : AppCompatActivity() {
             }
 
             if (apps.isEmpty() || rows == null) {
-                navigateTo(binding.pageApps.root, binding.pageAccess.root)
+                navigateToLocation(binding.pageApps.root)
                 return@launch
             }
 
@@ -164,20 +174,31 @@ class OnboardingActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     distractionList.applyReflectionSelectionBatch(rows)
                     withContext(Dispatchers.Main) {
-                        navigateTo(appsPage.root, binding.pageAccess.root)
+                        navigateToLocation(appsPage.root)
                     }
                 }
             }
         }
     }
 
-    // ── Page 3: Access ───────────────────────────────────────────────────────
+    // ── Page 3: Location ─────────────────────────────────────────────────────
+
+    private fun setupLocationPage() {
+        binding.pageLocation.btnGrant.setOnClickListener {
+            requestLocationPermission.launch(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)
+            )
+        }
+        binding.pageLocation.btnSkip.setOnClickListener {
+            navigateTo(binding.pageLocation.root, binding.pageAccess.root)
+        }
+    }
+
+    // ── Page 4: Access ───────────────────────────────────────────────────────
 
     private fun setupAccessPage() {
         binding.pageAccess.btnGrant.setOnClickListener {
             awaitingAccessReturn = true
-            prefs.onboardingComplete = true
-            prefs.reflectionSetupDone = true
             startActivity(Intent(Settings.ACTION_USAGE_ACCESS_SETTINGS))
         }
         binding.pageAccess.btnSkip.setOnClickListener {
@@ -187,10 +208,20 @@ class OnboardingActivity : AppCompatActivity() {
 
     // ── Helpers ──────────────────────────────────────────────────────────────
 
+    /** Prefs are committed in MainActivity when it receives [RESULT_OK]. */
     private fun finishOnboarding() {
-        prefs.onboardingComplete = true
-        prefs.reflectionSetupDone = true
+        setResult(RESULT_OK)
         finish()
+    }
+
+    private fun navigateToLocation(fromView: View) {
+        markLocationAsked()
+        navigateTo(fromView, binding.pageLocation.root)
+    }
+
+    private fun markLocationAsked() {
+        getSharedPreferences("weather_cache", MODE_PRIVATE)
+            .edit().putBoolean(HomeFragment.KEY_LOCATION_ASKED, true).apply()
     }
 
     private fun navigateTo(outView: View, inView: View) {
