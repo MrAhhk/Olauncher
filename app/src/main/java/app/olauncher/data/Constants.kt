@@ -109,7 +109,8 @@ object Constants {
     const val URL_PLAY_STORE_DEV = "https://play.google.com/store/apps/dev?id=7198807840081074933"
     const val URL_TWITTER_TANUJ = "https://x.com/tanujnotes"
     const val URL_WALLPAPERS = "https://gist.githubusercontent.com/tanujnotes/85e2d0343ace71e76615ac346fbff82b/raw"
-    const val URL_NTS = "https://play.google.com/store/apps/details?id=com.makenotetoself"
+    /** Ko-fi support (README Support section). Footer control only. */
+    const val URL_KOFI = "https://ko-fi.com/ahhkthecat"
     const val URL_DEFAULT_DARK_WALLPAPER = "https://images.unsplash.com/photo-1512551980832-13df02babc9e"
     const val URL_DEFAULT_LIGHT_WALLPAPER = "https://images.unsplash.com/photo-1515549832467-8783363e19b6"
     const val URL_DUCK_SEARCH = "https://duck.co/?q="
