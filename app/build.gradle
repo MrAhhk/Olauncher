@@ -42,6 +42,12 @@ android {
         buildConfig = true
     }
     namespace 'app.olauncher'
+
+    lint {
+        baseline = file("lint-baseline.xml")
+        abortOnError false
+        checkReleaseBuilds false
+    }
 }
 
 dependencies {

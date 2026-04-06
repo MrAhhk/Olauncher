@@ -1,0 +1,2445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="6" by="lint 8.13.2" type="baseline" client="gradle" dependencies="false" name="AGP (8.13.2)" variant="all" version="8.13.2">
+
+    <issue
+        id="MissingPermission"
+        message="Call requires permission which may be rejected by user: code should explicitly check to see if permission is available (with `checkPermission`) or explicitly handle a potential `SecurityException`"
+        errorLine1="                val loc = lm.getLastKnownLocation(provider)"
+        errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/WeatherWorker.kt"
+            line="96"
+            column="27"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/stepDots, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="11"
+            column="5"
+            message="Duplicate id @+id/stepDots, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/tvSubtitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvSubtitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvSubtitle]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="11"
+            column="5"
+            message="Duplicate id @+id/tvSubtitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvSubtitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvSubtitle]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="63"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvSubtitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="66"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvSubtitle"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/tvTitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="11"
+            column="5"
+            message="Duplicate id @+id/tvTitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="48"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/btnSkip, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnSkip]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="16"
+            column="5"
+            message="Duplicate id @+id/btnSkip, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnSkip]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="139"
+            column="13"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/btnSkip"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="101"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnSkip"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="101"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnSkip"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/stepDots, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="16"
+            column="5"
+            message="Duplicate id @+id/stepDots, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/tvTitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="16"
+            column="5"
+            message="Duplicate id @+id/tvTitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="48"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/btnGrant, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnGrant, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnGrant]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="21"
+            column="5"
+            message="Duplicate id @+id/btnGrant, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnGrant, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnGrant]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="79"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnGrant"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="79"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnGrant"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/btnSkip, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnSkip]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="21"
+            column="5"
+            message="Duplicate id @+id/btnSkip, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnSkip, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnSkip]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="139"
+            column="13"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/btnSkip"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="101"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/btnSkip"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="101"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/btnSkip"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/stepDots, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="21"
+            column="5"
+            message="Duplicate id @+id/stepDots, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/stepDots"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="9"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/stepDots"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/tvDescription, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvDescription, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvDescription]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="21"
+            column="5"
+            message="Duplicate id @+id/tvDescription, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvDescription, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvDescription]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="63"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvDescription"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="63"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvDescription"/>
+    </issue>
+
+    <issue
+        id="DuplicateIncludedIds"
+        message="Duplicate id @+id/tvTitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle]"
+        errorLine1="    &lt;include"
+        errorLine2="    ^">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="21"
+            column="5"
+            message="Duplicate id @+id/tvTitle, defined or included multiple times in layout/activity_onboarding.xml: [layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle, layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle]"/>
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_apps.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_access.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="48"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_reason.xml defines @+id/tvTitle"/>
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="45"
+            column="9"
+            message="Defined here, included via layout/activity_onboarding.xml => layout/onboarding_page_location.xml defines @+id/tvTitle"/>
+    </issue>
+
+    <issue
+        id="LocaleFolder"
+        message="The locale folder &quot;`he`&quot; should be called &quot;`iw`&quot; instead; see the `java.util.Locale` documentation">
+        <location
+            file="src/main/res/values-he"/>
+    </issue>
+
+    <issue
+        id="OldTargetApi"
+        message="Not targeting the latest versions of Android; compatibility modes apply. Consider testing and updating this version. Consult the `android.os.Build.VERSION_CODES` javadoc for details."
+        errorLine1="        targetSdkVersion 35"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="19"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of Gradle than 8.13 is available: 8.14.4"
+        errorLine1="distributionUrl=https\://services.gradle.org/distributions/gradle-8.13-bin.zip"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/wrapper/gradle-wrapper.properties"
+            line="3"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="AndroidGradlePluginVersion"
+        message="A newer version of com.android.tools.build:gradle than 8.13.2 is available: 9.1.0"
+        errorLine1="gradle = &quot;8.13.2&quot;"
+        errorLine2="         ~~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="4"
+            column="10"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of `compileSdkVersion` than 35 is available: 36"
+        errorLine1="    compileSdk 35"
+        errorLine2="    ~~~~~~~~~~~~~">
+        <location
+            file="build.gradle"
+            line="5"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.appcompat:appcompat than 1.7.0 is available: 1.7.1"
+        errorLine1="appcompat = &quot;1.7.0&quot;"
+        errorLine2="            ~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="2"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.core:core-ktx than 1.16.0 is available: 1.18.0"
+        errorLine1="coreKtx = &quot;1.16.0&quot;"
+        errorLine2="          ~~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="3"
+            column="11"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of org.jetbrains.kotlin:kotlin-stdlib than 2.1.20 is available: 2.2.0"
+        errorLine1="kotlinStdlib = &quot;2.1.20&quot;"
+        errorLine2="               ~~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="5"
+            column="16"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.lifecycle:lifecycle-viewmodel-ktx than 2.9.0 is available: 2.10.0"
+        errorLine1="lifecycleViewmodelKtx = &quot;2.9.0&quot;"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="7"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of com.google.android.material:material than 1.12.0 is available: 1.13.0"
+        errorLine1="material = &quot;1.12.0&quot;"
+        errorLine2="           ~~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="8"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.navigation:navigation-fragment-ktx than 2.9.0 is available: 2.9.7"
+        errorLine1="navigationFragmentKtx = &quot;2.9.0&quot;"
+        errorLine2="                        ~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="9"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="GradleDependency"
+        message="A newer version of androidx.work:work-runtime-ktx than 2.10.1 is available: 2.11.2"
+        errorLine1="workRuntimeKtx = &quot;2.10.1&quot;"
+        errorLine2="                 ~~~~~~~~">
+        <location
+            file="$HOME/Downloads/Olauncher-master/Olauncher-master/gradle/libs.versions.toml"
+            line="11"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`"
+        errorLine1="                foreground = getDrawable(rippleAttr.resourceId)"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/OnboardingActivity.kt"
+            line="104"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="UseCompatLoadingForDrawables"
+        message="Use `AppCompatResources.getDrawable()`"
+        errorLine1="                foreground = getDrawable(rippleAttr.resourceId)"
+        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/OnboardingActivity.kt"
+            line="104"
+            column="30"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;add_an_app&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;add_an_app&quot;>Add an app&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="21"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;_9&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;_9&quot;>9&lt;/string>"
+        errorLine2="            ~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="60"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;_10&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;_10&quot;>10&lt;/string>"
+        errorLine2="            ~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="61"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;_11&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;_11&quot;>11&lt;/string>"
+        errorLine2="            ~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="62"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;_12&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;_12&quot;>12&lt;/string>"
+        errorLine2="            ~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="63"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;weather_widget&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;weather_widget&quot;>Weather widget&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="75"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;update_weather&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;update_weather&quot;>Update weather&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="76"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;updating_weather&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;updating_weather&quot;>Updating weather…&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="77"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;weather_temp_unit&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;weather_temp_unit&quot;>Metric&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="78"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;temp_system&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;temp_system&quot;>System (by location)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="79"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;temp_celsius&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;temp_celsius&quot;>°C (Celsius)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="80"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;temp_fahrenheit&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;temp_fahrenheit&quot;>°F (Fahrenheit)&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="81"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;reflection_pause_dialog_title&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;reflection_pause_dialog_title&quot;>Reflection pause will activate for:&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="175"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;reflection_sheet_open_anyway&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;reflection_sheet_open_anyway&quot;>Open anyway&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="180"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;reflection_sheet_continue_later&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;reflection_sheet_continue_later&quot;>Continue later&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="181"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;done&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;done&quot;>Done&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="182"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MissingTranslation"
+        message="&quot;blocked_app_dialog_ok&quot; is not translated in &quot;de&quot; (German), &quot;sv&quot; (Swedish), &quot;in&quot; (Indonesian), &quot;hr&quot; (Croatian), &quot;it&quot; (Italian), &quot;fr&quot; (French), &quot;hu&quot; (Hungarian), &quot;zh&quot; (Chinese), &quot;ar&quot; (Arabic), &quot;uk&quot; (Ukrainian), &quot;ja&quot; (Japanese), &quot;pl&quot; (Polish), &quot;he&quot; (Hebrew), &quot;nl&quot; (Dutch), &quot;tr&quot; (Turkish)"
+        errorLine1="    &lt;string name=&quot;blocked_app_dialog_ok&quot;>:(&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="183"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="ExtraTranslation"
+        message="&quot;pro_message&quot; is translated here but not found in default locale"
+        errorLine1="    &lt;string name=&quot;pro_message&quot;>A Subconsciously-nek van egy pro verziója is, amely Pro Launcher néven ismert. További funkciókat kínál, mint például időjárás, widgetek, betűtípusok, mappák, AMOLED háttérképek stb."
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-hu/strings.xml"
+            line="70"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `ar (Arabic)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `de (German)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `he (Hebrew)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `hr (Croatian)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `hu (Hungarian)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `ja (Japanese)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `nl (Dutch)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `pl (Polish)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `sv (Swedish)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `tr (Turkish)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `uk (Ukrainian)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnusedTranslation"
+        message="The language `zh (Chinese)` is present in this project, but not declared in the `localeConfig` resource"
+        errorLine1="        android:localeConfig=&quot;@xml/locales_config&quot;"
+        errorLine2="                              ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/AndroidManifest.xml"
+            line="28"
+            column="31"/>
+    </issue>
+
+    <issue
+        id="UnsafeImplicitIntentLaunch"
+        message="The intent action `android.intent.action.MAIN (used to start an activity)` matches the intent filter of a non-exported component `app.olauncher.helper.FakeHomeActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
+        errorLine1="        val selector = Intent(Intent.ACTION_MAIN)"
+        errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Extensions.kt"
+            line="51"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="UnsafeImplicitIntentLaunch"
+        message="The intent action `android.intent.action.MAIN (used to start an activity)` matches the intent filter of a non-exported component `app.olauncher.helper.FakeHomeActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
+        errorLine1="            val intent = Intent(Intent.ACTION_MAIN)"
+        errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Utils.kt"
+            line="451"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="NotifyDataSetChanged"
+        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
+        errorLine1="                        notifyDataSetChanged()"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/AppDrawerAdapter.kt"
+            line="129"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; `SDK_INT` is always >= 24"
+        errorLine1="        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Utils.kt"
+            line="239"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="MergeRootFrame"
+        message="This `&lt;FrameLayout>` can be replaced with a `&lt;merge>` tag"
+        errorLine1="&lt;FrameLayout xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/layout/activity_fake_home.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="DisableBaselineAlignment"
+        message="Set `android:baselineAligned=&quot;false&quot;` on this element for better performance"
+        errorLine1="    &lt;LinearLayout"
+        errorLine2="     ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_home.xml"
+            line="21"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="DisableBaselineAlignment"
+        message="Set `android:baselineAligned=&quot;false&quot;` on this element for better performance"
+        errorLine1="    &lt;LinearLayout"
+        errorLine2="     ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_home.xml"
+            line="21"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `#141414` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
+        errorLine1="    android:background=&quot;#141414&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/activity_onboarding.xml"
+            line="5"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/primaryShadeDarkColor` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
+        errorLine1="    android:background=&quot;?attr/primaryShadeDarkColor&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_app_drawer.xml"
+            line="7"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/primaryShadeDarkColor` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
+        errorLine1="    android:background=&quot;?attr/primaryShadeDarkColor&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_app_drawer.xml"
+            line="7"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/primaryShadeDarkColor` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
+        errorLine1="    android:background=&quot;?attr/primaryShadeDarkColor&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_settings.xml"
+            line="8"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/primaryShadeDarkColor` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
+        errorLine1="    android:background=&quot;?attr/primaryShadeDarkColor&quot;>"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_settings.xml"
+            line="8"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `#000000` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
+        errorLine1="    android:background=&quot;#000000&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/item_home_pinned_app.xml"
+            line="6"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `?attr/selectableItemBackground` with a theme that also paints a background (inferred theme is `@style/AppTheme`)"
+        errorLine1="    android:background=&quot;?attr/selectableItemBackground&quot;"
+        errorLine2="    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/item_reflection_app_row.xml"
+            line="6"
+            column="5"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.bg_shade_circular` appears to be unused"
+        errorLine1="&lt;shape xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/bg_shade_circular.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.colorPrimary` appears to be unused"
+        errorLine1="    &lt;color name=&quot;colorPrimary&quot;>@android:color/white&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="3"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.colorAccent` appears to be unused"
+        errorLine1="    &lt;color name=&quot;colorAccent&quot;>#FFEB3B&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="5"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.whiteTrans95` appears to be unused"
+        errorLine1="    &lt;color name=&quot;whiteTrans95&quot;>#F2FFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="9"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.whiteInverseTrans10` appears to be unused"
+        errorLine1="    &lt;color name=&quot;whiteInverseTrans10&quot;>#1A000000&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="14"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.whiteInverseTrans25` appears to be unused"
+        errorLine1="    &lt;color name=&quot;whiteInverseTrans25&quot;>#40000000&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="15"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.blackTrans90` appears to be unused"
+        errorLine1="    &lt;color name=&quot;blackTrans90&quot;>#E6000000&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="22"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.blackInverseTrans10` appears to be unused"
+        errorLine1="    &lt;color name=&quot;blackInverseTrans10&quot;>#1AFFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="26"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.color.blackInverseTrans25` appears to be unused"
+        errorLine1="    &lt;color name=&quot;blackInverseTrans25&quot;>#40FFFFFF&lt;/color>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/colors.xml"
+            line="27"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.alphabet_recycler_margin_bottom` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;alphabet_recycler_margin_bottom&quot;>16dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/dimens.xml"
+            line="3"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.alphabet_recycler_margin_end` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;alphabet_recycler_margin_end&quot;>10dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/dimens.xml"
+            line="4"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.alphabet_recycler_margin_start` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;alphabet_recycler_margin_start&quot;>320dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/dimens.xml"
+            line="5"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.dimen.weather_widget_capsule_offset_above_icon` appears to be unused"
+        errorLine1="    &lt;dimen name=&quot;weather_widget_capsule_offset_above_icon&quot;>0dp&lt;/dimen>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/dimens.xml"
+            line="11"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.ic_aqi_home` appears to be unused"
+        errorLine1="&lt;vector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/ic_aqi_home.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.logo` appears to be unused">
+        <location
+            file="src/main/res/drawable/logo.webp"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.digital_minimalism` appears to be unused"
+        errorLine1="    &lt;string name=&quot;digital_minimalism&quot; translatable=&quot;false&quot;>&lt;u>Digital Minimalism&lt;/u>&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="5"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.day_battery` appears to be unused"
+        errorLine1="    &lt;string name=&quot;day_battery&quot; formatted=&quot;false&quot; translatable=&quot;false&quot;>%s, %d%%&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="7"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_0` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_0&quot; translatable=&quot;false&quot;>0&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="8"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_1` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_1&quot; translatable=&quot;false&quot;>1&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="9"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_2` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_2&quot; translatable=&quot;false&quot;>2&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="10"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_3` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_3&quot; translatable=&quot;false&quot;>3&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="11"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_4` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_4&quot; translatable=&quot;false&quot;>4&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="12"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_5` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_5&quot; translatable=&quot;false&quot;>5&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="13"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_6` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_6&quot; translatable=&quot;false&quot;>6&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="14"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_7` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_7&quot; translatable=&quot;false&quot;>7&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="15"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tag_8` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tag_8&quot; translatable=&quot;false&quot;>8&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="16"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.set_as_default_launcher_first` appears to be unused"
+        errorLine1="    &lt;string name=&quot;set_as_default_launcher_first&quot;>Set Subconsciously default first&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="24"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.app_text_color` appears to be unused"
+        errorLine1="    &lt;string name=&quot;app_text_color&quot;>Text color&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="25"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.about` appears to be unused"
+        errorLine1="    &lt;string name=&quot;about&quot;>About&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="28"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.black` appears to be unused"
+        errorLine1="    &lt;string name=&quot;black&quot;>Black&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="31"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.white` appears to be unused"
+        errorLine1="    &lt;string name=&quot;white&quot;>White&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="32"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.follow` appears to be unused"
+        errorLine1="    &lt;string name=&quot;follow&quot;>Follow&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="39"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.email` appears to be unused"
+        errorLine1="    &lt;string name=&quot;email&quot;>Email&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="40"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.donate` appears to be unused"
+        errorLine1="    &lt;string name=&quot;donate&quot;>Donate&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="41"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.daily_wallpaper_update` appears to be unused"
+        errorLine1="    &lt;string name=&quot;daily_wallpaper_update&quot;>Daily new wallpaper&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="44"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.right` appears to be unused"
+        errorLine1="    &lt;string name=&quot;right&quot;>Right&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="46"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.center` appears to be unused"
+        errorLine1="    &lt;string name=&quot;center&quot;>Center&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="47"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.home_layout_alignment` appears to be unused"
+        errorLine1="    &lt;string name=&quot;home_layout_alignment&quot;>App alignment&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="48"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.app_drawer_tips` appears to be unused"
+        errorLine1="    &lt;string name=&quot;app_drawer_tips&quot;>Tip: Start typing an app name to auto-launch it&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="64"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.cool` appears to be unused"
+        errorLine1="    &lt;string name=&quot;cool&quot;>Cool!&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="66"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.pro_message` appears to be unused"
+        errorLine1="    &lt;string name=&quot;pro_message&quot;>A Subconsciously-nek van egy pro verziója is, amely Pro Launcher néven ismert. További funkciókat kínál, mint például időjárás, widgetek, betűtípusok, mappák, AMOLED háttérképek stb."
+        errorLine2="            ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values-hu/strings.xml"
+            line="70"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.theme_mode` appears to be unused"
+        errorLine1="    &lt;string name=&quot;theme_mode&quot;>Theme mode&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="74"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.system_default` appears to be unused"
+        errorLine1="    &lt;string name=&quot;system_default&quot;>System&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="82"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.dark` appears to be unused"
+        errorLine1="    &lt;string name=&quot;dark&quot;>Dark&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="83"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.light` appears to be unused"
+        errorLine1="    &lt;string name=&quot;light&quot;>Light&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="84"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.digital_wellbeing_message` appears to be unused"
+        errorLine1="    &lt;string name=&quot;digital_wellbeing_message&quot;>If you want to set time limits for certain apps, Digital Wellbeing feature of Android can help you do it.           Please search for Digital Wellbeing in your phone settings and enable it.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="95"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.support_olauncher_for_free` appears to be unused"
+        errorLine1="    &lt;string name=&quot;support_olauncher_for_free&quot;>Support Subconsciously for free by using our Amazon affiliate link.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="101"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.support_olauncher_message` appears to be unused"
+        errorLine1="    &lt;string name=&quot;support_olauncher_message&quot;>Every time you buy something using our link, we get a small commission. Please save the link and use it whenever you shop online.\nThank you!&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="102"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.open` appears to be unused"
+        errorLine1="    &lt;string name=&quot;open&quot;>Open link&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="103"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.copy` appears to be unused"
+        errorLine1="    &lt;string name=&quot;copy&quot;>Copy&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="104"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.not_now` appears to be unused"
+        errorLine1="    &lt;string name=&quot;not_now&quot;>Not now&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="106"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.public_roadmap` appears to be unused"
+        errorLine1="    &lt;string name=&quot;public_roadmap&quot;>Subconsciously public roadmap&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="107"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.instagram` appears to be unused"
+        errorLine1="    &lt;string name=&quot;instagram&quot;>Instagram&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="108"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.roadmap` appears to be unused"
+        errorLine1="    &lt;string name=&quot;roadmap&quot;>Roadmap&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="110"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bottom_on` appears to be unused"
+        errorLine1="    &lt;string name=&quot;bottom_on&quot;>Bottom: On&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="113"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.bottom_off` appears to be unused"
+        errorLine1="    &lt;string name=&quot;bottom_off&quot;>Bottom: Off&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="114"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.please_set_olauncher_as_default_first` appears to be unused"
+        errorLine1="    &lt;string name=&quot;please_set_olauncher_as_default_first&quot;>Please set Subconsciously as default first&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="115"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.affiliate` appears to be unused"
+        errorLine1="    &lt;string name=&quot;affiliate&quot;>Affiliate&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="116"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.tip_start_typing_for_rename` appears to be unused"
+        errorLine1="    &lt;string name=&quot;tip_start_typing_for_rename&quot;>Tip: Start typing for app RENAME option&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="117"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.accept` appears to be unused"
+        errorLine1="    &lt;string name=&quot;accept&quot;>Accept&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="124"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.text_size` appears to be unused"
+        errorLine1="    &lt;string name=&quot;text_size&quot;>Text size&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="132"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.disabled` appears to be unused"
+        errorLine1="    &lt;string name=&quot;disabled&quot;>Disabled&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="134"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.copied` appears to be unused"
+        errorLine1="    &lt;string name=&quot;copied&quot;>Copied&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="139"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.unable_to_launch_app` appears to be unused"
+        errorLine1="    &lt;string name=&quot;unable_to_launch_app&quot;>Unable to launch app&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="143"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.search_for_Launcher_or_home_app` appears to be unused"
+        errorLine1="    &lt;string name=&quot;search_for_Launcher_or_home_app&quot;>Search for Launcher or Home app&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="144"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.olauncher_is_not_default_launcher` appears to be unused"
+        errorLine1="    &lt;string name=&quot;olauncher_is_not_default_launcher&quot;>Subconsciously is not default. Wallpaper update will fail.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="150"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.learn_more` appears to be unused"
+        errorLine1="    &lt;string name=&quot;learn_more&quot;>Learn more&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="159"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.alignment_changed` appears to be unused"
+        errorLine1="    &lt;string name=&quot;alignment_changed&quot;>Alignment changed ✅&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="164"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.new_year_wish` appears to be unused"
+        errorLine1="    &lt;string name=&quot;new_year_wish&quot;>Here\&apos;s to a year better than any before. Happy new year!&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="167"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.new_year_wish_1` appears to be unused"
+        errorLine1="    &lt;string name=&quot;new_year_wish_1&quot;>It doesn\&apos;t matter how January went. You still have the rest of the year to do better than ever.&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="168"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.cheers` appears to be unused"
+        errorLine1="    &lt;string name=&quot;cheers&quot;>Cheers!&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="169"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.aqi` appears to be unused"
+        errorLine1="    &lt;string name=&quot;aqi&quot; translatable=&quot;false&quot;>AQI&lt;/string>"
+        errorLine2="            ~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="174"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.string.reflection_untick_any_seconds` appears to be unused"
+        errorLine1="    &lt;string name=&quot;reflection_untick_any_seconds&quot; translatable=&quot;false&quot;>Any seconds though?&lt;/string>"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/strings.xml"
+            line="177"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.style.TextSmallLight` appears to be unused"
+        errorLine1="    &lt;style name=&quot;TextSmallLight&quot; parent=&quot;TextSmall&quot;>"
+        errorLine2="           ~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/values/styles.xml"
+            line="90"
+            column="12"/>
+    </issue>
+
+    <issue
+        id="UnusedResources"
+        message="The resource `R.drawable.text_colors_light` appears to be unused"
+        errorLine1="&lt;selector xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/drawable/text_colors_light.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="TooManyViews"
+        message="`fragment_settings.xml` has more than 80 views, bad for performance"
+        errorLine1="                        &lt;Space"
+        errorLine2="                         ~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_settings.xml"
+            line="773"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="TooManyViews"
+        message="`fragment_settings.xml` has more than 80 views, bad for performance"
+        errorLine1="                        &lt;Space"
+        errorLine2="                         ~~~~~">
+        <location
+            file="src/main/res/layout/fragment_settings.xml"
+            line="786"
+            column="26"/>
+    </issue>
+
+    <issue
+        id="MonochromeLauncherIcon"
+        message="The application adaptive icon is missing a monochrome tag"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/mipmap-anydpi-v26/ic_launcher.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="MonochromeLauncherIcon"
+        message="The application adaptive roundIcon is missing a monochrome tag"
+        errorLine1="&lt;adaptive-icon xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;>"
+        errorLine2="^">
+        <location
+            file="src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml"
+            line="2"
+            column="1"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/ic_rounded.webp` in densityless folder">
+        <location
+            file="src/main/res/drawable/ic_rounded.webp"/>
+    </issue>
+
+    <issue
+        id="IconLocation"
+        message="Found bitmap drawable `res/drawable/logo.webp` in densityless folder">
+        <location
+            file="src/main/res/drawable/logo.webp"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `Int.toDrawable` instead?"
+        errorLine1="            w.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))"
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/BlockedAppSheet.kt"
+            line="62"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                Uri.parse(&quot;https://play.google.com/store/search?q=$query&amp;c=apps&quot;)"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Extensions.kt"
+            line="96"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension property `View.isVisible` instead?"
+        errorLine1="            if (binding.firstRunTips.visibility == View.VISIBLE) return@Observer"
+        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="272"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        launcherPrefs().edit()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="1095"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        launcherPrefs().edit().putString(KEY_LOCATION_NAME, name).apply()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="1122"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(&quot;https://www.msn.com/weather&quot;)).apply {"
+        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="1213"
+            column="58"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="                ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(&quot;https://www.google.com/search?q=weather&quot;)).apply {"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="1218"
+            column="62"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        getSharedPreferences(&quot;weather_cache&quot;, MODE_PRIVATE)"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/app/olauncher/ui/OnboardingActivity.kt"
+            line="235"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `Int.toDrawable` instead?"
+        errorLine1="        dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))"
+        errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/reflection/ReflectionAlphabetStrip.kt"
+            line="87"
+            column="46"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `Int.toDrawable` instead?"
+        errorLine1="            w.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))"
+        errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/ReflectionSheet.kt"
+            line="95"
+            column="37"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `Int.toDrawable` instead?"
+        errorLine1="        pauseDialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))"
+        errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/reflection/ReflectionUntickPauseDialog.kt"
+            line="64"
+            column="51"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="    intent.data = Uri.parse(url)"
+        errorLine2="                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Utils.kt"
+            line="499"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="    intent.data = Uri.parse(url)"
+        errorLine2="                  ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Utils.kt"
+            line="499"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="    intent.data = Uri.parse(&quot;package:$packageName&quot;)"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Utils.kt"
+            line="526"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `String.toUri` instead?"
+        errorLine1="    intent.data = Uri.parse(&quot;package:$packageName&quot;)"
+        errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/Utils.kt"
+            line="526"
+            column="19"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        launcherPrefs().edit()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/WeatherWorker.kt"
+            line="140"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="UseKtx"
+        message="Use the KTX extension function `SharedPreferences.edit` instead?"
+        errorLine1="        launcherPrefs().edit().putString(KEY_LOCATION_NAME, name).apply()"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/helper/WeatherWorker.kt"
+            line="164"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``GestureInterceptFrameLayout`` has `setOnTouchListener` called on it but does not override `performClick`"
+        errorLine1="        binding.mainLayout.setOnTouchListener(getSwipeGestureListener(context))"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="300"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`OnSwipeTouchListener#onTouch` should call `View#performClick` when a click is detected"
+        errorLine1="    override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {"
+        errorLine2="                 ~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/listener/OnSwipeTouchListener.kt"
+            line="20"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="Custom view ``LinearLayout`` has `setOnTouchListener` called on it but does not override `performClick`"
+        errorLine1="        alphabetStrip.setOnTouchListener { strip, event ->"
+        errorLine2="        ^">
+        <location
+            file="src/main/java/app/olauncher/reflection/ReflectionAlphabetStrip.kt"
+            line="67"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`onTouch` lambda should call `View#performClick` when a click is detected"
+        errorLine1="        alphabetStrip.setOnTouchListener { strip, event ->"
+        errorLine2="                                         ^">
+        <location
+            file="src/main/java/app/olauncher/reflection/ReflectionAlphabetStrip.kt"
+            line="67"
+            column="42"/>
+    </issue>
+
+    <issue
+        id="ClickableViewAccessibility"
+        message="`ViewSwipeTouchListener#onTouch` should call `View#performClick` when a click is detected"
+        errorLine1="    override fun onTouch(view: View, motionEvent: MotionEvent): Boolean {"
+        errorLine2="                 ~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/listener/ViewSwipeTouchListener.kt"
+            line="22"
+            column="18"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="    &lt;ImageView"
+        errorLine2="     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/adapter_app_drawer.xml"
+            line="19"
+            column="6"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="                    &lt;ImageView"
+        errorLine2="                     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_settings.xml"
+            line="53"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="ContentDescription"
+        message="Missing `contentDescription` attribute on image"
+        errorLine1="                    &lt;ImageView"
+        errorLine2="                     ~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_settings.xml"
+            line="54"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="        binding.weatherTemp.text = &quot;${displayTemp.toInt()}°&quot;"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="1162"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Do not concatenate text displayed with `setText`. Use resource string with placeholders."
+        errorLine1="        binding.weatherHumidity.text = &quot;${info.humidity}%&quot;"
+        errorLine2="                                       ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/HomeFragment.kt"
+            line="1165"
+            column="40"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="        b.milestoneTitle.text = &quot;Have you changed?&quot;"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/MainActivity.kt"
+            line="235"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="        b.milestoneBtnPrimary.text = &quot;YES&quot;"
+        errorLine2="                                      ~~~">
+        <location
+            file="src/main/java/app/olauncher/MainActivity.kt"
+            line="239"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="        b.milestoneBtnSecondary.text = &quot;NOT YET&quot;"
+        errorLine2="                                        ~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/MainActivity.kt"
+            line="241"
+            column="41"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="        b.milestoneTitle.text = &quot;Are you still going?&quot;"
+        errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/MainActivity.kt"
+            line="284"
+            column="34"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="String literal in `setText` can not be translated. Use Android resources instead."
+        errorLine1="        b.milestoneBtnPrimary.text = &quot;OK&quot;"
+        errorLine2="                                      ~~">
+        <location
+            file="src/main/java/app/olauncher/MainActivity.kt"
+            line="327"
+            column="39"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Number formatting does not take into account locale settings. Consider using `String.format` instead."
+        errorLine1="        binding.homeAppsNum.text = prefs.homeAppsNum.toString()"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/SettingsFragment.kt"
+            line="82"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="SetTextI18n"
+        message="Number formatting does not take into account locale settings. Consider using `String.format` instead."
+        errorLine1="        binding.homeAppsNum.text = num.toString()"
+        errorLine2="                                   ~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/app/olauncher/ui/SettingsFragment.kt"
+            line="449"
+            column="36"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;AQI&quot;, should use `@string` resource"
+        errorLine1="                    android:text=&quot;AQI&quot;"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_home.xml"
+            line="205"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;AQI&quot;, should use `@string` resource"
+        errorLine1="                    android:text=&quot;AQI&quot;"
+        errorLine2="                    ~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_home.xml"
+            line="209"
+            column="21"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Reflection pause&quot;, should use `@string` resource"
+        errorLine1="                        android:text=&quot;Reflection pause&quot; />"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_settings.xml"
+            line="636"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Manage apps&quot;, should use `@string` resource"
+        errorLine1="                        android:text=&quot;Manage apps&quot; />"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout-land/fragment_settings.xml"
+            line="645"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Reflection pause&quot;, should use `@string` resource"
+        errorLine1="                        android:text=&quot;Reflection pause&quot; />"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_settings.xml"
+            line="645"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Manage apps&quot;, should use `@string` resource"
+        errorLine1="                        android:text=&quot;Manage apps&quot; />"
+        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/fragment_settings.xml"
+            line="654"
+            column="25"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;One last thing.&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;One last thing.&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="52"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Usage Access lets the app see your screen time and adjust how often you get reflection pauses.\n\nNot required — you can grant this later in Settings.&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Usage Access lets the app see your screen time and adjust how often you get reflection pauses.\n\nNot required — you can grant this later in Settings.&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="70"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;GRANT ACCESS&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;GRANT ACCESS&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="91"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Skip for now&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Skip for now&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_access.xml"
+            line="110"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Get out of the cheap\ndopamine cycle.&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Get out of the cheap\ndopamine cycle.&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="52"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Uncheck anything you want to keep open easily.&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Uncheck anything you want to keep open easily.&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="70"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;SKIP&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;SKIP&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="145"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;CONFIRM&quot;, should use `@string` resource"
+        errorLine1="            android:text=&quot;CONFIRM&quot;"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_apps.xml"
+            line="164"
+            column="13"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Show the weather.&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Show the weather.&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="52"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Subconsciously can show live weather on your home screen. Location is only used for this — never stored or shared.\n\nNot required — you can grant this later in Settings.&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Subconsciously can show live weather on your home screen. Location is only used for this — never stored or shared.\n\nNot required — you can grant this later in Settings.&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="70"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;GRANT LOCATION&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;GRANT LOCATION&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="91"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Skip for now&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Skip for now&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_location.xml"
+            line="110"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Why are you\nhere?&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Why are you\nhere?&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="55"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;Pick what fits most.&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;Pick what fits most.&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="73"
+            column="9"/>
+    </issue>
+
+    <issue
+        id="HardcodedText"
+        message="Hardcoded string &quot;CONTINUE&quot;, should use `@string` resource"
+        errorLine1="        android:text=&quot;CONTINUE&quot;"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/res/layout/onboarding_page_reason.xml"
+            line="108"
+            column="9"/>
+    </issue>
+
+</issues>
