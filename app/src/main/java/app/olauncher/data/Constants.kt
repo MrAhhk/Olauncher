@@ -107,7 +107,7 @@ object Constants {
     const val URL_OLAUNCHER_GITHUB = "https://www.github.com/tanujnotes/Olauncher"
     const val URL_OLAUNCHER_PLAY_STORE = "https://play.google.com/store/apps/details?id=app.olauncher"
     const val URL_PLAY_STORE_DEV = "https://play.google.com/store/apps/dev?id=7198807840081074933"
-    const val URL_TWITTER_TANUJ = "https://x.com/tanujnotes"
+    const val URL_TWITTER_TANUJ = "https://x.com/OwO15205751"
     const val URL_WALLPAPERS = "https://gist.githubusercontent.com/tanujnotes/85e2d0343ace71e76615ac346fbff82b/raw"
     /** Ko-fi support (README Support section). Footer control only. */
     const val URL_KOFI = "https://ko-fi.com/ahhkthecat"
