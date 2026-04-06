@@ -1,34 +1,63 @@
-![Olauncher](https://repository-images.githubusercontent.com/278638069/db0acb80-661b-11eb-803e-926cae5dccb4)
+# Subconsciously: minimalist phone
 
+The most boring launcher you'll ever use.
 
-# Olauncher | Minimal AF Launcher
-AF stands for Ad-Free
+No icons. No color. No notifications.
+Just you and what you actually need.
 
-[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png"
-    alt="Get it on F-Droid"
-    height="80">](https://f-droid.org/packages/app.olauncher)
-[<img src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
-    alt="Get it on Play Store"
-    height="80">](https://play.google.com/store/apps/details?id=app.olauncher)
+---
 
-### Install using [F-Droid](https://f-droid.org/packages/app.olauncher), [Play Store](https://play.google.com/store/apps/details?id=app.olauncher) or the [latest APK](https://github.com/tanujnotes/Olauncher/releases/).
+## Why this exists
 
-- To maintain the simplicity of the launcher, a few niche features are available but hidden.
+People don't scroll mindlessly because they lack willpower.
+They scroll because their phone is designed to make them.
 
-- Please check out the **[About](https://tanujnotes.substack.com/p/olauncher-minimal-af-launcher?utm_source=github)** page in the Olauncher settings for a complete list of features and **FAQs**.
+Subconsciously doesn't fight that with another clever trick.
+It just stops playing the game.
 
-##
+---
 
-License: [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html)
+## What it does
 
-Dev: [X/twitter](https://x.com/tanujnotes) • [Bluesky](https://bsky.app/profile/tanujnotes.bsky.social)
+- Black screen, text only, no icons
+- Max 7 apps on home screen
+- App drawer shuffles daily — no muscle memory
+- Search requires exact app name — no autopilot
+- Reflection pause before distraction apps
+- 30-day and 90-day check-ins
 
-##
+## What it doesn't do
 
-### My other apps:
+- Doesn't block apps
+- Doesn't track you
+- Doesn't sell anything
+- Doesn't try to keep you using it
 
-- [Pro Launcher](https://play.google.com/store/apps/details?id=app.prolauncher) - Pro version of Olauncher with extra features like widgets, weather, folders, etc.
+---
 
-- [Note to Self](https://play.google.com/store/apps/details?id=com.makenotetoself) - Free and [open source](https://github.com/jeerovan/ntsapp) notes app with chat like interface and end-to-end encryption.
+## Privacy & About
 
-- [Pentastic](https://play.google.com/store/apps/details?id=app.pentastic) - Minimal todo lists. Free and [open source](https://github.com/tanujnotes/Pentastic).
+All data stays on your device.
+No analytics. No ads. No accounts.
+
+[Privacy Policy](https://fallacious-output-8b6.notion.site/Subconsciously-33adbed9c25a80f0b365ea33f4a61001)
+[About](https://fallacious-output-8b6.notion.site/Subconsciously-About-33adbed9c25a80098f08c81650ea37f8)
+
+---
+
+## Support
+
+If Subconsciously helped you, buy me a cheese burger 🖤, i mean , I NEED CHEESE BURGERRRRRRRRRRRRRRRRR
+[ko-fi.com/ahhkthecat](https://ko-fi.com/ahhkthecat)
+
+---
+
+## Follow
+
+[X / Twitter](https://x.com/OwO15205751)
+
+---
+
+## License
+
+[GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) — forked from [Olauncher](https://github.com/tanujnotes/Olauncher)
