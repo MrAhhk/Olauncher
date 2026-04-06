@@ -63,4 +63,4 @@ If Subconsciously helped you, buy me a cheese burger 🖤, i mean , I NEED CHEES
 [GNU GPLv3](https://www.gnu.org/licenses/gpl-3.0.en.html) — forked from [Olauncher](https://github.com/tanujnotes/Olauncher)
 
 ## Github
-[Github]()
+[Github](https://github.com/MrAhhk/Subconsciously/tree/main)
