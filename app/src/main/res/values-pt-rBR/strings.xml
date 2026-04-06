@@ -139,4 +139,21 @@
     <string name="new_year_wish_1">Não importa como foi janeiro. Você ainda tem o resto do ano para se sair melhor do que nunca.</string>
     <string name="cheers">Saúde!</string>
     <string name="notification_bar">Barra de notificações</string>
+    <string name="add_an_app">Adicionar um app</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Widget do clima</string>
+    <string name="update_weather">Atualizar clima</string>
+    <string name="updating_weather">Atualizando clima…</string>
+    <string name="weather_temp_unit">Métrico</string>
+    <string name="temp_system">Sistema (por localização)</string>
+    <string name="temp_celsius">°C (Celsius)</string>
+    <string name="temp_fahrenheit">°F (Fahrenheit)</string>
+    <string name="reflection_pause_dialog_title">A pausa de reflexão será ativada para:</string>
+    <string name="reflection_sheet_open_anyway">Abrir mesmo assim</string>
+    <string name="reflection_sheet_continue_later">Continuar depois</string>
+    <string name="done">Concluído</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Portuguese -->

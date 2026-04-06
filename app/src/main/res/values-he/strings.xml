@@ -133,4 +133,21 @@
     <string name="digital_wellbeing_message">אם ברצונך להגדיר מגבלות זמן עבור אפליקציות מסוימות, תכונת Digital Wellbeing של אנדרואיד יכולה לעזור לך לעשות זאת. חפש את Digital Wellbeing בהגדרות הטלפון שלך והפעל אותה.</string>
     <string name="app_usage_message">כדי להציג/להסתיר את זמן המסך שלך במסך הבית, אנא אפשר או בטל את הרשאת השימוש באפליקציה. הערה: לא נאספים נתוני שימוש באפליקציה. הכל מעובד במכשיר שלך.</string>
     <string name="notification_bar">שורת ההתראות</string>
+    <string name="add_an_app">הוספת אפליקציה</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">ווידג\'ט מזג אוויר</string>
+    <string name="update_weather">עדכון מזג אוויר</string>
+    <string name="updating_weather">מעדכן מזג אוויר…</string>
+    <string name="weather_temp_unit">מטרי</string>
+    <string name="temp_system">מערכת (לפי מיקום)</string>
+    <string name="temp_celsius">°צ (צלזיוס)</string>
+    <string name="temp_fahrenheit">°פ (פרנהייט)</string>
+    <string name="reflection_pause_dialog_title">השהיית ההרהור תופעל עבור:</string>
+    <string name="reflection_sheet_open_anyway">פתיחה בכל זאת</string>
+    <string name="reflection_sheet_continue_later">המשך מאוחר יותר</string>
+    <string name="done">סיום</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources>

@@ -140,4 +140,21 @@
     <string name="new_year_wish_1">月过得如何并不重要。你还有一年的时间做到比以往任何时候都更好。</string>
     <string name="cheers">干杯!</string>
     <string name="notification_bar">通知栏</string>
+    <string name="add_an_app">添加应用</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">天气小部件</string>
+    <string name="update_weather">更新天气</string>
+    <string name="updating_weather">正在更新天气…</string>
+    <string name="weather_temp_unit">公制</string>
+    <string name="temp_system">跟随系统（按位置）</string>
+    <string name="temp_celsius">°C（摄氏度）</string>
+    <string name="temp_fahrenheit">°F（华氏度）</string>
+    <string name="reflection_pause_dialog_title">反思暂停将适用于：</string>
+    <string name="reflection_sheet_open_anyway">仍要打开</string>
+    <string name="reflection_sheet_continue_later">稍后继续</string>
+    <string name="done">完成</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Chinese -->

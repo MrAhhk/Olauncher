@@ -138,4 +138,21 @@
     <string name="new_year_wish_1">Nie ma znaczenia, jak minął styczeń. Wciąż masz resztę roku, aby poradzić sobie lepiej niż kiedykolwiek.</string>
     <string name="cheers">Na zdrowie!</string>
     <string name="notification_bar">Pasek powiadomień</string>
+    <string name="add_an_app">Dodaj aplikację</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Widżet pogody</string>
+    <string name="update_weather">Aktualizuj pogodę</string>
+    <string name="updating_weather">Aktualizowanie pogody…</string>
+    <string name="weather_temp_unit">Metryczny</string>
+    <string name="temp_system">System (wg lokalizacji)</string>
+    <string name="temp_celsius">°C (Celsjusz)</string>
+    <string name="temp_fahrenheit">°F (Fahrenheit)</string>
+    <string name="reflection_pause_dialog_title">Pauza refleksji zostanie włączona dla:</string>
+    <string name="reflection_sheet_open_anyway">Otwórz mimo to</string>
+    <string name="reflection_sheet_continue_later">Kontynuuj później</string>
+    <string name="done">Gotowe</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Polish -->

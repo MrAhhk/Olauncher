@@ -140,4 +140,21 @@
     <string name="new_year_wish_1">Ocak ayının nasıl geçtiği önemli değil. Her zamankinden daha iyisini yapmak için hala yılın geri kalanı var.</string>
     <string name="cheers">Şerefe!</string>
     <string name="notification_bar">Bildirim çubuğu</string>
+    <string name="add_an_app">Uygulama ekle</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Hava durumu widget\'ı</string>
+    <string name="update_weather">Hava durumunu güncelle</string>
+    <string name="updating_weather">Hava durumu güncelleniyor…</string>
+    <string name="weather_temp_unit">Metrik</string>
+    <string name="temp_system">Sistem (konuma göre)</string>
+    <string name="temp_celsius">°C (Santigrat)</string>
+    <string name="temp_fahrenheit">°F (Fahrenhayt)</string>
+    <string name="reflection_pause_dialog_title">Düşünce molası şunun için etkinleşecek:</string>
+    <string name="reflection_sheet_open_anyway">Yine de aç</string>
+    <string name="reflection_sheet_continue_later">Sonra devam et</string>
+    <string name="done">Bitti</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Turkish -->

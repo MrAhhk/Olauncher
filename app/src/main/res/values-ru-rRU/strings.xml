@@ -140,4 +140,21 @@
     <string name="new_year_wish_1">Неважно, как прошел январь. У тебя еще есть остаток года, чтобы добиться большего, чем когда-либо.</string>
     <string name="cheers">Ваше здоровье!</string>
     <string name="notification_bar">Панель уведомлений</string>
+    <string name="add_an_app">Добавить приложение</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Виджет погоды</string>
+    <string name="update_weather">Обновить погоду</string>
+    <string name="updating_weather">Обновление погоды…</string>
+    <string name="weather_temp_unit">Метрическая</string>
+    <string name="temp_system">Системная (по местоположению)</string>
+    <string name="temp_celsius">°C (Цельсий)</string>
+    <string name="temp_fahrenheit">°F (Фаренгейт)</string>
+    <string name="reflection_pause_dialog_title">Пауза для размышления включится для:</string>
+    <string name="reflection_sheet_open_anyway">Всё равно открыть</string>
+    <string name="reflection_sheet_continue_later">Продолжить позже</string>
+    <string name="done">Готово</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Russian -->

@@ -135,4 +135,21 @@
     <string name="new_year_wish_1">لا يهم كيف مضى شهر يناير. لا يزال لديك بقية العام لتقدم أداءً أفضل من أي وقت مضى.</string>
     <string name="cheers">هتافات!</string>
     <string name="notification_bar">شريط الإشعارات</string>
+    <string name="add_an_app">إضافة تطبيق</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">عنصر الطقس</string>
+    <string name="update_weather">تحديث الطقس</string>
+    <string name="updating_weather">جارٍ تحديث الطقس…</string>
+    <string name="weather_temp_unit">متري</string>
+    <string name="temp_system">النظام (حسب الموقع)</string>
+    <string name="temp_celsius">°م (سلسيوس)</string>
+    <string name="temp_fahrenheit">°ف (فهرنهايت)</string>
+    <string name="reflection_pause_dialog_title">سيتم تفعيل توقف التأمل لـ:</string>
+    <string name="reflection_sheet_open_anyway">افتح على أي حال</string>
+    <string name="reflection_sheet_continue_later">متابعة لاحقًا</string>
+    <string name="done">تم</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources>

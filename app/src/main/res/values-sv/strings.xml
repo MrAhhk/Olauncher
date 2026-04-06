@@ -138,4 +138,21 @@
     <string name="new_year_wish_1">Det spelar ingen roll hur januari gick. Du har fortfarande resten av året på dig att göra bättre ifrån dig än någonsin.</string>
     <string name="cheers">Skål!</string>
     <string name="notification_bar">Aviseringsfält</string>
+    <string name="add_an_app">Lägg till en app</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Väderwidget</string>
+    <string name="update_weather">Uppdatera väder</string>
+    <string name="updating_weather">Uppdaterar väder…</string>
+    <string name="weather_temp_unit">Metrisk</string>
+    <string name="temp_system">System (efter plats)</string>
+    <string name="temp_celsius">°C (Celsius)</string>
+    <string name="temp_fahrenheit">°F (Fahrenheit)</string>
+    <string name="reflection_pause_dialog_title">Reflektionspaus aktiveras för:</string>
+    <string name="reflection_sheet_open_anyway">Öppna ändå</string>
+    <string name="reflection_sheet_continue_later">Fortsätt senare</string>
+    <string name="done">Klar</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Swedish -->

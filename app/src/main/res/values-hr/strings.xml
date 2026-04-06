@@ -138,4 +138,21 @@
     <string name="new_year_wish_1">Nije važno kako je prošao siječanj. Još uvijek imate ostatak godine da budete bolji nego ikad.</string>
     <string name="cheers">Živjeli!</string>
     <string name="notification_bar">Traka obavijesti</string>
+    <string name="add_an_app">Dodaj aplikaciju</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Widget vremena</string>
+    <string name="update_weather">Ažuriraj vrijeme</string>
+    <string name="updating_weather">Ažuriranje vremena…</string>
+    <string name="weather_temp_unit">Metrički</string>
+    <string name="temp_system">Sustav (prema lokaciji)</string>
+    <string name="temp_celsius">°C (Celzijus)</string>
+    <string name="temp_fahrenheit">°F (Fahrenheit)</string>
+    <string name="reflection_pause_dialog_title">Pauza za razmišljanje aktivirat će se za:</string>
+    <string name="reflection_sheet_open_anyway">Ipak otvori</string>
+    <string name="reflection_sheet_continue_later">Nastavi kasnije</string>
+    <string name="done">Gotovo</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Croatian -->

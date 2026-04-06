@@ -144,4 +144,21 @@
     <string name="new_year_wish_1">Nem számít, hogyan telt a január. Még mindig van hátra az évből, hogy minden eddiginél jobban teljesíts.</string>
     <string name="cheers">Egészségére!</string>
     <string name="notification_bar">Értesítési sáv</string>
+    <string name="add_an_app">Alkalmazás hozzáadása</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Időjárás modul</string>
+    <string name="update_weather">Időjárás frissítése</string>
+    <string name="updating_weather">Időjárás frissítése…</string>
+    <string name="weather_temp_unit">Metrikus</string>
+    <string name="temp_system">Rendszer (hely szerint)</string>
+    <string name="temp_celsius">°C (Celsius)</string>
+    <string name="temp_fahrenheit">°F (Fahrenheit)</string>
+    <string name="reflection_pause_dialog_title">A gondolkodási szünet ehhez lesz aktív:</string>
+    <string name="reflection_sheet_open_anyway">Megnyitás mindenképp</string>
+    <string name="reflection_sheet_continue_later">Folytatás később</string>
+    <string name="done">Kész</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Hungarian -->

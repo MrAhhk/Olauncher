@@ -135,4 +135,25 @@
     <string name="alignment_changed">Uitlijning gewijzigd ✅</string>
     <string name="home_screen">Startscherm</string>
     <string name="hey">Hoi</string>
+    <string name="new_year_wish">Op een jaar beter dan elk eerder. Gelukkig nieuwjaar!</string>
+    <string name="new_year_wish_1">Het maakt niet uit hoe januari ging. Je hebt de rest van het jaar om beter te zijn dan ooit.</string>
+    <string name="cheers">Proost!</string>
+    <string name="notification_bar">Meldingsbalk</string>
+    <string name="add_an_app">App toevoegen</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">Weerwidget</string>
+    <string name="update_weather">Weer bijwerken</string>
+    <string name="updating_weather">Weer wordt bijgewerkt…</string>
+    <string name="weather_temp_unit">Metrisch</string>
+    <string name="temp_system">Systeem (op locatie)</string>
+    <string name="temp_celsius">°C (Celsius)</string>
+    <string name="temp_fahrenheit">°F (Fahrenheit)</string>
+    <string name="reflection_pause_dialog_title">Reflectiepauze wordt actief voor:</string>
+    <string name="reflection_sheet_open_anyway">Toch openen</string>
+    <string name="reflection_sheet_continue_later">Later verdergaan</string>
+    <string name="done">Klaar</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources><!-- Dutch -->

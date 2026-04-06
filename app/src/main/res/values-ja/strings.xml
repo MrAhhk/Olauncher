@@ -139,4 +139,21 @@
     <string name="new_year_wish_1">1月がどうだったかは関係ありません。これまで以上に良い結果を出すために、まだ今年の残りの期間があります。</string>
     <string name="cheers">乾杯!</string>
     <string name="notification_bar">通知バー</string>
+    <string name="add_an_app">アプリを追加</string>
+    <string name="_9">9</string>
+    <string name="_10">10</string>
+    <string name="_11">11</string>
+    <string name="_12">12</string>
+    <string name="weather_widget">天気ウィジェット</string>
+    <string name="update_weather">天気を更新</string>
+    <string name="updating_weather">天気を更新中…</string>
+    <string name="weather_temp_unit">メートル法</string>
+    <string name="temp_system">システム（位置情報に基づく）</string>
+    <string name="temp_celsius">°C（摂氏）</string>
+    <string name="temp_fahrenheit">°F（華氏）</string>
+    <string name="reflection_pause_dialog_title">次のアプリで振り返りの一時停止が有効になります：</string>
+    <string name="reflection_sheet_open_anyway">とにかく開く</string>
+    <string name="reflection_sheet_continue_later">後で続ける</string>
+    <string name="done">完了</string>
+    <string name="blocked_app_dialog_ok">:(</string>
 </resources> <!-- Japanese -->
