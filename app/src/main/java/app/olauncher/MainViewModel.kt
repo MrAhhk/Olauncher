@@ -165,6 +165,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return PauseOutcome.SilentBlocked(packageName)
 
         blockManager.recordOpen(packageName)
+        blockManager.recordThresholdExceededIfNeeded()
         if (blockManager.checkThresholdExceeded(packageName)) {
             blockManager.blockApp(packageName)
             getAppList()
@@ -247,7 +248,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         prefs.distractionOpensLog = updated
     }
 
+    /**
+     * Base reflection chance: tiered decay only while the user has **not** hit the daily distraction
+     * threshold on any day in the last 7 days. Any such day → 100% base until it ages out (then tiers apply again).
+     */
     private fun getReflectionProbability(): Float {
+        if (prefs.hasExceededThresholdInLast7Days()) return 1.0f
         val recent = prefs.distractionOpensLog
             .filter { it.toLongOrNull() ?: 0L > System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L }
         return when (recent.size) {

@@ -5,7 +5,10 @@ import android.content.SharedPreferences
 import android.view.Gravity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.core.content.edit
+import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.HashSet
+import java.util.Locale
 
 class Prefs(context: Context) {
     companion object {
@@ -124,6 +127,9 @@ class Prefs(context: Context) {
     private val IS_SHORTCUT_SWIPE_LEFT = "IS_SHORTCUT_SWIPE_LEFT"
     private val SHORTCUT_ID_SWIPE_RIGHT = "SHORTCUT_ID_SWIPE_RIGHT"
     private val IS_SHORTCUT_SWIPE_RIGHT = "IS_SHORTCUT_SWIPE_RIGHT"
+
+    /** yyyyMMdd days when distraction usage reached the daily threshold (reflection base stays 100% if any in last 7 days). */
+    private val EXCEEDED_THRESHOLD_DATES = "exceeded_threshold_dates"
 
     private val prefs: SharedPreferences = context.getSharedPreferences(PREFS_FILENAME, 0)
 
@@ -799,6 +805,38 @@ class Prefs(context: Context) {
     var distractionOpensLog: Set<String>
         get() = prefs.getStringSet("distraction_opens_log", emptySet()) ?: emptySet()
         set(value) = prefs.edit { putStringSet("distraction_opens_log", value) }
+
+    /** True if any calendar day in the last 7 days hit the daily distraction threshold. */
+    fun hasExceededThresholdInLast7Days(): Boolean {
+        val sdf = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+        val cutoff = System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000L
+        val dates = prefs.getStringSet(EXCEEDED_THRESHOLD_DATES, emptySet()) ?: emptySet()
+        for (d in dates) {
+            val t = try {
+                sdf.parse(d)?.time ?: 0L
+            } catch (_: Exception) {
+                0L
+            }
+            if (t >= cutoff) return true
+        }
+        return false
+    }
+
+    fun recordThresholdExceededToday() {
+        val sdf = SimpleDateFormat("yyyyMMdd", Locale.getDefault())
+        val cutoff = System.currentTimeMillis() - 7L * 24 * 60 * 60 * 1000L
+        val existing = (prefs.getStringSet(EXCEEDED_THRESHOLD_DATES, emptySet()) ?: emptySet()).toMutableSet()
+        existing.add(sdf.format(Date()))
+        val pruned = existing.filter { dateStr ->
+            val t = try {
+                sdf.parse(dateStr)?.time ?: 0L
+            } catch (_: Exception) {
+                0L
+            }
+            t >= cutoff
+        }.toSet()
+        prefs.edit { putStringSet(EXCEEDED_THRESHOLD_DATES, pruned) }
+    }
 
     var identityMode: String
         get() = prefs.getString("identity_mode", "").toString()

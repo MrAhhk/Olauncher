@@ -90,6 +90,21 @@ class BlockManager(private val context: Context) {
         }
     }
 
+    /** Same daily bar as [checkThresholdExceeded] (global totals), without per-package checks. */
+    fun hasExceededDailyThreshold(): Boolean {
+        checkAndResetIfNeeded()
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && context.appUsagePermissionGranted()) {
+            getDistractionTimeToday() >= getCurrentThresholdMs()
+        } else {
+            ensureOpenCountDate()
+            getTotalDistractionOpensToday() >= getCurrentThresholdCount()
+        }
+    }
+
+    fun recordThresholdExceededIfNeeded() {
+        if (hasExceededDailyThreshold()) prefs.recordThresholdExceededToday()
+    }
+
     fun blockApp(packageName: String) {
         val blocked = prefs.blockedApps.toMutableSet()
         blocked.add(packageName)
