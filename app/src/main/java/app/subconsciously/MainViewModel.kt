@@ -298,6 +298,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             )
         }
         refreshHome(false)
+        // Return from drawer after selecting a home-slot app.
+        drawerNavHint.value = DrawerNavHint(popOnce = true)
     }
 
     private fun saveSwipeApp(appModel: AppModel, isLeft: Boolean) {
