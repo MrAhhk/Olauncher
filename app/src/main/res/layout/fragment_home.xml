@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<app.olauncher.ui.GestureInterceptFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<app.subconsciously.ui.GestureInterceptFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mainLayout"
@@ -342,4 +342,4 @@
             android:src="@drawable/ic_camera_home"
             app:tint="@android:color/white" />
     </FrameLayout>
-</app.olauncher.ui.GestureInterceptFrameLayout>
+</app.subconsciously.ui.GestureInterceptFrameLayout>

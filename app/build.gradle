@@ -14,7 +14,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "app.olauncher"
+        applicationId "app.subconsciously"
         minSdkVersion 24
         targetSdkVersion 35
         versionCode 100
@@ -41,7 +41,7 @@ android {
         viewBinding = true
         buildConfig = true
     }
-    namespace 'app.olauncher'
+    namespace 'app.subconsciously'
 
     lint {
         baseline = file("lint-baseline.xml")

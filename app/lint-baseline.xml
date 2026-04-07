@@ -806,7 +806,7 @@
 
     <issue
         id="UnsafeImplicitIntentLaunch"
-        message="The intent action `android.intent.action.MAIN (used to start an activity)` matches the intent filter of a non-exported component `app.olauncher.helper.FakeHomeActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
+        message="The intent action `android.intent.action.MAIN (used to start an activity)` matches the intent filter of a non-exported component `app.subconsciously.helper.FakeHomeActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
         errorLine1="        val selector = Intent(Intent.ACTION_MAIN)"
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -817,7 +817,7 @@
 
     <issue
         id="UnsafeImplicitIntentLaunch"
-        message="The intent action `android.intent.action.MAIN (used to start an activity)` matches the intent filter of a non-exported component `app.olauncher.helper.FakeHomeActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
+        message="The intent action `android.intent.action.MAIN (used to start an activity)` matches the intent filter of a non-exported component `app.subconsciously.helper.FakeHomeActivity` from a manifest. If you are trying to invoke this specific component via the action then you should make the intent explicit by calling `Intent.set{Component,Class,ClassName}`."
         errorLine1="            val intent = Intent(Intent.ACTION_MAIN)"
         errorLine2="                         ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
