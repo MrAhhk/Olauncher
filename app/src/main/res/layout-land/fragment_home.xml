@@ -10,13 +10,6 @@
     android:orientation="vertical"
     tools:context=".ui.HomeFragment">
 
-    <!-- Placeholder layout for locking screen-->
-    <FrameLayout
-        android:id="@+id/lock"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:contentDescription="@string/lock_layout_description" />
-
     <!-- Top info area: clock/date/battery left, weather right -->
     <LinearLayout
         android:id="@+id/dateTimeLayout"

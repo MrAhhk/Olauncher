@@ -24,7 +24,6 @@ import android.os.UserManager
 import android.provider.AlarmClock
 import android.provider.CalendarContract
 import android.provider.MediaStore
-import android.provider.Settings
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
@@ -455,19 +454,6 @@ fun openCalendar(context: Context) {
             e.printStackTrace()
         }
     }
-}
-
-fun isAccessServiceEnabled(context: Context): Boolean {
-    val enabled = try {
-        Settings.Secure.getInt(context.applicationContext.contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED)
-    } catch (e: Exception) {
-        0
-    }
-    if (enabled == 1) {
-        val enabledServicesString: String? = Settings.Secure.getString(context.contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES)
-        return enabledServicesString?.contains(context.packageName + "/" + MyAccessibilityService::class.java.name) ?: false
-    }
-    return false
 }
 
 fun isTablet(context: Context): Boolean {

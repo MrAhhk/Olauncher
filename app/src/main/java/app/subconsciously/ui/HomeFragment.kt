@@ -1,7 +1,6 @@
 package app.subconsciously.ui
 
 import android.app.SearchManager
-import android.app.admin.DevicePolicyManager
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -27,7 +26,6 @@ import android.view.WindowInsets
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
@@ -102,7 +100,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     private lateinit var prefs: Prefs
     private lateinit var viewModel: MainViewModel
-    private lateinit var deviceManager: DevicePolicyManager
     private val blockManager by lazy { BlockManager(requireContext()) }
 
     private var _binding: FragmentHomeBinding? = null
@@ -132,8 +129,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         viewModel = activity?.run {
             ViewModelProvider(this)[MainViewModel::class.java]
         } ?: throw Exception("Invalid Activity")
-
-        deviceManager = requireContext().getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
 
         initObservers()
         setHomeAlignment(prefs.homeAlignment)
@@ -166,7 +161,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
     override fun onClick(view: View) {
         when (view.id) {
-            R.id.lock -> {}
             R.id.clock -> openClockApp()
             R.id.date -> openCalendarApp()
             R.id.phoneCornerAction -> openDialerApp(requireContext())
@@ -301,7 +295,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     }
 
     private fun initClickListeners() {
-        binding.lock.setOnClickListener(this)
         binding.clock.setOnClickListener(this)
         binding.date.setOnClickListener(this)
         binding.phoneCornerAction.setOnClickListener(this)
@@ -765,22 +758,6 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         }
     }
 
-    private fun lockPhone() {
-        if (!isAdded) return
-        viewLifecycleOwner.lifecycleScope.launch(kotlinx.coroutines.Dispatchers.Main.immediate) {
-            if (!isAdded) return@launch
-            try {
-                deviceManager.lockNow()
-            } catch (e: SecurityException) {
-                requireContext().showToast(getString(R.string.please_turn_on_double_tap_to_unlock), Toast.LENGTH_LONG)
-                findNavController().navigate(R.id.action_mainFragment_to_settingsFragment)
-            } catch (e: Exception) {
-                requireContext().showToast(getString(R.string.launcher_failed_to_lock_device), Toast.LENGTH_LONG)
-                prefs.lockModeOn = false
-            }
-        }
-    }
-
     private fun showStatusBar() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R)
             requireActivity().window.insetsController?.show(WindowInsets.Type.statusBars())
@@ -883,10 +860,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
 
             override fun onDoubleClick() {
                 super.onDoubleClick()
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-                    binding.lock.performClick()
-                else if (prefs.lockModeOn)
-                    lockPhone()
+                // Double-tap lock feature removed.
             }
 
             override fun onClick() {

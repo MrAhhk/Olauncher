@@ -1,22 +1,15 @@
 package app.subconsciously.ui
 
 import android.Manifest
-import android.app.Activity
-import android.app.admin.DevicePolicyManager
 import android.content.pm.PackageManager
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
-import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowInsets
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
@@ -31,10 +24,8 @@ import app.subconsciously.data.Constants
 import app.subconsciously.data.Prefs
 import app.subconsciously.databinding.FragmentSettingsBinding
 import app.subconsciously.helper.ABOUT_URL
-import app.subconsciously.helper.animateAlpha
 import app.subconsciously.helper.appUsagePermissionGranted
 import app.subconsciously.helper.getColorFromAttr
-import app.subconsciously.helper.isAccessServiceEnabled
 import app.subconsciously.helper.isOlauncherDefault
 import app.subconsciously.helper.isDeviceLocationEnabled
 import app.subconsciously.helper.openAppInfo
@@ -43,21 +34,11 @@ import app.subconsciously.helper.openUrl
 import app.subconsciously.helper.rateApp
 import app.subconsciously.helper.shareApp
 import app.subconsciously.helper.showToast
-import app.subconsciously.listener.DeviceAdmin
 
 class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListener {
 
-    private val addDeviceAdminLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK && ::prefs.isInitialized)
-            prefs.lockModeOn = true
-    }
-
     private lateinit var prefs: Prefs
     private lateinit var viewModel: MainViewModel
-    private lateinit var deviceManager: DevicePolicyManager
-    private lateinit var componentName: ComponentName
 
     private var _binding: FragmentSettingsBinding? = null
     private val binding get() = _binding!!
@@ -75,14 +56,9 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         } ?: throw Exception("Invalid Activity")
         viewModel.isOlauncherDefault()
 
-        deviceManager = requireContext().getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
-        componentName = ComponentName(requireContext(), DeviceAdmin::class.java)
-        checkAdminPermission()
-
         binding.homeAppsNum.text = prefs.homeAppsNum.toString()
         populateKeyboardText()
         populateScreenTimeOnOff()
-        populateLockSettings()
         populateStatusBar()
         populateDateTime()
         populateWeatherWidget()
@@ -108,7 +84,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.screenTimeOnOff -> viewModel.showDialog.postValue(Constants.Dialog.DIGITAL_WELLBEING)
             R.id.appInfo -> openAppInfo(requireContext(), Process.myUserHandle(), BuildConfig.APPLICATION_ID)
             R.id.setLauncher -> viewModel.resetLauncherLiveData.call()
-            R.id.toggleLock -> toggleLockMode()
             R.id.autoShowKeyboard -> toggleKeyboardText()
             R.id.homeAppsNum -> binding.appsNumSelectLayout.visibility = View.VISIBLE
             R.id.statusBar -> toggleStatusBar()
@@ -124,9 +99,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.weatherTempSystem -> setWeatherTempUnit("system")
             R.id.weatherTempCelsius -> setWeatherTempUnit("celsius")
             R.id.weatherTempFahrenheit -> setWeatherTempUnit("fahrenheit")
-            R.id.actionAccessibility -> openAccessibilityService()
-            R.id.closeAccessibility -> toggleAccessibilityVisibility(false)
-            R.id.notWorking -> requireContext().openUrl(Constants.URL_DOUBLE_TAP)
 
             R.id.tvGestures -> binding.flSwipeDown.visibility = View.VISIBLE
 
@@ -173,7 +145,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         when (view.id) {
             R.id.swipeLeftApp -> toggleSwipeLeft()
             R.id.swipeRightApp -> toggleSwipeRight()
-            R.id.toggleLock -> startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         }
         return true
     }
@@ -185,7 +156,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.setLauncher.setOnClickListener(this)
         binding.aboutOlauncher.setOnClickListener(this)
         binding.autoShowKeyboard.setOnClickListener(this)
-        binding.toggleLock.setOnClickListener(this)
         binding.homeAppsNum.setOnClickListener(this)
         binding.screenTimeOnOff.setOnClickListener(this)
         binding.statusBar.setOnClickListener(this)
@@ -206,9 +176,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.swipeDownAction.setOnClickListener(this)
         binding.search.setOnClickListener(this)
         binding.notifications.setOnClickListener(this)
-        binding.actionAccessibility.setOnClickListener(this)
-        binding.closeAccessibility.setOnClickListener(this)
-        binding.notWorking.setOnClickListener(this)
 
         binding.share.setOnClickListener(this)
         binding.rate.setOnClickListener(this)
@@ -234,7 +201,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
         binding.swipeLeftApp.setOnLongClickListener(this)
         binding.swipeRightApp.setOnLongClickListener(this)
-        binding.toggleLock.setOnLongClickListener(this)
     }
 
     private fun initObservers() {
@@ -388,62 +354,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         )
     }
 
-    private fun checkAdminPermission() {
-        val isAdmin: Boolean = deviceManager.isAdminActive(componentName)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P)
-            prefs.lockModeOn = isAdmin
-    }
-
-    private fun toggleAccessibilityVisibility(show: Boolean) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-            binding.notWorking.visibility = View.VISIBLE
-        if (isAccessServiceEnabled(requireContext()))
-            binding.actionAccessibility.text = getString(R.string.disable)
-        binding.accessibilityLayout.isVisible = show
-        binding.scrollView.animateAlpha(if (show) 0.5f else 1f)
-    }
-
-    private fun openAccessibilityService() {
-        toggleAccessibilityVisibility(false)
-        // prefs.lockModeOn = true
-        populateLockSettings()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P)
-            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
-    }
-
-    private fun toggleLockMode() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            toggleAccessibilityVisibility(true)
-            if (prefs.lockModeOn) {
-                prefs.lockModeOn = false
-                removeActiveAdmin()
-            }
-        } else {
-            val isAdmin: Boolean = deviceManager.isAdminActive(componentName)
-            if (isAdmin) {
-                removeActiveAdmin("Admin permission removed.")
-                prefs.lockModeOn = false
-            } else {
-                val intent = Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN)
-                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, componentName)
-                intent.putExtra(
-                    DevicePolicyManager.EXTRA_ADD_EXPLANATION,
-                    getString(R.string.admin_permission_message)
-                )
-                addDeviceAdminLauncher.launch(intent)
-            }
-        }
-        populateLockSettings()
-    }
-
-    private fun removeActiveAdmin(toastMessage: String? = null) {
-        try {
-            deviceManager.removeActiveAdmin(componentName) // for backward compatibility
-            requireContext().showToast(toastMessage)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
 
     private fun updateHomeAppsNum(num: Int) {
         binding.homeAppsNum.text = num.toString()
@@ -472,20 +382,6 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private fun populateKeyboardText() {
         if (prefs.autoShowKeyboard) binding.autoShowKeyboard.text = getString(R.string.on)
         else binding.autoShowKeyboard.text = getString(R.string.off)
-    }
-
-    private fun populateLockSettings() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            binding.toggleLock.text = getString(
-                if (isAccessServiceEnabled(requireContext())) R.string.on
-                else R.string.off
-            )
-        } else {
-            binding.toggleLock.text = getString(
-                if (prefs.lockModeOn) R.string.on
-                else R.string.off
-            )
-        }
     }
 
     private fun populateSwipeDownAction() {
