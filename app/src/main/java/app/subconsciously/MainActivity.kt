@@ -44,6 +44,7 @@ import app.subconsciously.helper.isEinkDisplay
 import app.subconsciously.helper.isOlauncherDefault
 import app.subconsciously.helper.isTablet
 import app.subconsciously.helper.openUrl
+import app.subconsciously.helper.PlayIntegrityHelper
 import app.subconsciously.helper.rateApp
 import app.subconsciously.helper.resetLauncherViaFakeActivity
 import app.subconsciously.helper.setPlainWallpaper
@@ -54,6 +55,7 @@ import app.subconsciously.reflection.ReflectionConstants
 import app.subconsciously.reflection.ReflectionSetupRows
 import app.subconsciously.reflection.ReflectionUntickPauseDialog
 import app.subconsciously.helper.showToast
+import app.subconsciously.helper.DeviceIntegrityResult
 import app.subconsciously.ui.ReflectionSheet
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -79,6 +81,7 @@ class MainActivity : AppCompatActivity() {
     private var offerLauncherImmediatelyAfterOnboarding = false
     /** Avoid repeated PackageManager.getPackageInfo on every resume when [Prefs.firstOpenTime] is still 0. */
     private var installTimeBackfillAttempted = false
+    private var integrityCheckStarted = false
 
     private lateinit var prefs: Prefs
     private lateinit var navController: NavController
@@ -448,9 +451,32 @@ class MainActivity : AppCompatActivity() {
 
     override fun onPostResume() {
         super.onPostResume()
+        maybeCheckDeviceIntegrity()
         if (!prefs.onboardingComplete || !prefs.reflectionSetupDone) return
         if (prefs.shown30DayMessage && prefs.shown90DayMessage) return
         if (!isFinishing && !isDestroyed) maybeShowInstallMilestoneDialogs()
+    }
+
+    private fun maybeCheckDeviceIntegrity() {
+        if (integrityCheckStarted) return
+        integrityCheckStarted = true
+        PlayIntegrityHelper.checkDeviceIntegrity(this) { result ->
+            if (isFinishing || isDestroyed) return@checkDeviceIntegrity
+            when (result) {
+                DeviceIntegrityResult.MeetsDeviceIntegrity -> {
+                    // Keep UX silent on success.
+                }
+                DeviceIntegrityResult.DoesNotMeetDeviceIntegrity -> {
+                    showToast("Device integrity check failed")
+                }
+                DeviceIntegrityResult.NotConfigured -> {
+                    // No cloud project configured, skip in local/dev setups.
+                }
+                is DeviceIntegrityResult.Error -> {
+                    showToast("Integrity check unavailable: ${result.message}")
+                }
+            }
+        }
     }
 
     private fun initObservers(viewModel: MainViewModel) {

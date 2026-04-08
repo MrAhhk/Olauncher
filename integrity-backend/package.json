@@ -1,0 +1,16 @@
+{
+  "name": "integrity-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend verifier for Google Play Integrity tokens",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.5.0",
+    "express": "^4.21.2",
+    "googleapis": "^144.0.0"
+  }
+}
