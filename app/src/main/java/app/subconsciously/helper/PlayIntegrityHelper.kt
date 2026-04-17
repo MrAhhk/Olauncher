@@ -4,8 +4,9 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import app.subconsciously.BuildConfig
-import com.google.android.play.core.integrity.IntegrityManagerFactory
-import com.google.android.play.core.integrity.IntegrityTokenRequest
+import com.google.android.play.core.integrity.StandardIntegrityManager
+import com.google.android.play.core.integrity.StandardIntegrityManagerFactory
+import com.google.android.play.core.integrity.StandardIntegrityTokenRequest
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.OutputStreamWriter
@@ -21,6 +22,10 @@ sealed class DeviceIntegrityResult {
 
 object PlayIntegrityHelper {
     private val mainHandler = Handler(Looper.getMainLooper())
+
+    // Cached provider — warm-up is done once per process; reused for subsequent requests.
+    @Volatile
+    private var tokenProvider: StandardIntegrityManager.StandardIntegrityTokenProvider? = null
 
     fun checkDeviceIntegrity(
         context: Context,
@@ -45,32 +50,55 @@ object PlayIntegrityHelper {
                 return@Thread
             }
 
-            val integrityManager = IntegrityManagerFactory.create(context)
-            val request = IntegrityTokenRequest.builder()
-                .setCloudProjectNumber(projectNumber)
-                .setNonce(nonce)
-                .build()
+            val existingProvider = tokenProvider
+            if (existingProvider != null) {
+                requestToken(existingProvider, nonce, backendUrl, context.packageName, ::emit)
+            } else {
+                val prepareRequest = StandardIntegrityManager.PrepareIntegrityTokenRequest.builder()
+                    .setCloudProjectNumber(projectNumber)
+                    .build()
 
-            integrityManager.requestIntegrityToken(request)
-                .addOnSuccessListener { response ->
-                    val meetsIntegrity = verifyTokenWithBackend(
-                        verifyUrl = "$backendUrl/integrity/verify",
-                        packageName = context.packageName,
-                        nonce = nonce,
-                        token = response.token()
-                    )
-                    if (meetsIntegrity == null) {
-                        emit(DeviceIntegrityResult.Error("Integrity verification failed"))
-                    } else if (meetsIntegrity) {
-                        emit(DeviceIntegrityResult.MeetsDeviceIntegrity)
-                    } else {
-                        emit(DeviceIntegrityResult.DoesNotMeetDeviceIntegrity)
+                StandardIntegrityManagerFactory.create(context)
+                    .prepareIntegrityToken(prepareRequest)
+                    .addOnSuccessListener { provider ->
+                        tokenProvider = provider
+                        requestToken(provider, nonce, backendUrl, context.packageName, ::emit)
                     }
-                }
-                .addOnFailureListener { error ->
-                    emit(DeviceIntegrityResult.Error(error.message ?: "Integrity check failed"))
-                }
+                    .addOnFailureListener { error ->
+                        emit(DeviceIntegrityResult.Error(error.message ?: "Integrity warm-up failed"))
+                    }
+            }
         }.start()
+    }
+
+    private fun requestToken(
+        provider: StandardIntegrityManager.StandardIntegrityTokenProvider,
+        requestHash: String,
+        backendUrl: String,
+        packageName: String,
+        emit: (DeviceIntegrityResult) -> Unit
+    ) {
+        val tokenRequest = StandardIntegrityTokenRequest.builder()
+            .setRequestHash(requestHash)
+            .build()
+
+        provider.request(tokenRequest)
+            .addOnSuccessListener { response ->
+                val meetsIntegrity = verifyTokenWithBackend(
+                    verifyUrl = "$backendUrl/integrity/verify",
+                    packageName = packageName,
+                    nonce = requestHash,
+                    token = response.token()
+                )
+                when (meetsIntegrity) {
+                    null  -> emit(DeviceIntegrityResult.Error("Integrity verification failed"))
+                    true  -> emit(DeviceIntegrityResult.MeetsDeviceIntegrity)
+                    false -> emit(DeviceIntegrityResult.DoesNotMeetDeviceIntegrity)
+                }
+            }
+            .addOnFailureListener { error ->
+                emit(DeviceIntegrityResult.Error(error.message ?: "Integrity check failed"))
+            }
     }
 
     private fun fetchNonce(nonceUrl: String): String? {
