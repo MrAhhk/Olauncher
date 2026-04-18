@@ -4,9 +4,8 @@ import android.content.Context
 import android.os.Handler
 import android.os.Looper
 import app.subconsciously.BuildConfig
+import com.google.android.play.core.integrity.IntegrityManagerFactory
 import com.google.android.play.core.integrity.StandardIntegrityManager
-import com.google.android.play.core.integrity.StandardIntegrityManagerFactory
-import com.google.android.play.core.integrity.StandardIntegrityTokenRequest
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.OutputStreamWriter
@@ -58,7 +57,7 @@ object PlayIntegrityHelper {
                     .setCloudProjectNumber(projectNumber)
                     .build()
 
-                StandardIntegrityManagerFactory.create(context)
+                IntegrityManagerFactory.createStandard(context)
                     .prepareIntegrityToken(prepareRequest)
                     .addOnSuccessListener { provider ->
                         tokenProvider = provider
@@ -78,7 +77,7 @@ object PlayIntegrityHelper {
         packageName: String,
         emit: (DeviceIntegrityResult) -> Unit
     ) {
-        val tokenRequest = StandardIntegrityTokenRequest.builder()
+        val tokenRequest = StandardIntegrityManager.StandardIntegrityTokenRequest.builder()
             .setRequestHash(requestHash)
             .build()
 
