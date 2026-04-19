@@ -127,7 +127,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             Constants.FLAG_HIDDEN_APPS -> {
                 if (appModel !is AppModel.App) return
                 viewModelScope.launch {
-                    val outcome = withContext(Dispatchers.Default) { evaluatePauseLaunch(appModel) }
+                    val outcome = withContext(Dispatchers.Default) { evaluatePauseLaunch(appModel, isHiddenApp = true) }
                     withContext(Dispatchers.Main.immediate) {
                         applyPauseLaunchOutcome(appModel, flag, outcome, isDrawerLaunchContext)
                     }
@@ -156,7 +156,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Runs on a background thread; usage-stats aggregation must not run on main. */
-    private fun evaluatePauseLaunch(appModel: AppModel): PauseOutcome {
+    private fun evaluatePauseLaunch(appModel: AppModel, isHiddenApp: Boolean = false): PauseOutcome {
         val packageName = appModel.appPackage
         val distractionList = DistractionList(appContext)
         if (!distractionList.isDistraction(packageName)) return PauseOutcome.ProceedLaunch
@@ -164,12 +164,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         if (blockManager.isLaunchBlocked(packageName))
             return PauseOutcome.SilentBlocked(packageName)
 
-        blockManager.recordOpen(packageName)
-        blockManager.recordThresholdExceededIfNeeded()
-        if (blockManager.checkThresholdExceeded(packageName)) {
-            blockManager.blockApp(packageName)
-            getAppList()
-            return PauseOutcome.ThresholdBlocked(packageName)
+        if (isHiddenApp) {
+            blockManager.recordOpen(packageName)
+            blockManager.recordThresholdExceededIfNeeded()
+            if (blockManager.checkThresholdExceeded(packageName)) {
+                blockManager.blockApp(packageName)
+                getAppList()
+                return PauseOutcome.ThresholdBlocked(packageName)
+            }
         }
 
         logDistractionOpen()
