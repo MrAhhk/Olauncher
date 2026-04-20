@@ -22,6 +22,7 @@ import app.subconsciously.R
 import app.subconsciously.data.AppModel
 import app.subconsciously.data.BlockManager
 import app.subconsciously.data.Constants
+import app.subconsciously.data.DistractionList
 import app.subconsciously.data.Prefs
 import app.subconsciously.databinding.FragmentAppDrawerBinding
 import app.subconsciously.helper.deletePinnedShortcut
@@ -76,6 +77,7 @@ class AppDrawerFragment : Fragment() {
     }
 
     private fun initViews() {
+        binding.search.onActionViewExpanded()
         if (flag == Constants.FLAG_HIDDEN_APPS)
             binding.search.queryHint = getString(R.string.hidden_apps)
         else if (Constants.isHomeAppFlag(flag) || flag in Constants.FLAG_SET_SWIPE_LEFT_APP..Constants.FLAG_SET_CALENDAR_APP)
@@ -239,6 +241,12 @@ class AppDrawerFragment : Fragment() {
                         }
                         Collections.shuffle(listToShow, Random(today.toLong()))
                     }
+                    if (Constants.isHomeAppFlag(flag)) {
+                        val distractionList = DistractionList(requireContext())
+                        listToShow.removeAll { app ->
+                            app is AppModel.App && distractionList.isDistraction(app.appPackage)
+                        }
+                    }
                     adapter.setAppList(listToShow)
                     adapter.filter.filter(binding.search.query)
                 }
@@ -274,20 +282,25 @@ class AppDrawerFragment : Fragment() {
                 return@setOnClickListener
             }
 
-            when (flag) {
-                Constants.FLAG_SET_HOME_APP_1 -> prefs.appName1 = name
-                Constants.FLAG_SET_HOME_APP_2 -> prefs.appName2 = name
-                Constants.FLAG_SET_HOME_APP_3 -> prefs.appName3 = name
-                Constants.FLAG_SET_HOME_APP_4 -> prefs.appName4 = name
-                Constants.FLAG_SET_HOME_APP_5 -> prefs.appName5 = name
-                Constants.FLAG_SET_HOME_APP_6 -> prefs.appName6 = name
-                Constants.FLAG_SET_HOME_APP_7 -> prefs.appName7 = name
-                Constants.FLAG_SET_HOME_APP_8 -> prefs.appName8 = name
-                Constants.FLAG_SET_HOME_APP_9 -> prefs.setAppName(9, name)
-                Constants.FLAG_SET_HOME_APP_10 -> prefs.setAppName(10, name)
-                Constants.FLAG_SET_HOME_APP_11 -> prefs.setAppName(11, name)
-                Constants.FLAG_SET_HOME_APP_12 -> prefs.setAppName(12, name)
+            val homeAppIndex = when (flag) {
+                Constants.FLAG_SET_HOME_APP_1 -> 1
+                Constants.FLAG_SET_HOME_APP_2 -> 2
+                Constants.FLAG_SET_HOME_APP_3 -> 3
+                Constants.FLAG_SET_HOME_APP_4 -> 4
+                Constants.FLAG_SET_HOME_APP_5 -> 5
+                Constants.FLAG_SET_HOME_APP_6 -> 6
+                Constants.FLAG_SET_HOME_APP_7 -> 7
+                Constants.FLAG_SET_HOME_APP_8 -> 8
+                Constants.FLAG_SET_HOME_APP_9 -> 9
+                Constants.FLAG_SET_HOME_APP_10 -> 10
+                Constants.FLAG_SET_HOME_APP_11 -> 11
+                Constants.FLAG_SET_HOME_APP_12 -> 12
+                else -> -1
             }
+            if (homeAppIndex != -1) {
+                prefs.setAppName(homeAppIndex, name)
+            }
+            binding.search.hideKeyboard()
             findNavController().popBackStack()
         }
     }
@@ -316,10 +329,19 @@ class AppDrawerFragment : Fragment() {
                     }
                 }
             }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+                if (dy > 10 && binding.search.hasFocus()) {
+                    binding.search.hideKeyboard()
+                    binding.search.clearFocus()
+                }
+            }
         }
     }
 
     private fun checkMessageAndExit() {
+        binding.search.hideKeyboard()
         findNavController().popBackStack()
         if (flag == Constants.FLAG_LAUNCH_APP)
             viewModel.checkForMessages.call()
