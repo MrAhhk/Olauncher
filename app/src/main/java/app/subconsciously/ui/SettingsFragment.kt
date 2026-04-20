@@ -17,6 +17,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import app.subconsciously.BuildConfig
+import app.subconsciously.reflection.ReflectionAlphabetStrip
+import app.subconsciously.reflection.ReflectionConstants
 import app.subconsciously.MainActivity
 import app.subconsciously.MainViewModel
 import app.subconsciously.R
@@ -452,54 +454,115 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
     private fun showModeDialog() {
         val current = prefs.identityMode.ifBlank { "normal" }
         val modes = listOf("easy", "normal", "hard")
-        val labels = listOf("Easy — I just want a less addictive environment",
-                            "Normal — I will reduce my use of addictive apps",
-                            "HARD — Fuck those algorithm. I'll go for it")
-        val currentIndex = modes.indexOf(current).coerceAtLeast(0)
 
-        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-            .setTitle("Pause mode")
-            .setSingleChoiceItems(labels.toTypedArray(), currentIndex) { dialog, which ->
-                dialog.dismiss()
-                val chosen = modes[which]
-                if (chosen == current) return@setSingleChoiceItems
+        val view = layoutInflater.inflate(R.layout.dialog_mode_select, null)
+        val optionViews = listOf(
+            view.findViewById<android.widget.LinearLayout>(R.id.modeEasy),
+            view.findViewById<android.widget.LinearLayout>(R.id.modeNormal),
+            view.findViewById<android.widget.LinearLayout>(R.id.modeHard),
+        )
+        val btnConfirm = view.findViewById<android.widget.TextView>(R.id.btnModeConfirm)
 
-                val isUpgrade = modes.indexOf(chosen) > modes.indexOf(current)
-                if (isUpgrade) {
-                    // Confirm upgrade — warn about 3-day downgrade lock
-                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                        .setMessage("Go for it? You can't set a lower mode for 3 days!")
-                        .setPositiveButton("Okay") { _, _ ->
-                            prefs.identityMode = chosen
-                            prefs.modeUpgradeTimestamp = System.currentTimeMillis()
-                            populateMode()
-                        }
-                        .setNegativeButton("Back", null)
-                        .show()
+        var selected = current
+
+        fun highlight(key: String) {
+            modes.forEachIndexed { i, mode ->
+                optionViews[i].setBackgroundResource(
+                    if (mode == key) R.drawable.bg_onboarding_option_selected
+                    else R.drawable.bg_onboarding_option
+                )
+            }
+        }
+        highlight(selected)
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.ReflectionSetupDialog)
+            .setView(view)
+            .setCancelable(true)
+            .create()
+
+        modes.forEachIndexed { i, mode ->
+            optionViews[i].setOnClickListener {
+                selected = mode
+                highlight(selected)
+            }
+        }
+
+        btnConfirm.setOnClickListener {
+            dialog.dismiss()
+            if (selected == current) return@setOnClickListener
+
+            val isUpgrade = modes.indexOf(selected) > modes.indexOf(current)
+            if (isUpgrade) {
+                showModeConfirmDialog(
+                    message = "Go for it? You won't be able to lower it for 3 days.",
+                    primaryLabel = "Okay",
+                    secondaryLabel = "Back",
+                    onPrimary = {
+                        prefs.identityMode = selected
+                        prefs.modeUpgradeTimestamp = System.currentTimeMillis()
+                        populateMode()
+                    },
+                )
+            } else {
+                val elapsed = System.currentTimeMillis() - prefs.modeUpgradeTimestamp
+                val threeDaysMs = 3L * 24 * 60 * 60 * 1000L
+                if (prefs.modeUpgradeTimestamp > 0L && elapsed < threeDaysMs) {
+                    val hourMs = 60 * 60 * 1000L
+                    val hoursLeft = (threeDaysMs - elapsed + hourMs - 1L) / hourMs
+                    showModeConfirmDialog(
+                        message = "You're locked in for $hoursLeft ${if (hoursLeft == 1L) "hour" else "hours"}. Stay with it!",
+                        primaryLabel = "Ok",
+                    )
                 } else {
-                    // Downgrade — check 3-day lock first
-                    val elapsed = System.currentTimeMillis() - prefs.modeUpgradeTimestamp
-                    val threeDaysMs = 3L * 24 * 60 * 60 * 1000L
-                    if (prefs.modeUpgradeTimestamp > 0L && elapsed < threeDaysMs) {
-                        val daysLeft = ((threeDaysMs - elapsed) / (24 * 60 * 60 * 1000L)) + 1
-                        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                            .setMessage("You can reduce your mode in $daysLeft day(s).")
-                            .setPositiveButton("Ok", null)
-                            .show()
-                    } else {
-                        androidx.appcompat.app.AlertDialog.Builder(requireContext())
-                            .setMessage("Reduce the mode?")
-                            .setPositiveButton("Yes") { _, _ ->
-                                prefs.identityMode = chosen
-                                populateMode()
-                            }
-                            .setNegativeButton("No", null)
-                            .show()
-                    }
+                    showModeConfirmDialog(
+                        message = "Switch to an easier mode?",
+                        primaryLabel = "Yes",
+                        secondaryLabel = "No",
+                        onPrimary = {
+                            prefs.identityMode = selected
+                            populateMode()
+                        },
+                    )
                 }
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
+
+        dialog.show()
+        ReflectionAlphabetStrip.styleDialogWindow(dialog, ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN)
+    }
+
+    private fun showModeConfirmDialog(
+        message: String,
+        primaryLabel: String,
+        secondaryLabel: String? = null,
+        onPrimary: (() -> Unit)? = null,
+    ) {
+        val view = layoutInflater.inflate(R.layout.dialog_mode_confirm, null)
+        val tvMessage = view.findViewById<android.widget.TextView>(R.id.confirmMessage)
+        val btnPrimary = view.findViewById<android.widget.TextView>(R.id.btnConfirmPrimary)
+        val btnSecondary = view.findViewById<android.widget.TextView>(R.id.btnConfirmSecondary)
+
+        tvMessage.text = message
+        btnPrimary.text = primaryLabel
+
+        if (secondaryLabel != null) {
+            btnSecondary.text = secondaryLabel
+            btnSecondary.visibility = android.view.View.VISIBLE
+        }
+
+        val dialog = androidx.appcompat.app.AlertDialog.Builder(requireContext(), R.style.ReflectionSetupDialog)
+            .setView(view)
+            .setCancelable(true)
+            .create()
+
+        btnPrimary.setOnClickListener {
+            dialog.dismiss()
+            onPrimary?.invoke()
+        }
+        btnSecondary.setOnClickListener { dialog.dismiss() }
+
+        dialog.show()
+        ReflectionAlphabetStrip.styleDialogWindow(dialog, ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN)
     }
 
     override fun onDestroyView() {
