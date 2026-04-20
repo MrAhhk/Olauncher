@@ -17,6 +17,7 @@ import app.subconsciously.data.AppModel
 import app.subconsciously.data.Prefs
 import app.subconsciously.helper.PromptRepository
 import app.subconsciously.reflection.ReflectionConstants
+import android.util.Log
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -57,7 +58,10 @@ class ReflectionSheet : DialogFragment() {
         btnContinueLater.alpha = ReflectionConstants.DISABLED_CONTROL_ALPHA
 
         viewLifecycleOwner.lifecycleScope.launch {
-            delay(ReflectionConstants.PROMPT_BUTTON_DELAY_MS)
+            val delayMs = viewModel.currentDelayMs()
+            Log.d("BURST", "ReflectionSheet delay starting: ${delayMs}ms")
+            delay(delayMs)
+            Log.d("BURST", "ReflectionSheet delay done — buttons enabled")
             btnOpenAnyway.isEnabled = true
             btnOpenAnyway.alpha = 1.0f
             btnContinueLater.isEnabled = true

@@ -69,6 +69,7 @@ class OnboardingActivity : AppCompatActivity() {
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
 
         setupReasonPage()
+        setupModePage()
         setupAppsPageButtons()
         setupLocationPage()
         setupAccessPage()
@@ -127,13 +128,68 @@ class OnboardingActivity : AppCompatActivity() {
         btnContinue.setOnClickListener {
             if (selectedReasonIndex >= 0) {
                 prefs.onboardingReason = reasons[selectedReasonIndex]
-                navigateTo(binding.pageReason.root, binding.pageApps.root)
-                loadAppsAsync()
+                navigateTo(binding.pageReason.root, binding.pageMode.root)
             }
         }
     }
 
-    // ── Page 2: Apps ─────────────────────────────────────────────────────────
+    // ── Page 2: Mode ─────────────────────────────────────────────────────────
+
+    private fun setupModePage() {
+        val container = binding.pageMode.modeOptionsContainer
+        val btnConfirm = binding.pageMode.btnModeConfirm
+        val modes = listOf(
+            Triple("easy",   "Easy",   "I just want a less addictive environment"),
+            Triple("normal", "Normal", "I will reduce my use of addictive apps"),
+            Triple("hard",   "HARD",   "Fuck those algorithm. I'll go for it"),
+        )
+        val pad = 16.dpToPx()
+        val padH = 20.dpToPx()
+        val marginBottom = 8.dpToPx()
+        var selectedMode = "normal"
+
+        modes.forEachIndexed { index, (key, label, desc) ->
+            val tv = android.widget.TextView(this).apply {
+                text = "$label\n$desc"
+                setTextColor(getColor(R.color.whiteTrans90))
+                textSize = 15f
+                setPadding(padH, pad, padH, pad)
+                setBackgroundResource(R.drawable.bg_onboarding_option)
+                isClickable = true
+                isFocusable = true
+                val rippleAttr = android.util.TypedValue()
+                theme.resolveAttribute(android.R.attr.selectableItemBackground, rippleAttr, true)
+                foreground = getDrawable(rippleAttr.resourceId)
+                // Pre-select Normal
+                if (key == "normal") setBackgroundResource(R.drawable.bg_onboarding_option_selected)
+            }
+            val lp = android.widget.LinearLayout.LayoutParams(
+                android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
+                android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { bottomMargin = marginBottom }
+            tv.layoutParams = lp
+
+            tv.setOnClickListener {
+                for (i in 0 until container.childCount)
+                    (container.getChildAt(i) as? android.widget.TextView)
+                        ?.setBackgroundResource(R.drawable.bg_onboarding_option)
+                tv.setBackgroundResource(R.drawable.bg_onboarding_option_selected)
+                selectedMode = key
+            }
+            container.addView(tv)
+        }
+
+        // Normal is pre-selected so button is always enabled
+        btnConfirm.isEnabled = true
+        btnConfirm.alpha = 1f
+        btnConfirm.setOnClickListener {
+            prefs.identityMode = selectedMode
+            navigateTo(binding.pageMode.root, binding.pageApps.root)
+            loadAppsAsync()
+        }
+    }
+
+    // ── Page 3: Apps ─────────────────────────────────────────────────────────
 
     private fun setupAppsPageButtons() {
         binding.pageApps.btnSkip.setOnClickListener {

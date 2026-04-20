@@ -66,6 +66,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateSwipeApps()
         populateSwipeDownAction()
         populateActionHints()
+        populateMode()
         initClickListeners()
         initObservers()
         if (prefs.firstSettingsOpen)
@@ -137,6 +138,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.github -> requireContext().openUrl(Constants.URL_OLAUNCHER_GITHUB)
             R.id.privacy -> requireContext().openUrl(Constants.URL_OLAUNCHER_PRIVACY)
             R.id.footer -> requireContext().openUrl(Constants.URL_KOFI)
+            R.id.tvMode -> showModeDialog()
             R.id.manageDistractionApps -> (requireActivity() as MainActivity).showReflectionSetupDialog()
         }
     }
@@ -183,6 +185,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.github.setOnClickListener(this)
         binding.privacy.setOnClickListener(this)
         binding.footer.setOnClickListener(this)
+        binding.tvMode?.setOnClickListener(this)
         binding.manageDistractionApps.setOnClickListener(this)
 
         binding.maxApps0.setOnClickListener(this)
@@ -436,6 +439,67 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         if (viewModel.isOlauncherDefault.value != true) return
         if (prefs.rateClicked.not() && prefs.toShowHintCounter > Constants.HINT_RATE_US && prefs.toShowHintCounter < Constants.HINT_RATE_US + 100)
             binding.rate.setCompoundDrawablesWithIntrinsicBounds(0, android.R.drawable.arrow_down_float, 0, 0)
+    }
+
+    private fun populateMode() {
+        binding.tvMode?.text = when (prefs.identityMode) {
+            "easy" -> "Easy"
+            "hard" -> "HARD"
+            else   -> "Normal"
+        }
+    }
+
+    private fun showModeDialog() {
+        val current = prefs.identityMode.ifBlank { "normal" }
+        val modes = listOf("easy", "normal", "hard")
+        val labels = listOf("Easy — I just want a less addictive environment",
+                            "Normal — I will reduce my use of addictive apps",
+                            "HARD — Fuck those algorithm. I'll go for it")
+        val currentIndex = modes.indexOf(current).coerceAtLeast(0)
+
+        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+            .setTitle("Pause mode")
+            .setSingleChoiceItems(labels.toTypedArray(), currentIndex) { dialog, which ->
+                dialog.dismiss()
+                val chosen = modes[which]
+                if (chosen == current) return@setSingleChoiceItems
+
+                val isUpgrade = modes.indexOf(chosen) > modes.indexOf(current)
+                if (isUpgrade) {
+                    // Confirm upgrade — warn about 3-day downgrade lock
+                    androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                        .setMessage("Go for it? You can't set a lower mode for 3 days!")
+                        .setPositiveButton("Okay") { _, _ ->
+                            prefs.identityMode = chosen
+                            prefs.modeUpgradeTimestamp = System.currentTimeMillis()
+                            populateMode()
+                        }
+                        .setNegativeButton("Back", null)
+                        .show()
+                } else {
+                    // Downgrade — check 3-day lock first
+                    val elapsed = System.currentTimeMillis() - prefs.modeUpgradeTimestamp
+                    val threeDaysMs = 3L * 24 * 60 * 60 * 1000L
+                    if (prefs.modeUpgradeTimestamp > 0L && elapsed < threeDaysMs) {
+                        val daysLeft = ((threeDaysMs - elapsed) / (24 * 60 * 60 * 1000L)) + 1
+                        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                            .setMessage("You can reduce your mode in $daysLeft day(s).")
+                            .setPositiveButton("Ok", null)
+                            .show()
+                    } else {
+                        androidx.appcompat.app.AlertDialog.Builder(requireContext())
+                            .setMessage("Reduce the mode?")
+                            .setPositiveButton("Yes") { _, _ ->
+                                prefs.identityMode = chosen
+                                populateMode()
+                            }
+                            .setNegativeButton("No", null)
+                            .show()
+                    }
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     override fun onDestroyView() {

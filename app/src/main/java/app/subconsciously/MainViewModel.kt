@@ -38,7 +38,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
-import kotlin.random.Random
 
 data class DrawerNavHint(
     val stayOnDrawer: Boolean = false,
@@ -82,6 +81,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /** Fires when a home-screen launch attempt ends blocked (e.g. threshold) so UI can show [BlockedAppSheet]. */
     val showBlockedAfterHomeLaunch: SingleLiveEvent<String> = SingleLiveEvent()
     var pendingApp: AppModel? = null
+    private var isEvaluating = false
+
+    fun currentDelayMs(): Long = blockManager.getCurrentDelayMs()
 
     private val launcherAppsService by lazy {
         appContext.getSystemService(Context.LAUNCHER_APPS_SERVICE) as LauncherApps
@@ -116,9 +118,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun selectedApp(appModel: AppModel, flag: Int, isDrawerLaunchContext: Boolean = false) {
         when (flag) {
             Constants.FLAG_LAUNCH_APP -> {
+                if (isEvaluating) return
+                isEvaluating = true
                 viewModelScope.launch {
                     val outcome = withContext(Dispatchers.Default) { evaluatePauseLaunch(appModel) }
                     withContext(Dispatchers.Main.immediate) {
+                        isEvaluating = false
                         applyPauseLaunchOutcome(appModel, flag, outcome, isDrawerLaunchContext)
                     }
                 }
@@ -126,9 +131,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
             Constants.FLAG_HIDDEN_APPS -> {
                 if (appModel !is AppModel.App) return
+                if (isEvaluating) return
+                isEvaluating = true
                 viewModelScope.launch {
                     val outcome = withContext(Dispatchers.Default) { evaluatePauseLaunch(appModel, isHiddenApp = true) }
                     withContext(Dispatchers.Main.immediate) {
+                        isEvaluating = false
                         applyPauseLaunchOutcome(appModel, flag, outcome, isDrawerLaunchContext)
                     }
                 }
@@ -165,7 +173,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             return PauseOutcome.SilentBlocked(packageName)
 
         if (isHiddenApp) {
-            blockManager.recordOpen(packageName)
             blockManager.recordThresholdExceededIfNeeded()
             if (blockManager.checkThresholdExceeded(packageName)) {
                 blockManager.blockApp(packageName)
@@ -175,10 +182,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
 
         logDistractionOpen()
-        val finalProb = (getReflectionProbability() *
-            blockManager.getThresholdProximityMultiplier()).coerceAtMost(1.0f)
-        return if (Random.nextFloat() < finalProb) PauseOutcome.Reflection(appModel)
-        else PauseOutcome.ProceedLaunch
+        blockManager.recordOpen(packageName)
+        return PauseOutcome.Reflection(appModel)
     }
 
     private fun applyPauseLaunchOutcome(
@@ -232,6 +237,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
 
             is PauseOutcome.Reflection -> {
+                if (pendingApp != null) return  // reflection already showing, ignore second tap
                 pendingApp = outcome.model
                 showReflection.value = outcome.model
                 if (drawerCtx) {
@@ -248,22 +254,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         updated.add(now.toString())
         updated.removeAll { it.toLongOrNull() ?: 0L < now - sevenDaysMs }
         prefs.distractionOpensLog = updated
-    }
-
-    /**
-     * Base reflection chance: tiered decay only while the user has **not** hit the daily distraction
-     * threshold on any day in the last 7 days. Any such day → 100% base until it ages out (then tiers apply again).
-     */
-    private fun getReflectionProbability(): Float {
-        if (prefs.hasExceededThresholdInLast7Days()) return 1.0f
-        val recent = prefs.distractionOpensLog
-            .filter { it.toLongOrNull() ?: 0L > System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000L }
-        return when (recent.size) {
-            in 0..4   -> 1.0f
-            in 5..14  -> 0.7f
-            in 15..29 -> 0.4f
-            else      -> 0.2f
-        }
     }
 
     internal fun launchShortcut(appModel: AppModel.PinnedShortcut) {

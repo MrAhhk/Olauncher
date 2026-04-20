@@ -839,8 +839,13 @@ class Prefs(context: Context) {
     }
 
     var identityMode: String
-        get() = prefs.getString("identity_mode", "").toString()
+        get() = prefs.getString("identity_mode", "normal").toString()
         set(value) = prefs.edit { putString("identity_mode", value) }
+
+    /** Timestamp of the last mode upgrade (used for 3-day downgrade lock). 0 = never upgraded. */
+    var modeUpgradeTimestamp: Long
+        get() = prefs.getLong("mode_upgrade_timestamp", 0L)
+        set(value) = prefs.edit { putLong("mode_upgrade_timestamp", value) }
 
     /** One-time reflection setup list (games/hidden locked; choose pause apps). */
     var reflectionSetupDone: Boolean
@@ -870,6 +875,22 @@ class Prefs(context: Context) {
     var resetTimestamp: Long
         get() = prefs.getLong("block_reset_timestamp", 0L)
         set(value) = prefs.edit { putLong("block_reset_timestamp", value).apply() }
+
+    var burstLevel: Int
+        get() = prefs.getInt("burst_level", 0)
+        set(value) = prefs.edit { putInt("burst_level", value).apply() }
+
+    var burstWindowStartAt: Long
+        get() = prefs.getLong("burst_window_start_at", 0L)
+        set(value) = prefs.edit { putLong("burst_window_start_at", value).apply() }
+
+    var burstWindowCount: Int
+        get() = prefs.getInt("burst_window_count", 0)
+        set(value) = prefs.edit { putInt("burst_window_count", value).apply() }
+
+    var lastDistractionOpenAt: Long
+        get() = prefs.getLong("last_distraction_open_at", 0L)
+        set(value) = prefs.edit { putLong("last_distraction_open_at", value).apply() }
 
     var onboardingComplete: Boolean
         get() = prefs.getBoolean("onboarding_complete", false)
