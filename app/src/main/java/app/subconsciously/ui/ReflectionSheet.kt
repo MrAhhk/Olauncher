@@ -7,6 +7,7 @@ import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -19,6 +20,7 @@ import app.subconsciously.helper.PromptRepository
 import app.subconsciously.reflection.ReflectionConstants
 import android.util.Log
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 /** Centered reflection prompt (same card style as settings); not a bottom sheet. */
@@ -48,6 +50,7 @@ class ReflectionSheet : DialogFragment() {
         val tvPrompt = view.findViewById<TextView>(R.id.tvPrompt)
         val btnOpenAnyway = view.findViewById<TextView>(R.id.btnOpenAnyway)
         val btnContinueLater = view.findViewById<TextView>(R.id.btnContinueLater)
+        val progressBar = view.findViewById<ProgressBar>(R.id.reflectionProgress)
 
         val prefs = Prefs(requireContext())
         tvPrompt.text = PromptRepository.getRandomPrompt()
@@ -60,7 +63,15 @@ class ReflectionSheet : DialogFragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             val delayMs = viewModel.currentDelayMs()
             Log.d("BURST", "ReflectionSheet delay starting: ${delayMs}ms")
-            delay(delayMs)
+            val tickMs = 32L
+            val totalTicks = delayMs / tickMs
+            var tick = 0L
+            while (isActive && tick < totalTicks) {
+                progressBar.progress = ((tick * 1000L) / totalTicks).toInt()
+                delay(tickMs)
+                tick++
+            }
+            progressBar.progress = 1000
             Log.d("BURST", "ReflectionSheet delay done — buttons enabled")
             btnOpenAnyway.isEnabled = true
             btnOpenAnyway.alpha = 1.0f
