@@ -27,6 +27,18 @@
             android:textSize="@dimen/text_small"
             tools:text="Sample prompt" />
 
+        <TextView
+            android:id="@+id/tvTagPrompt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:alpha="0"
+            android:gravity="center"
+            android:paddingBottom="4dp"
+            android:textColor="@color/whiteTrans90"
+            android:textSize="13sp"
+            android:textStyle="italic"
+            android:visibility="invisible" />
+
         <ProgressBar
             android:id="@+id/reflectionProgress"
             style="?android:attr/progressBarStyleHorizontal"
