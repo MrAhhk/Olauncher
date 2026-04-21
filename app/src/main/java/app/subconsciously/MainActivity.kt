@@ -45,6 +45,7 @@ import app.subconsciously.helper.isOlauncherDefault
 import app.subconsciously.helper.isTablet
 import app.subconsciously.helper.openUrl
 import app.subconsciously.helper.PlayIntegrityHelper
+import app.subconsciously.helper.ReflectionBackgroundManager
 import app.subconsciously.helper.rateApp
 import app.subconsciously.helper.resetLauncherViaFakeActivity
 import app.subconsciously.helper.setPlainWallpaper
@@ -155,6 +156,9 @@ class MainActivity : AppCompatActivity() {
 
         navController = this.findNavController(R.id.nav_host_fragment)
         viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+
+        // Preload reflection overlay backgrounds (Pexels → disk cache, idempotent).
+        ReflectionBackgroundManager.ensureCached(applicationContext)
 
         val onBackPressedCallback = object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

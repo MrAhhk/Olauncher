@@ -1,6 +1,16 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
+// Load secrets from local.properties (not checked into git).
+def localProps = new Properties()
+def localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) {
+    localPropsFile.withInputStream { localProps.load(it) }
+}
+def pexelsApiKey = localProps.getProperty("PEXELS_API_KEY")
+    ?: project.findProperty("PEXELS_API_KEY")
+    ?: ""
+
 android {
     compileSdk 35
 
@@ -21,6 +31,7 @@ android {
         versionName "v1.0.2"
         buildConfigField "String", "PLAY_INTEGRITY_CLOUD_PROJECT_NUMBER", "\"${project.findProperty("PLAY_INTEGRITY_CLOUD_PROJECT_NUMBER") ?: ""}\""
         buildConfigField "String", "INTEGRITY_BACKEND_URL", "\"${project.findProperty("INTEGRITY_BACKEND_URL") ?: ""}\""
+        buildConfigField "String", "PEXELS_API_KEY", "\"${pexelsApiKey}\""
 
         resourceConfigurations += ["en", "ar", "de", "es-rES", "es-rUS", "fr", "he", "hr", "hu", "in", "it", "ja", "nl", "pl", "pt-rBR", "ru-rRU", "sv", "tr", "uk", "zh"]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

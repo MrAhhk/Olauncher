@@ -1,14 +1,21 @@
 package app.subconsciously.ui
 
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.Outline
+import android.graphics.RenderEffect
+import android.graphics.Shader
 import android.graphics.Typeface
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewOutlineProvider
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.fragment.app.DialogFragment
@@ -19,12 +26,15 @@ import app.subconsciously.R
 import app.subconsciously.data.AppModel
 import app.subconsciously.data.Prefs
 import app.subconsciously.helper.PromptRepository
+import app.subconsciously.helper.ReflectionBackgroundManager
 import app.subconsciously.reflection.ReflectionConstants
 import android.util.Log
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Centered reflection prompt (same card style as settings); not a bottom sheet. */
 class ReflectionSheet : DialogFragment() {
@@ -55,9 +65,23 @@ class ReflectionSheet : DialogFragment() {
         val btnOpenAnyway = view.findViewById<TextView>(R.id.btnOpenAnyway)
         val btnContinueLater = view.findViewById<TextView>(R.id.btnContinueLater)
         val progressBar = view.findViewById<ProgressBar>(R.id.reflectionProgress)
+        val card = view.findViewById<FrameLayout>(R.id.reflectionCard)
+        val bgImage = view.findViewById<ImageView>(R.id.reflectionBgImage)
+        val bgScrim = view.findViewById<View>(R.id.reflectionBgScrim)
+
+        // Clip the card's children (image + scrim) to the rounded-rect card background.
+        val cornerRadiusPx = resources.getDimension(R.dimen.reflection_dialog_corner_radius)
+        card.clipToOutline = true
+        card.outlineProvider = object : ViewOutlineProvider() {
+            override fun getOutline(v: View, outline: Outline) {
+                outline.setRoundRect(0, 0, v.width, v.height, cornerRadiusPx)
+            }
+        }
+
+        loadBackgroundImage(bgImage, bgScrim)
 
         val prefs = Prefs(requireContext())
-        tvPrompt.text = PromptRepository.getRandomPrompt()
+        tvPrompt.text = "\"${PromptRepository.getRandomPrompt()}\""
 
         btnOpenAnyway.isEnabled = false
         btnOpenAnyway.alpha = ReflectionConstants.DISABLED_CONTROL_ALPHA
@@ -160,13 +184,48 @@ class ReflectionSheet : DialogFragment() {
         }
     }
 
+    /**
+     * Async load a random cached background bitmap, apply blur (RenderEffect on API 31+),
+     * fade in image + scrim. Triggers a background refill for next time.
+     */
+    private fun loadBackgroundImage(bgImage: ImageView, bgScrim: View) {
+        val appCtx = requireContext().applicationContext
+        viewLifecycleOwner.lifecycleScope.launch {
+            val bitmap = withContext(Dispatchers.IO) {
+                val file = ReflectionBackgroundManager.pickRandomFile(appCtx) ?: return@withContext null
+                try {
+                    BitmapFactory.decodeFile(file.absolutePath)
+                } catch (t: Throwable) {
+                    Log.w("ReflectionBg", "decode cache error: ${t.message}")
+                    null
+                }
+            }
+            if (bitmap != null && viewLifecycleOwner.lifecycle.currentState.isAtLeast(
+                    androidx.lifecycle.Lifecycle.State.INITIALIZED
+                )) {
+                bgImage.setImageBitmap(bitmap)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    bgImage.setRenderEffect(
+                        RenderEffect.createBlurEffect(12f, 12f, Shader.TileMode.CLAMP)
+                    )
+                }
+                bgImage.animate().alpha(1f).setDuration(250).start()
+                bgScrim.animate().alpha(1f).setDuration(250).start()
+            }
+            // Refill cache for next overlay.
+            ReflectionBackgroundManager.ensureCached(appCtx)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
         dialog?.window?.let { w ->
             w.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             val widthPx =
                 (resources.displayMetrics.widthPixels * ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN).toInt()
-            w.setLayout(widthPx, ViewGroup.LayoutParams.WRAP_CONTENT)
+            val heightPx =
+                (resources.displayMetrics.heightPixels * 0.5f).toInt()
+            w.setLayout(widthPx, heightPx)
             w.setGravity(Gravity.CENTER)
         }
     }
