@@ -155,7 +155,7 @@ class ReflectionSheet : DialogFragment() {
                     winView.animate().alpha(0f).setDuration(400).withEndAction {
                         root.removeView(winView)
                     }.start()
-                }, 900)
+                }, 2200)
             }.start()
         }
     }
