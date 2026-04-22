@@ -25,9 +25,9 @@
         <androidx.appcompat.widget.SearchView
             android:id="@+id/search"
             android:layout_width="0dp"
-            android:layout_height="56dp"
+            android:layout_height="64dp"
             android:layout_weight="1"
-            android:gravity="end"
+            android:gravity="center_vertical"
             android:imeOptions="actionSearch"
             android:paddingHorizontal="8dp"
             android:paddingVertical="0dp"
