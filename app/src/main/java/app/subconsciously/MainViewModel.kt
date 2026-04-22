@@ -23,6 +23,7 @@ import app.subconsciously.data.BlockManager
 import app.subconsciously.data.Constants
 import app.subconsciously.data.DistractionList
 import app.subconsciously.data.Prefs
+import app.subconsciously.helper.RadarEngine
 import app.subconsciously.helper.SingleLiveEvent
 import app.subconsciously.helper.WallpaperWorker
 import app.subconsciously.helper.WeatherWorker
@@ -254,6 +255,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         updated.add(now.toString())
         updated.removeAll { it.toLongOrNull() ?: 0L < now - sevenDaysMs }
         prefs.distractionOpensLog = updated
+
+        val dateKey = RadarEngine.todayKey()
+        prefs.addRadarOpen(dateKey)
+        val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
+        if (hour >= 22 || hour < 5) prefs.addRadarLateOpen(dateKey)
     }
 
     internal fun launchShortcut(appModel: AppModel.PinnedShortcut) {

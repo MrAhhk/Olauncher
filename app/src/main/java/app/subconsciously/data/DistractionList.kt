@@ -118,6 +118,14 @@ class DistractionList(private val context: Context) {
         return isGameInfo(info)
     }
 
+    fun getActiveDistractionPackages(@Suppress("UNUSED_PARAMETER") prefs: Prefs): Set<String> {
+        val pm = context.packageManager
+        return pm.getInstalledApplications(PackageManager.GET_META_DATA)
+            .map { it.packageName }
+            .filter { isDistraction(it) }
+            .toSet()
+    }
+
     fun addToWhitelist(packageName: String) {
         val white = cachedWhitelist.toMutableSet().also { it.add(packageName) }
         val black = cachedBlacklist.toMutableSet().also { it.remove(packageName) }

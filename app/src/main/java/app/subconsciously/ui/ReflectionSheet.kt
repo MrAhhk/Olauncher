@@ -26,6 +26,7 @@ import app.subconsciously.R
 import app.subconsciously.data.AppModel
 import app.subconsciously.data.Prefs
 import app.subconsciously.helper.PromptRepository
+import app.subconsciously.helper.RadarEngine
 import app.subconsciously.helper.ReflectionBackgroundManager
 import app.subconsciously.reflection.ReflectionConstants
 import android.util.Log
@@ -115,6 +116,8 @@ class ReflectionSheet : DialogFragment() {
                 tick++
             }
             progressBar.progress = 1000
+            // User sat through the full pause — that's awareness, regardless of what they press next
+            prefs.addRadarHesitation(RadarEngine.todayKey())
             Log.d("BURST", "ReflectionSheet delay done — buttons enabled")
             btnOpenAnyway.isEnabled = true
             btnOpenAnyway.alpha = 1.0f
@@ -153,6 +156,9 @@ class ReflectionSheet : DialogFragment() {
             btnOpenAnyway.isEnabled = false
 
             prefs.pauseCount = prefs.pauseCount + 1
+            val dateKey = RadarEngine.todayKey()
+            prefs.addRadarStop(dateKey)
+            prefs.addRadarIntent(dateKey)
             viewModel.pendingApp = null
 
             // Grab root before dismiss detaches the fragment

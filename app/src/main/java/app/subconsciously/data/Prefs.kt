@@ -899,4 +899,24 @@ class Prefs(context: Context) {
     var onboardingReason: String
         get() = prefs.getString("onboarding_reason", "").toString()
         set(value) = prefs.edit { putString("onboarding_reason", value) }
+
+    fun getRadarOpens(dateKey: String): Int = prefs.getInt("r_opens_$dateKey", 0)
+    fun addRadarOpen(dateKey: String) = prefs.edit { putInt("r_opens_$dateKey", getRadarOpens(dateKey) + 1) }
+    fun getRadarStops(dateKey: String): Int = prefs.getInt("r_stops_$dateKey", 0)
+    fun addRadarStop(dateKey: String) = prefs.edit { putInt("r_stops_$dateKey", getRadarStops(dateKey) + 1) }
+    fun getRadarHesitations(dateKey: String): Int = prefs.getInt("r_hes_$dateKey", 0)
+    fun addRadarHesitation(dateKey: String) = prefs.edit { putInt("r_hes_$dateKey", getRadarHesitations(dateKey) + 1) }
+    fun getRadarIntent(dateKey: String): Int = prefs.getInt("r_int_$dateKey", 0)
+    fun addRadarIntent(dateKey: String) = prefs.edit { putInt("r_int_$dateKey", getRadarIntent(dateKey) + 1) }
+    fun getRadarLateOpens(dateKey: String): Int = prefs.getInt("r_late_$dateKey", 0)
+    fun addRadarLateOpen(dateKey: String) = prefs.edit { putInt("r_late_$dateKey", getRadarLateOpens(dateKey) + 1) }
+    fun getRecentRadarInsights(): List<String> =
+        (prefs.getString("recent_radar_insights", null) ?: "").split("|||").filter { it.isNotEmpty() }
+
+    fun addRecentRadarInsight(text: String) {
+        val recent = getRecentRadarInsights().toMutableList()
+        recent.add(0, text)
+        prefs.edit { putString("recent_radar_insights", recent.take(3).joinToString("|||")) }
+    }
+
 }

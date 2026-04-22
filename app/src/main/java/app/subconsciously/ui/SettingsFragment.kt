@@ -26,6 +26,8 @@ import app.subconsciously.data.Constants
 import app.subconsciously.data.Prefs
 import app.subconsciously.databinding.FragmentSettingsBinding
 import app.subconsciously.helper.ABOUT_URL
+import app.subconsciously.helper.RadarEngine
+import app.subconsciously.helper.RadarInsightEngine
 import app.subconsciously.helper.appUsagePermissionGranted
 import app.subconsciously.helper.getColorFromAttr
 import app.subconsciously.helper.isOlauncherDefault
@@ -69,6 +71,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateSwipeDownAction()
         populateActionHints()
         populateMode()
+        loadRadarData()
         initClickListeners()
         initObservers()
         if (prefs.firstSettingsOpen)
@@ -576,6 +579,32 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
 
         dialog.show()
         ReflectionAlphabetStrip.styleDialogWindow(dialog, ReflectionConstants.DIALOG_WIDTH_FRACTION_MAIN)
+    }
+
+    private fun loadRadarData() {
+        val radarView = binding.radarView ?: return
+        val ctx = requireContext()
+
+        // Today: null when < MIN_EVENTS (clean day or too early) — green layer not drawn
+        val todaySnap = RadarEngine.buildTodaySnapshot(ctx, prefs)
+        radarView.current = todaySnap
+
+        // Week: accumulated totals across past 7 days (days 1–7, not including today)
+        val weekSnap = RadarEngine.buildPeriodSnapshot(prefs, 1, 7) ?: todaySnap
+        radarView.week = weekSnap
+
+        // Month: accumulated totals across past 30 days (days 1–30, not including today)
+        radarView.month = RadarEngine.buildPeriodSnapshot(prefs, 1, 30) ?: weekSnap
+
+        // Need at least one real snapshot to generate a meaningful insight
+        val snapForToday = todaySnap ?: weekSnap ?: return
+        val snapForWeek = weekSnap ?: snapForToday
+        val insight = RadarInsightEngine.selectPrompt(snapForToday, snapForWeek, prefs.getRecentRadarInsights())
+        prefs.addRecentRadarInsight(insight)
+        binding.radarInsightText?.let { tv ->
+            tv.text = "\"$insight\""
+            tv.animate().alpha(1f).setDuration(250).start()
+        }
     }
 
     override fun onDestroyView() {
