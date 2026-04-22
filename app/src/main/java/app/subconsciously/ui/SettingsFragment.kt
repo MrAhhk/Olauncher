@@ -131,10 +131,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             }
 
             R.id.share -> requireActivity().shareApp()
-            R.id.rate -> {
-                prefs.rateClicked = true
-                requireActivity().rateApp()
-            }
+            R.id.star1 -> { fillStars(1); prefs.rateClicked = true; requireActivity().rateApp() }
+            R.id.star2 -> { fillStars(2); prefs.rateClicked = true; requireActivity().rateApp() }
+            R.id.star3 -> { fillStars(3); prefs.rateClicked = true; requireActivity().rateApp() }
+            R.id.star4 -> { fillStars(4); prefs.rateClicked = true; requireActivity().rateApp() }
+            R.id.star5 -> { fillStars(5); prefs.rateClicked = true; requireActivity().rateApp() }
 
             R.id.twitter -> requireContext().openUrl(Constants.URL_TWITTER_TANUJ)
             R.id.github -> requireContext().openUrl(Constants.URL_OLAUNCHER_GITHUB)
@@ -182,7 +183,11 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.notifications.setOnClickListener(this)
 
         binding.share.setOnClickListener(this)
-        binding.rate.setOnClickListener(this)
+        binding.star1.setOnClickListener(this)
+        binding.star2.setOnClickListener(this)
+        binding.star3.setOnClickListener(this)
+        binding.star4.setOnClickListener(this)
+        binding.star5.setOnClickListener(this)
         binding.twitter.setOnClickListener(this)
         binding.github.setOnClickListener(this)
         binding.privacy.setOnClickListener(this)
@@ -435,12 +440,20 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         )
     }
 
+    private fun fillStars(count: Int) {
+        val stars = listOf(binding.star1, binding.star2, binding.star3, binding.star4, binding.star5)
+        stars.forEachIndexed { index, tv ->
+            if (index < count) {
+                tv.text = "★"
+                tv.setTextColor(android.graphics.Color.parseColor("#FFD700"))
+            }
+        }
+    }
+
     private fun populateActionHints() {
         if (prefs.aboutClicked.not())
             binding.aboutOlauncher.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_info, 0)
         if (viewModel.isOlauncherDefault.value != true) return
-        if (prefs.rateClicked.not() && prefs.toShowHintCounter > Constants.HINT_RATE_US && prefs.toShowHintCounter < Constants.HINT_RATE_US + 100)
-            binding.rate.setCompoundDrawablesWithIntrinsicBounds(0, android.R.drawable.arrow_down_float, 0, 0)
     }
 
     private fun populateMode() {
