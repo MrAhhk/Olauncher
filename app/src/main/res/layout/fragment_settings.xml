@@ -100,7 +100,7 @@
                     android:alpha="0"
                     android:fontFamily="sans-serif-light"
                     android:gravity="center"
-                    android:textColor="#38BDF8"
+                    android:textColor="#9CA3AF"
                     android:textSize="18sp"
                     android:textStyle="italic" />
 

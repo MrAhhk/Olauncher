@@ -31,7 +31,7 @@ class PentagonRadarView @JvmOverloads constructor(
     private val colorMonth   = Color.parseColor("#F87171")
     private val colorGrid    = Color.argb(20, 255, 255, 255)
     private val colorAxis    = Color.argb(30, 255, 255, 255)
-    private val colorLabel   = Color.parseColor("#38BDF8")
+    private val colorLabel   = Color.parseColor("#9CA3AF")
 
     private val paintFill   = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
     private val paintStroke = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 1.5f }
