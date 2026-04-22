@@ -1,5 +1,7 @@
 package app.subconsciously.ui
 
+import android.animation.ObjectAnimator
+import android.view.animation.LinearInterpolator
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Outline
@@ -89,32 +91,56 @@ class ReflectionSheet : DialogFragment() {
         btnContinueLater.isEnabled = false
         btnContinueLater.alpha = ReflectionConstants.DISABLED_CONTROL_ALPHA
 
+        // Show user goal in the TAG spot immediately (if set)
+        val userGoal = prefs.userGoal
+        if (userGoal.isNotBlank()) {
+            tvTagPrompt.text = "\"$userGoal\""
+            tvTagPrompt.alpha = 0f
+            tvTagPrompt.visibility = View.VISIBLE
+            tvTagPrompt.animate().alpha(1f).setDuration(500).start()
+        }
+
         var tagJob: Job? = null
 
         fun showTagPrompt(text: String) {
-            tvTagPrompt.text = "\"$text\""
-            tvTagPrompt.alpha = 0f
-            tvTagPrompt.visibility = View.VISIBLE
-            tvTagPrompt.animate().alpha(1f).setDuration(500).withEndAction {
-                tvTagPrompt.postDelayed({
-                    tvTagPrompt.animate().alpha(0f).setDuration(500).withEndAction {
-                        tvTagPrompt.visibility = View.INVISIBLE
+            val newText = "\"$text\""
+            if (tvTagPrompt.visibility == View.VISIBLE && tvTagPrompt.alpha > 0f) {
+                // Goal is showing — crossfade to TAG
+                tvTagPrompt.animate().alpha(0f).setDuration(300).withEndAction {
+                    tvTagPrompt.text = newText
+                    tvTagPrompt.animate().alpha(1f).setDuration(500).withEndAction {
+                        tvTagPrompt.postDelayed({
+                            tvTagPrompt.animate().alpha(0f).setDuration(500).withEndAction {
+                                tvTagPrompt.visibility = View.INVISIBLE
+                            }.start()
+                        }, 2000)
                     }.start()
-                }, 2000)
-            }.start()
+                }.start()
+            } else {
+                tvTagPrompt.text = newText
+                tvTagPrompt.alpha = 0f
+                tvTagPrompt.visibility = View.VISIBLE
+                tvTagPrompt.animate().alpha(1f).setDuration(500).withEndAction {
+                    tvTagPrompt.postDelayed({
+                        tvTagPrompt.animate().alpha(0f).setDuration(500).withEndAction {
+                            tvTagPrompt.visibility = View.INVISIBLE
+                        }.start()
+                    }, 2000)
+                }.start()
+            }
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
             val delayMs = viewModel.currentDelayMs()
             Log.d("BURST", "ReflectionSheet delay starting: ${delayMs}ms")
-            val tickMs = 32L
-            val totalTicks = delayMs / tickMs
-            var tick = 0L
-            while (isActive && tick < totalTicks) {
-                progressBar.progress = ((tick * 1000L) / totalTicks).toInt()
-                delay(tickMs)
-                tick++
+
+            ObjectAnimator.ofInt(progressBar, "progress", 0, 1000).apply {
+                duration = delayMs
+                interpolator = LinearInterpolator()
+                start()
             }
+
+            delay(delayMs)
             progressBar.progress = 1000
             // User sat through the full pause — that's awareness, regardless of what they press next
             prefs.addRadarHesitation(RadarEngine.todayKey())
