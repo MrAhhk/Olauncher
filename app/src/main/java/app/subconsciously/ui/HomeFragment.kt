@@ -273,6 +273,9 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         viewModel.toggleDateTime.observe(viewLifecycleOwner) {
             populateDateTime()
         }
+        viewModel.toggleGoalCard.observe(viewLifecycleOwner) {
+            populateUserGoal()
+        }
         viewModel.screenTimeValue.observe(viewLifecycleOwner) {
             it?.let { binding.tvScreenTime.text = it }
         }
@@ -305,6 +308,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         binding.setDefaultLauncher.setOnLongClickListener(this)
         binding.tvScreenTime.setOnClickListener(this)
         binding.tvScreenTime.setOnLongClickListener(this)
+        binding.tvUserGoal?.setOnClickListener { showGoalEditDialog() }
         binding.batteryProgress.setOnClickListener { openBatterySettings() }
         binding.weatherWidget.setOnClickListener {
             requireContext().showToast(R.string.updating_weather)
@@ -334,6 +338,48 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
         }
         val dateText = homeDateFormatter!!.format(Date()).replace(".,", ",")
         if (binding.date.text?.toString() != dateText) binding.date.text = dateText
+    }
+
+    private fun populateUserGoal() {
+        val tv = binding.tvUserGoal ?: return
+        if (!prefs.showGoalCard) {
+            tv.visibility = View.GONE
+            return
+        }
+        val goal = prefs.userGoal
+        tv.text = if (goal.isNotBlank()) goal else "Tap to set your intention"
+        tv.alpha = if (goal.isNotBlank()) 1f else 0.4f
+        tv.visibility = View.VISIBLE
+    }
+
+    private fun showGoalEditDialog() {
+        val view = layoutInflater.inflate(R.layout.dialog_goal_edit, null)
+        val et = view.findViewById<android.widget.EditText>(R.id.etGoalDialog)
+        et.setText(prefs.userGoal)
+        et.setSelection(et.text.length)
+
+        val dialog = android.app.Dialog(requireContext(), R.style.Theme_AppCompat_Dialog)
+        dialog.requestWindowFeature(android.view.Window.FEATURE_NO_TITLE)
+        dialog.setContentView(view)
+        dialog.window?.apply {
+            setBackgroundDrawable(android.graphics.drawable.ColorDrawable(android.graphics.Color.TRANSPARENT))
+            setLayout(
+                (resources.displayMetrics.widthPixels * 0.88).toInt(),
+                android.view.WindowManager.LayoutParams.WRAP_CONTENT
+            )
+            setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
+        }
+
+        view.findViewById<TextView>(R.id.btnGoalSave).setOnClickListener {
+            prefs.userGoal = et.text.toString().trim()
+            populateUserGoal()
+            dialog.dismiss()
+        }
+        view.findViewById<TextView>(R.id.btnGoalCancel).setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)
@@ -519,6 +565,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
     private fun populateHomeScreen(appCountUpdated: Boolean) {
         if (appCountUpdated) hideHomeApps()
         populateDateTime()
+        populateUserGoal()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
             populateScreenTime()

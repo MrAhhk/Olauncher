@@ -900,6 +900,14 @@ class Prefs(context: Context) {
         get() = prefs.getString("onboarding_reason", "").toString()
         set(value) = prefs.edit { putString("onboarding_reason", value) }
 
+    var userGoal: String
+        get() = prefs.getString("user_goal", "").toString()
+        set(value) = prefs.edit { putString("user_goal", value) }
+
+    var showGoalCard: Boolean
+        get() = prefs.getBoolean("show_goal_card", true)
+        set(value) = prefs.edit { putBoolean("show_goal_card", value) }
+
     fun getRadarOpens(dateKey: String): Int = prefs.getInt("r_opens_$dateKey", 0)
     fun addRadarOpen(dateKey: String) = prefs.edit { putInt("r_opens_$dateKey", getRadarOpens(dateKey) + 1) }
     fun getRadarStops(dateKey: String): Int = prefs.getInt("r_stops_$dateKey", 0)

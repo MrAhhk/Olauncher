@@ -9,6 +9,11 @@
         layout="@layout/onboarding_page_reason" />
 
     <include
+        android:id="@+id/pageGoal"
+        layout="@layout/onboarding_page_goal"
+        android:visibility="gone" />
+
+    <include
         android:id="@+id/pageMode"
         layout="@layout/onboarding_page_mode"
         android:visibility="gone" />

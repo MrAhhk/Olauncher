@@ -226,6 +226,28 @@
         android:paddingTop="112dp"
         android:paddingBottom="48dp">
 
+        <TextView
+            android:id="@+id/tvUserGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:background="@drawable/bg_reflection_setup_dialog"
+            android:clickable="true"
+            android:ellipsize="end"
+            android:focusable="true"
+            android:fontFamily="sans-serif-light"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:maxLines="2"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="18dp"
+            android:textColor="@color/whiteTrans90"
+            android:textSize="20sp"
+            android:visibility="gone"
+            tools:text="Be present, not scrolling"
+            tools:visibility="visible" />
+
         <FrameLayout
             android:id="@+id/homeAppsViewport"
             android:layout_width="match_parent"

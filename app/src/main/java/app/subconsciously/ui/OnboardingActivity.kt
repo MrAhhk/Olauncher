@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContracts
@@ -69,6 +70,7 @@ class OnboardingActivity : AppCompatActivity() {
         window.addFlags(FLAG_LAYOUT_NO_LIMITS)
 
         setupReasonPage()
+        setupGoalPage()
         setupModePage()
         setupAppsPageButtons()
         setupLocationPage()
@@ -128,12 +130,29 @@ class OnboardingActivity : AppCompatActivity() {
         btnContinue.setOnClickListener {
             if (selectedReasonIndex >= 0) {
                 prefs.onboardingReason = reasons[selectedReasonIndex]
-                navigateTo(binding.pageReason.root, binding.pageMode.root)
+                navigateTo(binding.pageReason.root, binding.pageGoal.root)
             }
         }
     }
 
-    // ── Page 2: Mode ─────────────────────────────────────────────────────────
+    // ── Page 2: Goal ─────────────────────────────────────────────────────────
+
+    private fun setupGoalPage() {
+        val page = binding.pageGoal
+        page.btnGoalContinue.setOnClickListener {
+            val goal = page.etGoal.text.toString().trim()
+            prefs.userGoal = goal
+            hideKeyboard(page.etGoal)
+            navigateTo(page.root, binding.pageMode.root)
+        }
+        page.btnGoalSkip.setOnClickListener {
+            prefs.userGoal = ""
+            hideKeyboard(page.etGoal)
+            navigateTo(page.root, binding.pageMode.root)
+        }
+    }
+
+    // ── Page 3: Mode ─────────────────────────────────────────────────────────
 
     private fun setupModePage() {
         val container = binding.pageMode.modeOptionsContainer
@@ -290,6 +309,11 @@ class OnboardingActivity : AppCompatActivity() {
     private fun markLocationAsked() {
         getSharedPreferences("weather_cache", MODE_PRIVATE)
             .edit().putBoolean(HomeFragment.KEY_LOCATION_ASKED, true).apply()
+    }
+
+    private fun hideKeyboard(view: View) {
+        (getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager)
+            .hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun navigateTo(outView: View, inView: View) {

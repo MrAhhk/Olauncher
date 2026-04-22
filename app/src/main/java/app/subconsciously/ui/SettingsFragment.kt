@@ -64,6 +64,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         populateKeyboardText()
         populateScreenTimeOnOff()
         populateStatusBar()
+        populateGoalCard()
         populateDateTime()
         populateWeatherWidget()
         populateWeatherTempUnit()
@@ -93,6 +94,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             R.id.autoShowKeyboard -> toggleKeyboardText()
             R.id.homeAppsNum -> binding.appsNumSelectLayout.visibility = View.VISIBLE
             R.id.statusBar -> toggleStatusBar()
+            R.id.showGoalCard -> toggleGoalCard()
             R.id.dateTime -> binding.dateTimeSelectLayout.visibility = View.VISIBLE
             R.id.dateTimeOn -> toggleDateTime(Constants.DateTime.ON)
             R.id.dateTimeOff -> toggleDateTime(Constants.DateTime.OFF)
@@ -167,6 +169,7 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
         binding.homeAppsNum.setOnClickListener(this)
         binding.screenTimeOnOff.setOnClickListener(this)
         binding.statusBar.setOnClickListener(this)
+        binding.showGoalCard?.setOnClickListener(this)
         binding.dateTime.setOnClickListener(this)
         binding.dateTimeOn.setOnClickListener(this)
         binding.dateTimeOff.setOnClickListener(this)
@@ -263,6 +266,16 @@ class SettingsFragment : Fragment(), View.OnClickListener, View.OnLongClickListe
             hideStatusBar()
             binding.statusBar.text = getString(R.string.off)
         }
+    }
+
+    private fun toggleGoalCard() {
+        prefs.showGoalCard = !prefs.showGoalCard
+        populateGoalCard()
+        viewModel.toggleGoalCard()
+    }
+
+    private fun populateGoalCard() {
+        binding.showGoalCard?.text = getString(if (prefs.showGoalCard) R.string.on else R.string.off)
     }
 
     private fun toggleDateTime(selected: Int) {

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_reflection_setup_dialog"
+    android:orientation="vertical"
+    android:paddingStart="20dp"
+    android:paddingTop="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="20dp">
+
+    <EditText
+        android:id="@+id/etGoalDialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:fontFamily="sans-serif-light"
+        android:gravity="center"
+        android:hint="e.g. Be present, not scrolling"
+        android:inputType="textCapSentences"
+        android:maxLines="2"
+        android:padding="16dp"
+        android:textColor="@color/whiteTrans90"
+        android:textColorHint="@color/whiteTrans50"
+        android:textSize="18sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/btnGoalCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_weight="1"
+            android:background="@drawable/bg_reflection_done_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="48dp"
+            android:text="Cancel"
+            android:textColor="@color/whiteTrans90"
+            android:textSize="@dimen/text_small"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/btnGoalSave"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/bg_reflection_done_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:minHeight="48dp"
+            android:text="Save"
+            android:textColor="@color/whiteTrans90"
+            android:textSize="@dimen/text_small"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+</LinearLayout>
