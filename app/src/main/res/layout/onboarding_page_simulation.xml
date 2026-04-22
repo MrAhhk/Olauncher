@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Phase 1: tap prompt -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/phaseOne"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/stepDots"
+            android:layout_width="wrap_content"
+            android:layout_height="8dp"
+            android:layout_marginTop="60dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <View android:layout_width="6dp" android:layout_height="4dp" android:layout_marginEnd="6dp" android:background="#40FFFFFF" />
+            <View android:layout_width="6dp" android:layout_height="4dp" android:layout_marginEnd="6dp" android:background="#40FFFFFF" />
+            <View android:layout_width="6dp" android:layout_height="4dp" android:layout_marginEnd="6dp" android:background="#40FFFFFF" />
+            <View android:layout_width="6dp" android:layout_height="4dp" android:layout_marginEnd="6dp" android:background="#40FFFFFF" />
+            <View android:layout_width="20dp" android:layout_height="4dp" android:background="#E6FFFFFF" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvSimTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginTop="28dp"
+            android:fontFamily="sans-serif"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.1"
+            android:text="Feel it\nbefore it's real"
+            android:textColor="@color/whiteTrans90"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/stepDots" />
+
+        <TextView
+            android:id="@+id/tvSimSubtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:layout_marginEnd="28dp"
+            android:layout_marginTop="10dp"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:text="Tap any app below — just like\nyou normally would"
+            android:textColor="@color/whiteTrans50"
+            android:textSize="15sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSimTitle" />
+
+        <!-- Fake app icons row -->
+        <LinearLayout
+            android:id="@+id/fakeAppsRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tvSimSubtitle">
+
+            <!-- Instagram -->
+            <FrameLayout
+                android:id="@+id/fakeApp1"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/bg_fake_app_insta"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_sim_instagram"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+
+            <!-- TikTok -->
+            <FrameLayout
+                android:id="@+id/fakeApp2"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/bg_fake_app_dark"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_sim_tiktok"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+
+            <!-- YouTube -->
+            <FrameLayout
+                android:id="@+id/fakeApp3"
+                android:layout_width="72dp"
+                android:layout_height="72dp"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/bg_fake_app_red"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_sim_youtube"
+                    android:contentDescription="@null" />
+            </FrameLayout>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="80dp"
+            android:alpha="0.35"
+            android:fontFamily="sans-serif-light"
+            android:letterSpacing="0.08"
+            android:text="go on, try it"
+            android:textColor="#FFFFFF"
+            android:textSize="13sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Phase 2: mock reflection card (initially gone) -->
+    <FrameLayout
+        android:id="@+id/simCardOverlay"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#CC000000"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:id="@+id/simCard"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="24dp"
+            android:background="@drawable/bg_reflection_setup_dialog"
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingTop="20dp"
+            android:paddingEnd="20dp"
+            android:paddingBottom="20dp"
+            android:translationY="300dp">
+
+            <!-- User goal as top reminder -->
+            <TextView
+                android:id="@+id/tvSimGoal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingBottom="4dp"
+                android:textColor="@color/whiteTrans90"
+                android:textSize="13sp"
+                android:textStyle="italic" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="20dp" />
+
+            <!-- Pause prompt -->
+            <TextView
+                android:id="@+id/tvSimPrompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="16dp"
+                android:text="Future you remembers\nthe moments you chose differently."
+                android:textColor="@color/whiteTrans90"
+                android:textSize="15sp"
+                android:textStyle="italic" />
+
+            <Space
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:minHeight="20dp" />
+
+            <!-- Progress bar (fills slowly) -->
+            <ProgressBar
+                android:id="@+id/pbSim"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/home_battery_bar_height"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:max="1000"
+                android:progress="0"
+                android:progressDrawable="@drawable/reflection_progress" />
+
+            <!-- Buttons -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/btnSimOpenAnyway"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_reflection_done_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:minHeight="48dp"
+                    android:text="Open anyway"
+                    android:textColor="@color/whiteTrans90"
+                    android:textSize="@dimen/text_small"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/btnSimWait"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_reflection_done_button"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:gravity="center"
+                    android:minHeight="48dp"
+                    android:text="I'll wait →"
+                    android:textColor="@color/whiteTrans90"
+                    android:textSize="@dimen/text_small"
+                    android:textStyle="bold" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</FrameLayout>

@@ -24,6 +24,11 @@
         android:visibility="gone" />
 
     <include
+        android:id="@+id/pageSimulation"
+        layout="@layout/onboarding_page_simulation"
+        android:visibility="gone" />
+
+    <include
         android:id="@+id/pageLocation"
         layout="@layout/onboarding_page_location"
         android:visibility="gone" />

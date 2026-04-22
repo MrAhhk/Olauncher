@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <!-- TikTok musical note shape -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 23,4 L 23,25 A 9,9 0 1 1 14,25 A 9,9 0 0 1 23,25 L 23,13 C 26,15 29.5,16 34,15 L 34,9 C 29.5,10 25.5,7.5 23,4 Z" />
+</vector>

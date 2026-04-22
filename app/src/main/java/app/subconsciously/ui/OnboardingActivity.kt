@@ -73,6 +73,7 @@ class OnboardingActivity : AppCompatActivity() {
         setupGoalPage()
         setupModePage()
         setupAppsPageButtons()
+        setupSimulationPage()
         setupLocationPage()
         setupAccessPage()
     }
@@ -244,7 +245,7 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun setupAppsPageButtons() {
         binding.pageApps.btnSkip.setOnClickListener {
-            navigateToLocation(binding.pageApps.root)
+            navigateTo(binding.pageApps.root, binding.pageSimulation.root)
         }
         // btnConfirm is wired after rows are loaded in loadAppsAsync()
     }
@@ -292,14 +293,49 @@ class OnboardingActivity : AppCompatActivity() {
                 lifecycleScope.launch(Dispatchers.IO) {
                     distractionList.applyReflectionSelectionBatch(rows)
                     withContext(Dispatchers.Main) {
-                        navigateToLocation(appsPage.root)
+                        navigateTo(appsPage.root, binding.pageSimulation.root)
                     }
                 }
             }
         }
     }
 
-    // ── Page 3: Location ─────────────────────────────────────────────────────
+    // ── Page 5: Simulation ───────────────────────────────────────────────────
+
+    private fun setupSimulationPage() {
+        val page = binding.pageSimulation
+
+        fun triggerSimulation() {
+            val goal = prefs.userGoal.takeIf { it.isNotBlank() } ?: "Be present, not scrolling"
+            page.tvSimGoal.text = "\"$goal\""
+
+            page.simCardOverlay.visibility = View.VISIBLE
+            page.simCardOverlay.alpha = 0f
+            page.simCard.translationY = 300f
+
+            page.simCardOverlay.animate().alpha(1f).setDuration(250).start()
+            page.simCard.animate().translationY(0f).setDuration(400)
+                .setInterpolator(android.view.animation.DecelerateInterpolator(1.5f)).start()
+
+            android.animation.ValueAnimator.ofInt(0, 1000).apply {
+                duration = 5000
+                addUpdateListener { page.pbSim.progress = it.animatedValue as Int }
+                start()
+            }
+
+            val advance = {
+                navigateToLocation(page.root)
+            }
+            page.btnSimOpenAnyway.setOnClickListener { advance() }
+            page.btnSimWait.setOnClickListener { advance() }
+        }
+
+        listOf(page.fakeApp1, page.fakeApp2, page.fakeApp3).forEach {
+            it.setOnClickListener { triggerSimulation() }
+        }
+    }
+
+    // ── Page 6: Location ─────────────────────────────────────────────────────
 
     private fun setupLocationPage() {
         binding.pageLocation.btnGrant.setOnClickListener {

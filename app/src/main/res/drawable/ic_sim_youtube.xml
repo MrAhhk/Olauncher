@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="40dp"
+    android:height="40dp"
+    android:viewportWidth="40"
+    android:viewportHeight="40">
+    <!-- YouTube play triangle -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 14,10 L 14,30 L 31,20 Z" />
+</vector>
