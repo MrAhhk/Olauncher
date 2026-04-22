@@ -25,8 +25,12 @@ object RadarEngine {
         val hesitations = prefs.getRadarHesitations(dateKey)
         val intents = prefs.getRadarIntent(dateKey)
 
-        // Zero opens = perfectly clean day — full score on all behavioral axes
-        if (opens == 0) return RadarSnapshot(1f, 1f, 1f, 1f, 1f)
+        // Zero opens = perfectly clean day — full score on behavioral axes, T from actual usage
+        if (opens == 0) {
+            val savedS = savedSecondsFromUsageStats(context, prefs, dateKey)
+            val rawT = (savedS / DAILY_TARGET_S).coerceIn(0f, 1f)
+            return RadarSnapshot(1f, 1f, 1f, rawT, 1f)
+        }
 
         if (opens < MIN_EVENTS) return null
 
