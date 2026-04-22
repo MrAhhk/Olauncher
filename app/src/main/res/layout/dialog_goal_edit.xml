@@ -9,20 +9,37 @@
     android:paddingEnd="20dp"
     android:paddingBottom="20dp">
 
-    <EditText
-        android:id="@+id/etGoalDialog"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        android:fontFamily="sans-serif-light"
-        android:gravity="center"
-        android:hint="e.g. Be present, not scrolling"
-        android:inputType="textCapSentences"
-        android:maxLines="2"
-        android:padding="16dp"
-        android:textColor="@color/whiteTrans90"
-        android:textColorHint="@color/whiteTrans50"
-        android:textSize="18sp" />
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/etGoalDialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:inputType="textCapSentences"
+            android:maxLines="2"
+            android:padding="16dp"
+            android:textColor="@color/whiteTrans90"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/tvGoalHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:padding="16dp"
+            android:textColor="@color/whiteTrans50"
+            android:textSize="18sp"
+            android:clickable="false"
+            android:focusable="false" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

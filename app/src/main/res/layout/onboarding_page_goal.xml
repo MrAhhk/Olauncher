@@ -51,7 +51,7 @@
         android:fontFamily="sans-serif"
         android:gravity="center"
         android:lineSpacingMultiplier="1.1"
-        android:text="What's your\nintention?"
+        android:text="What's your\ngoal?"
         android:textColor="@color/whiteTrans90"
         android:textSize="34sp"
         android:textStyle="bold"
@@ -67,34 +67,54 @@
         android:layout_marginEnd="28dp"
         android:layout_marginTop="8dp"
         android:fontFamily="sans-serif-light"
-        android:text="This will show on your home screen as a reminder."
+        android:text="Whatever goal is on your mind right now — set it. It'll be waiting for you every time you unlock."
         android:textColor="@color/whiteTrans50"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-    <EditText
-        android:id="@+id/etGoal"
+    <FrameLayout
+        android:id="@+id/goalInputWrapper"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginEnd="24dp"
         android:layout_marginTop="32dp"
         android:background="@drawable/bg_onboarding_option"
-        android:fontFamily="sans-serif-light"
-        android:gravity="center"
-        android:hint="e.g. Be present, not scrolling"
-        android:inputType="textCapSentences"
-        android:maxLines="2"
-        android:paddingHorizontal="20dp"
-        android:paddingVertical="18dp"
-        android:textColor="@color/whiteTrans90"
-        android:textColorHint="@color/whiteTrans50"
-        android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSubtitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvSubtitle">
+
+        <EditText
+            android:id="@+id/etGoal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:inputType="textCapSentences"
+            android:maxLines="2"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="18dp"
+            android:textColor="@color/whiteTrans90"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tvGoalHint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:clickable="false"
+            android:focusable="false"
+            android:fontFamily="sans-serif-light"
+            android:gravity="center"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="18dp"
+            android:textColor="@color/whiteTrans50"
+            android:textSize="16sp" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/btnGoalContinue"

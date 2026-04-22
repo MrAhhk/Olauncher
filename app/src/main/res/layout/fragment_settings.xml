@@ -369,7 +369,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
                         android:paddingVertical="8dp"
-                        android:text="Show intention"
+                        android:text="Show goal"
                         android:textColor="?attr/primaryColor" />
 
                     <TextView

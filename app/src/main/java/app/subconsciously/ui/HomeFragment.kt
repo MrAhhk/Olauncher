@@ -347,7 +347,7 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             return
         }
         val goal = prefs.userGoal
-        tv.text = if (goal.isNotBlank()) goal else "Tap to set your intention"
+        tv.text = if (goal.isNotBlank()) goal else "Tap to set your goal"
         tv.alpha = if (goal.isNotBlank()) 1f else 0.4f
         tv.visibility = View.VISIBLE
     }
@@ -370,16 +370,54 @@ class HomeFragment : Fragment(), View.OnClickListener, View.OnLongClickListener 
             setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
         }
 
+        val tvHint = view.findViewById<TextView>(R.id.tvGoalHint)
+        val hintRunner = startCyclingHints(et, tvHint)
+
         view.findViewById<TextView>(R.id.btnGoalSave).setOnClickListener {
+            hintRunner.removeCallbacksAndMessages(null)
             prefs.userGoal = et.text.toString().trim()
             populateUserGoal()
             dialog.dismiss()
         }
         view.findViewById<TextView>(R.id.btnGoalCancel).setOnClickListener {
+            hintRunner.removeCallbacksAndMessages(null)
             dialog.dismiss()
         }
+        dialog.setOnDismissListener { hintRunner.removeCallbacksAndMessages(null) }
 
         dialog.show()
+    }
+
+    private fun startCyclingHints(et: android.widget.EditText, tvHint: TextView): android.os.Handler {
+        val hints = listOf(
+            "e.g. Become the person future me is proud of",
+            "e.g. Break the loop, choose growth",
+            "e.g. Less scrolling, more living",
+            "e.g. Show up for myself every single day",
+            "e.g. Build the life I keep dreaming about",
+            "e.g. Stop reacting, start deciding",
+            "e.g. Be someone I actually respect",
+            "e.g. Make today count, not just pass",
+            "e.g. Do less, but mean every bit of it",
+            "e.g. One good choice at a time"
+        )
+        var index = (Math.random() * hints.size).toInt()
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+
+        fun fadeHint() {
+            if (et.text.isNotEmpty()) { tvHint.alpha = 0f; return }
+            tvHint.animate().alpha(0f).setDuration(300).withEndAction {
+                tvHint.text = hints[index % hints.size]
+                index++
+                tvHint.animate().alpha(1f).setDuration(300).start()
+            }.start()
+            handler.postDelayed(::fadeHint, 2500)
+        }
+
+        tvHint.text = hints[index % hints.size]
+        index++
+        handler.postDelayed(::fadeHint, 2500)
+        return handler
     }
 
     @RequiresApi(Build.VERSION_CODES.Q)

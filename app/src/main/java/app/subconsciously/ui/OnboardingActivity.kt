@@ -139,13 +139,45 @@ class OnboardingActivity : AppCompatActivity() {
 
     private fun setupGoalPage() {
         val page = binding.pageGoal
+        val hints = listOf(
+            "e.g. Become the person future me is proud of",
+            "e.g. Break the loop, choose growth",
+            "e.g. Less scrolling, more living",
+            "e.g. Show up for myself every single day",
+            "e.g. Build the life I keep dreaming about",
+            "e.g. Stop reacting, start deciding",
+            "e.g. Be someone I actually respect",
+            "e.g. Make today count, not just pass",
+            "e.g. Do less, but mean every bit of it",
+            "e.g. One good choice at a time"
+        )
+        var hintIndex = (Math.random() * hints.size).toInt()
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+
+        val tvHint = page.tvGoalHint
+
+        fun cycleHint() {
+            if (page.etGoal.text.isNotEmpty()) { tvHint.alpha = 0f; return }
+            tvHint.animate().alpha(0f).setDuration(300).withEndAction {
+                tvHint.text = hints[hintIndex % hints.size]
+                hintIndex++
+                tvHint.animate().alpha(1f).setDuration(300).start()
+            }.start()
+            handler.postDelayed(::cycleHint, 2500)
+        }
+
+        tvHint.text = hints[hintIndex % hints.size]
+        hintIndex++
+        handler.postDelayed(::cycleHint, 2500)
+
         page.btnGoalContinue.setOnClickListener {
-            val goal = page.etGoal.text.toString().trim()
-            prefs.userGoal = goal
+            handler.removeCallbacksAndMessages(null)
+            prefs.userGoal = page.etGoal.text.toString().trim()
             hideKeyboard(page.etGoal)
             navigateTo(page.root, binding.pageMode.root)
         }
         page.btnGoalSkip.setOnClickListener {
+            handler.removeCallbacksAndMessages(null)
             prefs.userGoal = ""
             hideKeyboard(page.etGoal)
             navigateTo(page.root, binding.pageMode.root)
